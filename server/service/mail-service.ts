@@ -31,4 +31,4 @@ class MailService {
     }
 }
 
-module.exports = new MailService();
+export default new MailService();
