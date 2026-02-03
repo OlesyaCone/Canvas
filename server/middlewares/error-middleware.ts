@@ -1,4 +1,4 @@
-import ApiError from '../exceptions/api-error.js';
+import ApiError from '../exceptions/apiError';
 
 export default function (err, req, res, next) {
     console.log(err);

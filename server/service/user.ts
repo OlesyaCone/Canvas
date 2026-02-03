@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';  
-import UserModel from '../models/user-model.js';
-import mailService from './mail-service.js';
-import tokenService from './token-service.js';
-import UserDto from '../dtos/user-dto.js';
-import ApiError from '../exceptions/api-error.js';
+import { User as UserModel} from '../models/authModel';
+import mailService from './mail';
+import tokenService from './token';
+import UserDto from '../dtos/user-dto';
+import ApiError from '../exceptions/apiError';
 
 class UserService {
     async registration(email, password) {
