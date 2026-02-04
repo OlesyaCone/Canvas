@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors, { CorsOptions } from "cors";
 import router from "./router/index";
-import errorMiddleware from "./middlewares/error-middleware";
+import errorMiddleware from "./middlewares/errorMiddleware";
 import dotenv from "dotenv";
 
 dotenv.config();

@@ -1,6 +1,7 @@
 export type TokenType = {
     user: string;
     refreshToken: string;
+    accessToken: string;
 };
 
 export type UserType = {
@@ -8,4 +9,11 @@ export type UserType = {
     password: string;
     isActivated: boolean;
     activationLink?: string;
+};
+
+export type AuthenticatedRequest = Request & {
+  user?: UserType;
+  headers: Request['headers'] & {
+    authorization?: string;
+  };
 };

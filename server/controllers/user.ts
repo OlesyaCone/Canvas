@@ -1,31 +1,44 @@
-import { validationResult } from "express-validator";
-import  ApiError  from "../exceptions/apiError";  
-import  userService  from "../service/user";  
-import { Request, Response } from "express";
+import { validationResult, Result, ValidationError } from "express-validator";
+import ApiError from "../exceptions/apiError";
+import userService from "../service/user";
+import { Request, Response, NextFunction } from "express";
 import type { TokenType, UserType } from "types/auth";
 
 class UserController {
-  async registration(req: Request, res: Response, next) {
+  async registration(
+    req: Request<{}, {}, Pick<UserType, "email" | "password">>,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const errors = validationResult(req);
+      const errors: Result<ValidationError> = validationResult(req);
+
       if (!errors.isEmpty()) {
+        const errorArray: ValidationError[] = errors.array();
+
         return next(
-          ApiError.BadRequest("Ошибка при валидации", errors.array()),
+          ApiError.BadRequest<ValidationError>(
+            "Ошибка при валидации",
+            errorArray,
+          ),
         );
       }
+
       const { email, password } = req.body;
       const userData = await userService.registration(email, password);
+
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
+
       return res.json(userData);
     } catch (e) {
       next(e);
     }
   }
 
-  async login(req: Request, res: Response, next) {
+  async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
       const userData = await userService.login(email, password);
@@ -39,7 +52,7 @@ class UserController {
     }
   }
 
-  async logout(req: Request, res: Response, next) {
+  async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.cookies;
       const token = await userService.logout(refreshToken);
@@ -50,7 +63,7 @@ class UserController {
     }
   }
 
-  async activate(req: Request, res: Response, next) {
+  async activate(req: Request, res: Response, next: NextFunction) {
     try {
       const activationLink = req.params.link;
       await userService.activate(activationLink);
@@ -60,7 +73,7 @@ class UserController {
     }
   }
 
-  async refresh(req: Request, res: Response, next) {
+  async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.cookies;
       const userData = await userService.refresh(refreshToken);
@@ -74,7 +87,7 @@ class UserController {
     }
   }
 
-  async getUsers(req: Request, res: Response, next) {
+  async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await userService.getAllUsers();
       return res.json(users);
