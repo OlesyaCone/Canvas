@@ -5,10 +5,10 @@ import mailService from "./mail";
 import tokenService from "./token";
 import UserDto from "../dtos/userDto";
 import ApiError from "../exceptions/apiError";
-import type { UserType } from "../types/auth";
+import type { UserType, LoginResponse } from "../types/auth";
 
 class UserService {
-  async registration(email, password) {
+  async registration(email: UserType["email"], password: UserType["password"]): Promise<LoginResponse> {
     const candidate = await UserModel.findOne({ email });
     if (candidate) {
       throw ApiError.BadRequest(
@@ -22,19 +22,28 @@ class UserService {
       password: hashPassword,
       activationLink,
     });
+
     await mailService.sendActivationMail(
       email,
       `${process.env.API_URL}/api/activate/${activationLink}`,
     );
 
-    const userDto = new UserDto(user);
+    const userDto = new UserDto({
+      _id: user._id.toString(),
+      email: user.email,
+      isActivated: user.isActivated,
+    });
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
-    return { ...tokens, user: userDto };
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: userDto,
+    };
   }
 
-  async activate(activationLink) {
+  async activate(activationLink: NonNullable<UserType["activationLink"]>): Promise<void> {
     const user = await UserModel.findOne({ activationLink });
     if (!user) {
       throw ApiError.BadRequest("Некорректная ссылка активации");
@@ -43,7 +52,7 @@ class UserService {
     await user.save();
   }
 
-  async login(email, password) {
+  async login(email: UserType["email"], password: UserType["password"]): Promise<LoginResponse> {
     const user = await UserModel.findOne({ email });
     if (!user) {
       throw ApiError.BadRequest("Пользователь с таким email не найден");
@@ -52,44 +61,65 @@ class UserService {
     if (!isPassEquals) {
       throw ApiError.BadRequest("Неверный пароль");
     }
-    const userDto = new UserDto(user);
+    
+    const userDto = new UserDto({
+      _id: user._id.toString(),
+      email: user.email,
+      isActivated: user.isActivated
+    });
+    
     const tokens = tokenService.generateTokens({ ...userDto });
-
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    return { 
+      accessToken: tokens.accessToken, 
+      refreshToken: tokens.refreshToken, 
+      user: userDto 
+    };
   }
 
-  async logout(refreshToken) {
-    const token = await tokenService.removeToken(refreshToken);
-    return token;
+  async logout(refreshToken: string): Promise<void> {
+    await tokenService.removeToken(refreshToken);
   }
 
-  async refresh(refreshToken) {
+  async refresh(refreshToken: string): Promise<LoginResponse> {
     if (!refreshToken) {
       throw ApiError.UnauthorizedError();
     }
-    const userData = tokenService.validateRefreshToken(refreshToken);
+    const userData = tokenService.validateRefreshToken(refreshToken) as unknown as { id: string };
     const tokenFromDb = await tokenService.findToken(refreshToken);
     if (!userData || !tokenFromDb) {
       throw ApiError.UnauthorizedError();
     }
     const user = await UserModel.findById(userData.id);
-    const userDto = new UserDto(user);
+    if (!user) {
+      throw ApiError.UnauthorizedError();
+    }
+    
+    const userDto = new UserDto({
+      _id: user._id.toString(),
+      email: user.email,
+      isActivated: user.isActivated
+    });
+    
     const tokens = tokenService.generateTokens({ ...userDto });
-
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    
+    return { 
+      accessToken: tokens.accessToken, 
+      refreshToken: tokens.refreshToken, 
+      user: userDto 
+    };
   }
 
   async getAllUsers(): Promise<UserType[]> {
     const users = await UserModel.find();
-    return users.map(user => ({
+    return users.map((user) => ({
       email: user.email,
       password: user.password,
       isActivated: user.isActivated,
-      activationLink: user.activationLink || undefined
+      activationLink: user.activationLink || undefined,
     }));
-}
+  }
 }
 
 export default new UserService();

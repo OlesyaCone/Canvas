@@ -1,21 +1,20 @@
 import ApiError from "../exceptions/apiError";
 import tokenService from "../service/token";
 import { Request, Response, NextFunction } from "express";
-import {UserType, AuthenticatedRequest } from "../types/auth";
 
 export default function authMiddleware(
-  req: AuthenticatedRequest,  
-  res: Response, 
-  next: NextFunction
-) {
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
       return next(ApiError.UnauthorizedError());
     }
 
-    const parts = authorizationHeader.split(' ');
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    const parts = authorizationHeader.split(" ");
+    if (parts.length !== 2 || parts[0] !== "Bearer") {
       return next(ApiError.UnauthorizedError());
     }
 
@@ -29,7 +28,7 @@ export default function authMiddleware(
       return next(ApiError.UnauthorizedError());
     }
 
-    req.user = userData as UserType; 
+    req.user = userData;
 
     next();
   } catch (error) {

@@ -8,11 +8,11 @@ class ApiError<T = any> extends Error {
     this.errors = errors;
   }
 
-  static BadRequest<T = any>(message: string, errors: T[] = []) {
+  static BadRequest<T = any>(message: string, errors: T[] = []): ApiError<T> {
     return new ApiError<T>(400, message, errors);
   }
 
-  static UnauthorizedError<T = any>() {
+  static UnauthorizedError<T = any>(): ApiError<T> {
     return new ApiError<T>(401, "Пользователь не авторизован");
   }
 }
