@@ -132,18 +132,11 @@ class UserController {
   ): Promise<Response | void> {
     try {
       const users = await userService.getAllUsers();
-
-      const safeUsers = (users as any[]).map((user) => ({
-        _id: user._id,
-        email: user.email,
-        isActivated: user.isActivated,
-        activationLink: user.activationLink,
-      }));
       
       return res.json({
         success: true,
-        count: safeUsers.length,
-        users: safeUsers,
+        count: users.length,
+        users,
       });
     } catch (e) {
       next(e);

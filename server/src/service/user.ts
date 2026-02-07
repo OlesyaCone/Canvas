@@ -8,7 +8,10 @@ import ApiError from "../exceptions/apiError";
 import type { UserType, LoginResponse } from "../types/auth";
 
 class UserService {
-  async registration(email: UserType["email"], password: UserType["password"]): Promise<LoginResponse> {
+  async registration(
+    email: UserType["email"],
+    password: UserType["password"],
+  ): Promise<LoginResponse> {
     const candidate = await UserModel.findOne({ email });
     if (candidate) {
       throw ApiError.BadRequest(
@@ -43,7 +46,9 @@ class UserService {
     };
   }
 
-  async activate(activationLink: NonNullable<UserType["activationLink"]>): Promise<void> {
+  async activate(
+    activationLink: NonNullable<UserType["activationLink"]>,
+  ): Promise<void> {
     const user = await UserModel.findOne({ activationLink });
     if (!user) {
       throw ApiError.BadRequest("Некорректная ссылка активации");
@@ -52,7 +57,10 @@ class UserService {
     await user.save();
   }
 
-  async login(email: UserType["email"], password: UserType["password"]): Promise<LoginResponse> {
+  async login(
+    email: UserType["email"],
+    password: UserType["password"],
+  ): Promise<LoginResponse> {
     const user = await UserModel.findOne({ email });
     if (!user) {
       throw ApiError.BadRequest("Пользователь с таким email не найден");
@@ -61,19 +69,19 @@ class UserService {
     if (!isPassEquals) {
       throw ApiError.BadRequest("Неверный пароль");
     }
-    
+
     const userDto = new UserDto({
       _id: user._id.toString(),
       email: user.email,
-      isActivated: user.isActivated
+      isActivated: user.isActivated,
     });
-    
+
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { 
-      accessToken: tokens.accessToken, 
-      refreshToken: tokens.refreshToken, 
-      user: userDto 
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: userDto,
     };
   }
 
@@ -85,7 +93,11 @@ class UserService {
     if (!refreshToken) {
       throw ApiError.UnauthorizedError();
     }
-    const userData = tokenService.validateRefreshToken(refreshToken) as unknown as { id: string };
+    const userData = tokenService.validateRefreshToken(refreshToken);
+    
+    if (!userData) {
+      throw ApiError.UnauthorizedError();
+    }
     const tokenFromDb = await tokenService.findToken(refreshToken);
     if (!userData || !tokenFromDb) {
       throw ApiError.UnauthorizedError();
@@ -94,20 +106,20 @@ class UserService {
     if (!user) {
       throw ApiError.UnauthorizedError();
     }
-    
+
     const userDto = new UserDto({
       _id: user._id.toString(),
       email: user.email,
-      isActivated: user.isActivated
+      isActivated: user.isActivated,
     });
-    
+
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    
-    return { 
-      accessToken: tokens.accessToken, 
-      refreshToken: tokens.refreshToken, 
-      user: userDto 
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: userDto,
     };
   }
 

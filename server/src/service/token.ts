@@ -37,21 +37,21 @@ class TokenService {
   async saveToken(userId: string, refreshToken: string): Promise<TokenDbType> {
     const tokenData = await TokenModel.findOne({ user: userId });
     if (tokenData) {
-      tokenData.refreshToken = refreshToken;
-      await tokenData.save();
-      return {
-        user: tokenData.user?.toString() || userId,
-        refreshToken: tokenData.refreshToken,
-        _id: tokenData._id?.toString()
-      };
+        tokenData.refreshToken = refreshToken;
+        await tokenData.save();
+        return {
+            user: tokenData.user!.toString(), 
+            refreshToken: tokenData.refreshToken,
+            _id: tokenData._id!.toString()
+        };
     }
     const token = await TokenModel.create({ user: userId, refreshToken });
     return {
-      user: token.user?.toString() || userId,
-      refreshToken: token.refreshToken,
-      _id: token._id?.toString()
+        user: token.user!.toString(),
+        refreshToken: token.refreshToken,
+        _id: token._id!.toString()
     };
-  }
+}
 
   async removeToken(refreshToken: string): Promise<{ deletedCount?: number }> {
     const tokenData = await TokenModel.deleteOne({ refreshToken });
