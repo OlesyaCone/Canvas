@@ -1,0 +1,23 @@
+@use '../variables' as *;
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-btn {
+  padding: map-get($spacing, "md") map-get($spacing, "lg");
+  background-color: map-get($colors, "primary");
+  color: map-get($colors, "bg-light");
+  border: none;
+  border-radius: map-get($border-radius, "full");
+  cursor: pointer;
+  font-size: 1rem;
+  transition: $transition;
+
+  &:hover {
+    background-color: map-get($colors, "bg-dark");
+  }
+}

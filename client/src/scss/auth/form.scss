@@ -1,0 +1,109 @@
+@use '../variables' as *;
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background-color: map-get($colors, "overlay");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  &-content {
+    position: relative;
+    background: white;
+    padding: map-get($spacing, "lg");
+    border-radius: map-get($spacing, "md");
+    max-width: 400px;
+    width: 90%;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: map-get($spacing, "md");
+    right: map-get($spacing, "md");
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: map-get($colors, "bg-dark");
+    
+    &:hover {
+      color: map-get($colors, "primary");
+    }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: map-get($spacing, "md");
+  width: 100%;
+
+  .input-span {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: map-get($spacing, "xs");
+  }
+
+  input[type="email"],
+  input[type="password"] {
+    border-radius: map-get($border-radius, "md");
+    padding: map-get($spacing, "md") map-get($spacing, "sm");
+    width: 100%;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: map-get($spacing, "xs");
+    background-color: map-get($colors, "primary-alpha");
+    outline: 2px solid map-get($colors, "bg-dark");
+
+    &:focus {
+      outline: 2px solid map-get($colors, "primary");
+    }
+  }
+
+  .label {
+    align-self: flex-start;
+    color: map-get($colors, "primary");
+    font-weight: 600;
+  }
+
+  .submit {
+    padding: map-get($spacing, "md") map-get($spacing, "sm");
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: map-get($spacing, "xs");
+    border-radius: map-get($border-radius, "full");
+    background-color: map-get($colors, "bg-dark");
+    color: map-get($colors, "bg-light");
+    border: none;
+    cursor: pointer;
+    transition: $transition;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    &:hover {
+      background-color: map-get($colors, "primary");
+      color: map-get($colors, "bg-dark");
+    }
+  }
+
+  .span {
+    text-decoration: none;
+    color: map-get($colors, "bg-dark");
+
+    a {
+      color: map-get($colors, "primary");
+      cursor: pointer;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

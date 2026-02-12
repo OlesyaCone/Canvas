@@ -1,0 +1,23 @@
+$colors: (
+  "bg-light": #efefef,
+  "bg-dark": #707070,
+  "primary": #58bc82,
+  "primary-alpha": #9c9c9c60,
+  "overlay": rgba(0, 0, 0, 0.5),
+  "white": #ffffff
+);
+
+$spacing: (
+  "xs": 0.5rem,
+  "sm": 0.75rem,
+  "md": 1rem,
+  "lg": 2rem,
+  "xl": 3rem
+);
+
+$border-radius: (
+  "md": 0.5rem,
+  "full": 3rem
+);
+
+$transition: all 300ms;
