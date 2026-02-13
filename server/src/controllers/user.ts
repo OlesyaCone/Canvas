@@ -2,13 +2,13 @@ import { validationResult, Result, ValidationError } from "express-validator";
 import ApiError from "../exceptions/apiError";
 import userService from "../service/user";
 import { Request, Response, NextFunction } from "express";
-import type { UserType, LoginResponse, UserDtoType } from "src/types/auth";
+import type { UserType} from "src/types/auth";
 
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_CLIENT_URL = "http://localhost:3000";
 
 class UserController {
-  private setRefreshTokenCookie(res: Response, token: string): void {
+  private setRefreshTokenCookie = (res: Response, token: string): void => {
     res.cookie("refreshToken", token, {
       maxAge: REFRESH_TOKEN_MAX_AGE,
       httpOnly: true,
@@ -17,18 +17,18 @@ class UserController {
     });
   }
 
-  private validateRefreshToken(refreshToken?: string): string {
+  private validateRefreshToken = (refreshToken?: string): string => {
     if (!refreshToken) {
       throw ApiError.UnauthorizedError();
     }
     return refreshToken;
   }
 
-  async registration(
+  registration = async (
     req: Request<{}, {}, Pick<UserType, "email" | "password">>,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const errors: Result<ValidationError> = validationResult(req);
 
@@ -52,11 +52,11 @@ class UserController {
     }
   }
 
-  async login(
+  login = async (
     req: Request<{}, {}, Pick<UserType, "email" | "password">>,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const { email, password } = req.body;
       const userData = await userService.login(email, password);
@@ -71,11 +71,11 @@ class UserController {
     }
   }
 
-  async logout(
+  logout = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const { refreshToken } = req.cookies || {};
 
@@ -90,11 +90,11 @@ class UserController {
     }
   }
 
-  async activate(
+  activate = async (
     req: Request<{ link: string }>,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const activationLink = req.params.link;
       await userService.activate(activationLink);
@@ -104,11 +104,11 @@ class UserController {
     }
   }
 
-  async refresh(
+  refresh = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const { refreshToken } = req.cookies || {};
       const validRefreshToken = this.validateRefreshToken(refreshToken);
@@ -125,11 +125,11 @@ class UserController {
     }
   }
 
-  async getUsers(
+  getUsers = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const users = await userService.getAllUsers();
       
