@@ -107,3 +107,203 @@
     }
   }
 }
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: map-get($colors, "overlay");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: map-get($colors, "white");
+  padding: map-get($spacing, "xl");
+  border-radius: map-get($border-radius, "md");
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: map-get($spacing, "md");
+  right: map-get($spacing, "md");
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: map-get($colors, "bg-dark");
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: $transition;
+
+  &:hover {
+    background-color: map-get($colors, "primary-alpha");
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: map-get($spacing, "lg");
+}
+
+.title {
+  text-align: center;
+  color: map-get($colors, "bg-dark");
+  margin-bottom: map-get($spacing, "sm");
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.input-span {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: map-get($spacing, "xs");
+}
+
+.label {
+  font-size: 0.9rem;
+  color: map-get($colors, "bg-dark");
+  font-weight: 500;
+}
+
+.input-span input {
+  width: 100%;
+  padding: map-get($spacing, "sm") map-get($spacing, "md");
+  border: 2px solid map-get($colors, "bg-light");
+  border-radius: map-get($border-radius, "full");
+  font-size: 1rem;
+  transition: $transition;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: map-get($colors, "primary");
+    box-shadow: 0 0 0 3px map-get($colors, "primary-alpha");
+  }
+}
+
+.submit {
+  width: 100%;
+  padding: map-get($spacing, "sm") map-get($spacing, "md");
+  background-color: map-get($colors, "primary");
+  color: map-get($colors, "white");
+  border: none;
+  border-radius: map-get($border-radius, "full");
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: $transition;
+
+  &:hover {
+    background-color: map-get($colors, "bg-dark");
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.toggle-auth {
+  text-align: center;
+  font-size: 0.9rem;
+  color: map-get($colors, "bg-dark");
+  margin-top: -#{map-get($spacing, "sm")};
+
+  a {
+    color: map-get($colors, "primary");
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: map-get($spacing, "xs");
+    transition: $transition;
+
+    &:hover {
+      color: map-get($colors, "bg-dark");
+      text-decoration: underline;
+    }
+  }
+}
+
+// Разделитель
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: map-get($colors, "bg-dark");
+  opacity: 0.5;
+  margin: map-get($spacing, "xs") 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid map-get($colors, "bg-light");
+  }
+
+  .divider-text {
+    padding: 0 map-get($spacing, "sm");
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: map-get($spacing, "sm");
+  width: 100%;
+  padding: map-get($spacing, "sm") map-get($spacing, "md");
+  background-color: map-get($colors, "white");
+  border: 2px solid map-get($colors, "bg-light");
+  border-radius: map-get($border-radius, "full");
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: map-get($colors, "bg-dark");
+  transition: $transition;
+
+  &:hover {
+    background-color: map-get($colors, "bg-light");
+    border-color: map-get($colors, "primary");
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px map-get($colors, "primary-alpha");
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
