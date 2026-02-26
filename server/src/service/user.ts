@@ -24,6 +24,7 @@ class UserService {
       email,
       password: hashPassword,
       activationLink,
+      provider: 'local'
     });
 
     await mailService.sendActivationMail(
@@ -32,10 +33,12 @@ class UserService {
     );
 
     const userDto = new UserDto({
-      _id: user._id.toString(),
+      _id: user._id,
       email: user.email,
       isActivated: user.isActivated,
+      provider: user.provider
     });
+    
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
@@ -71,9 +74,10 @@ class UserService {
     }
 
     const userDto = new UserDto({
-      _id: user._id.toString(),
+      _id: user._id,
       email: user.email,
       isActivated: user.isActivated,
+      provider: user.provider
     });
 
     const tokens = tokenService.generateTokens({ ...userDto });
@@ -108,9 +112,10 @@ class UserService {
     }
 
     const userDto = new UserDto({
-      _id: user._id.toString(),
+      _id: user._id,
       email: user.email,
       isActivated: user.isActivated,
+      provider: user.provider
     });
 
     const tokens = tokenService.generateTokens({ ...userDto });
@@ -130,6 +135,7 @@ class UserService {
       password: user.password,
       isActivated: user.isActivated,
       activationLink: user.activationLink || undefined,
+      provider: user.provider || 'local'
     }));
   }
 }

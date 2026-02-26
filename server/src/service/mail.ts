@@ -21,8 +21,6 @@ class MailService {
 
   async sendActivationMail(to: string, link: string): Promise<void> {
     try {
-      console.log(`📨 Отправка на ${to} через ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
-      
       const info = await this.transporter.sendMail({
         from: process.env.SMTP_USER || 'noreply@localhost',
         to,

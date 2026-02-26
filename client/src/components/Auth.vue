@@ -58,7 +58,6 @@ const handleGoogleLogin = () => {
           </a>
         </span>
 
-        <!-- Разделитель -->
         <div class="divider">
           <span class="divider-text">или</span>
         </div>

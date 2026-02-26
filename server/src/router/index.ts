@@ -3,6 +3,10 @@ import { body } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 import userController from '../controllers/user';
 import authMiddleware from '../middlewares/authMiddleware';
+import { 
+  authenticateGoogle, 
+  authenticateGoogleCallback 
+} from '../middlewares/googleAuth';
 import type { UserType } from '../types/auth';
 
 type AuthRequestBody = Pick<UserType, 'email' | 'password'>;
@@ -56,5 +60,8 @@ router.get('/users',
     userController.getUsers(req, res, next)
   )
 );
+
+router.get('/auth/google', authenticateGoogle);
+router.get('/auth/google/callback', authenticateGoogleCallback);
 
 export default router;
