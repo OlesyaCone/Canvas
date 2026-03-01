@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Auth from './components/Auth.vue'
+import Chat from './components/Chat.vue'
 
 const showAuth = ref(false)
 </script>
@@ -12,5 +13,6 @@ const showAuth = ref(false)
     </button>
 
     <Auth v-if="showAuth" @close="showAuth = false" />
+    <Chat></Chat>
   </div>
 </template>
