@@ -23,11 +23,9 @@ const emit = defineEmits<{
   (e: "back"): void;
 }>();
 
-
 const messages = ref<Message[]>([]);
 const newMessage = ref("");
 const displayName = ref("Имя");
-
 
 const showSchedules = () => {
   if (!props.schedules || props.schedules.length === 0) {
@@ -39,7 +37,6 @@ const showSchedules = () => {
     });
     return;
   }
-
 
   const schedulesList = props.schedules
     .map(

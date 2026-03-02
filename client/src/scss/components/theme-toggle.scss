@@ -1,0 +1,126 @@
+@use "../variables" as *;
+
+.theme-controls {
+  display: flex;
+  gap: map-get($spacing, "md");
+  padding: map-get($spacing, "md");
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-btn {
+  padding: map-get($spacing, "sm") map-get($spacing, "lg");
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: map-get($border-radius, "full");
+  cursor: pointer;
+  font-size: 1rem;
+  transition: $transition;
+
+  &:hover {
+    background-color: var(--bg-dark);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--primary-alpha);
+  }
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 3em;
+  height: 3em;
+  cursor: pointer;
+  z-index: 1000;
+  background: var(--white);
+  border: none;
+  border-radius: 50%;
+  padding: 0.5em;
+  transition: all 0.3s ease;
+  margin: 0;
+  animation: slideInFromTop 0.8s ease-out 0.5s both;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px var(--overlay);
+  }
+}
+
+.theme-toggle-input {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  cursor: pointer;
+}
+
+.theme-toggle-svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease;
+  transform: rotate(40deg);
+  color: var(--primary);
+
+  .sun-moon {
+    transform-origin: center center;
+    transition: inherit;
+    transform: scale(1);
+  }
+
+  .sun-ray {
+    transform-origin: center center;
+    transform: scale(0);
+
+    &.ray-2 { animation-delay: 0.05s; }
+    &.ray-3 { animation-delay: 0.1s; }
+    &.ray-4 { animation-delay: 0.17s; }
+    &.ray-5 { animation-delay: 0.25s; }
+    &.ray-6 { animation-delay: 0.29s; }
+  }
+
+  mask {
+    circle {
+      transition: transform 0.64s cubic-bezier(0.41, 0.64, 0.32, 1.575);
+      transform: translate(0px, 0px);
+    }
+  }
+}
+
+.theme-toggle-input:checked + .theme-toggle-svg {
+  transform: rotate(90deg);
+  color: var(--primary);
+
+  mask circle {
+    transform: translate(16px, -3px);
+  }
+
+  .sun-moon {
+    transform: scale(0.55);
+  }
+
+  .sun-ray {
+    animation: showRay 0.4s ease 0s 1 forwards;
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.5);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes showRay {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}

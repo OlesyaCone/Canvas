@@ -2,119 +2,11 @@
 
 .modal {
   position: fixed;
-  inset: 0;
-  background-color: map-get($colors, "overlay");
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-
-  &-content {
-    position: relative;
-    background: white;
-    padding: map-get($spacing, "lg");
-    border-radius: map-get($spacing, "md");
-    max-width: 400px;
-    width: 90%;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: map-get($spacing, "md");
-    right: map-get($spacing, "md");
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: map-get($colors, "bg-dark");
-    
-    &:hover {
-      color: map-get($colors, "primary");
-    }
-  }
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: map-get($spacing, "md");
-  width: 100%;
-
-  .input-span {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: map-get($spacing, "xs");
-  }
-
-  input[type="email"],
-  input[type="password"] {
-    border-radius: map-get($border-radius, "md");
-    padding: map-get($spacing, "md") map-get($spacing, "sm");
-    width: 100%;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: map-get($spacing, "xs");
-    background-color: map-get($colors, "primary-alpha");
-    outline: 2px solid map-get($colors, "bg-dark");
-
-    &:focus {
-      outline: 2px solid map-get($colors, "primary");
-    }
-  }
-
-  .label {
-    align-self: flex-start;
-    color: map-get($colors, "primary");
-    font-weight: 600;
-  }
-
-  .submit {
-    padding: map-get($spacing, "md") map-get($spacing, "sm");
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: map-get($spacing, "xs");
-    border-radius: map-get($border-radius, "full");
-    background-color: map-get($colors, "bg-dark");
-    color: map-get($colors, "bg-light");
-    border: none;
-    cursor: pointer;
-    transition: $transition;
-    font-weight: 600;
-    font-size: 0.9rem;
-
-    &:hover {
-      background-color: map-get($colors, "primary");
-      color: map-get($colors, "bg-dark");
-    }
-  }
-
-  .span {
-    text-decoration: none;
-    color: map-get($colors, "bg-dark");
-
-    a {
-      color: map-get($colors, "primary");
-      cursor: pointer;
-      text-decoration: none;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-}
-
-.modal {
-  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: map-get($colors, "overlay");
+  background-color: var(--overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -123,7 +15,7 @@
 }
 
 .modal-content {
-  background-color: map-get($colors, "white");
+  background-color: var(--white);
   padding: map-get($spacing, "xl");
   border-radius: map-get($border-radius, "md");
   max-width: 400px;
@@ -152,7 +44,7 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: map-get($colors, "bg-dark");
+  color: var(--bg-dark);
   width: 30px;
   height: 30px;
   display: flex;
@@ -162,7 +54,8 @@
   transition: $transition;
 
   &:hover {
-    background-color: map-get($colors, "primary-alpha");
+    background-color: var(--primary-alpha);
+    color: var(--primary);
   }
 }
 
@@ -174,7 +67,7 @@
 
 .title {
   text-align: center;
-  color: map-get($colors, "bg-dark");
+  color: var(--bg-dark);
   margin-bottom: map-get($spacing, "sm");
   font-size: 1.8rem;
   font-weight: 600;
@@ -189,31 +82,38 @@
 
 .label {
   font-size: 0.9rem;
-  color: map-get($colors, "bg-dark");
+  color: var(--bg-dark);
   font-weight: 500;
 }
 
 .input-span input {
   width: 100%;
   padding: map-get($spacing, "sm") map-get($spacing, "md");
-  border: 2px solid map-get($colors, "bg-light");
+  border: 2px solid var(--bg-light);
   border-radius: map-get($border-radius, "full");
   font-size: 1rem;
   transition: $transition;
   box-sizing: border-box;
+  background-color: var(--white);
+  color: var(--bg-dark);
 
   &:focus {
     outline: none;
-    border-color: map-get($colors, "primary");
-    box-shadow: 0 0 0 3px map-get($colors, "primary-alpha");
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-alpha);
+  }
+
+  &::placeholder {
+    color: var(--bg-dark);
+    opacity: 0.5;
   }
 }
 
 .submit {
   width: 100%;
   padding: map-get($spacing, "sm") map-get($spacing, "md");
-  background-color: map-get($colors, "primary");
-  color: map-get($colors, "white");
+  background-color: var(--primary);
+  color: var(--white);
   border: none;
   border-radius: map-get($border-radius, "full");
   cursor: pointer;
@@ -222,9 +122,10 @@
   transition: $transition;
 
   &:hover {
-    background-color: map-get($colors, "bg-dark");
+    background-color: var(--bg-dark);
+    color: var(--bg-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px var(--primary-alpha);
   }
 
   &:active {
@@ -235,29 +136,29 @@
 .toggle-auth {
   text-align: center;
   font-size: 0.9rem;
-  color: map-get($colors, "bg-dark");
+  color: var(--bg-dark);
   margin-top: -#{map-get($spacing, "sm")};
 
   a {
-    color: map-get($colors, "primary");
+    color: var(--primary);
     text-decoration: none;
     font-weight: 600;
     margin-left: map-get($spacing, "xs");
     transition: $transition;
+    cursor: pointer;
 
     &:hover {
-      color: map-get($colors, "bg-dark");
+      color: var(--bg-dark);
       text-decoration: underline;
     }
   }
 }
 
-// Разделитель
 .divider {
   display: flex;
   align-items: center;
   text-align: center;
-  color: map-get($colors, "bg-dark");
+  color: var(--bg-dark);
   opacity: 0.5;
   margin: map-get($spacing, "xs") 0;
 
@@ -265,7 +166,7 @@
   &::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid map-get($colors, "bg-light");
+    border-bottom: 1px solid var(--bg-light);
   }
 
   .divider-text {
@@ -282,20 +183,20 @@
   gap: map-get($spacing, "sm");
   width: 100%;
   padding: map-get($spacing, "sm") map-get($spacing, "md");
-  background-color: map-get($colors, "white");
-  border: 2px solid map-get($colors, "bg-light");
+  background-color: var(--white);
+  border: 2px solid var(--bg-light);
   border-radius: map-get($border-radius, "full");
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  color: map-get($colors, "bg-dark");
+  color: var(--bg-dark);
   transition: $transition;
 
   &:hover {
-    background-color: map-get($colors, "bg-light");
-    border-color: map-get($colors, "primary");
+    background-color: var(--bg-light);
+    border-color: var(--primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px map-get($colors, "primary-alpha");
+    box-shadow: 0 4px 12px var(--primary-alpha);
   }
 
   &:active {

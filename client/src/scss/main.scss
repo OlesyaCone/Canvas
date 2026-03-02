@@ -1,5 +1,9 @@
 @use 'variables'; 
 
 @use './auth/form';
+
 @use './components/app';
-@use './components/chat';
+@use './components/theme-toggle';
+
+@use './app/chat';
+@use './app/panel';
