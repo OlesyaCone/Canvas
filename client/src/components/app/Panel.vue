@@ -1,3 +1,9 @@
+<script setup lang="ts">
+const emit = defineEmits<{
+  (e: 'open-settings'): void
+}>()
+</script>
+
 <template>
   <div class="sidebar">
     <div class="sidebar-header">
@@ -43,7 +49,7 @@
         </div>
       </div>
       
-      <button class="setting-btn">
+      <button class="setting-btn" @click="emit('open-settings')">
         <span class="bar bar1"></span>
         <span class="bar bar2"></span>
         <span class="bar bar1"></span>
