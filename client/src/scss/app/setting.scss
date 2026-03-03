@@ -370,7 +370,7 @@
 
 .user-message {
   align-self: flex-end;
-  background-color: var(--chat-user-bg);  // <- Весь блок цветной
+  background-color: var(--chat-user-bg); 
   color: var(--chat-user-text);
   border-bottom-right-radius: map-get($spacing, "xs");
   box-shadow: var(--shadow-message-user);
@@ -381,7 +381,6 @@
   line-height: 1.4;
   font-size: 0.95rem;
   transition: $transition;
-  // НЕТ background-color здесь!
 }
 
 .message-time {
@@ -391,7 +390,7 @@
   text-align: right;
 
   .user-message & {
-    color: rgba(255, 255, 255, 0.8);  // Текст времени на цветном фоне
+    color: rgba(255, 255, 255, 0.8);  
   }
 }
 
