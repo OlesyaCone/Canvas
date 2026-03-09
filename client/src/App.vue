@@ -1,10 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import Auth from './components/Auth.vue'
-import Main from './components/Main.vue'
+import { ref, onMounted, watch } from "vue";
+import Auth from "./components/Auth.vue";
 
-const showAuth = ref(false)
+import Main from "./components/Main.vue";
+import { useAuthStore } from "./store/auth";
+
+const authStore = useAuthStore();
+const showAuth = ref(false);
+const showCompleteProfile = ref(false);
 const isDark = ref(false);
+
+watch(() => authStore.isAuth, (newVal) => {
+  if (newVal) {
+    showAuth.value = false;
+    if (!authStore.tempUser) {
+      showCompleteProfile.value = false;
+    }
+  }
+});
 
 const toggleTheme = (): void => {
   applyTheme();
@@ -14,7 +27,7 @@ const toggleTheme = (): void => {
 const applyTheme = (): void => {
   document.documentElement.setAttribute(
     "data-theme",
-    isDark.value ? "dark" : "light"
+    isDark.value ? "dark" : "light",
   );
 };
 
@@ -28,15 +41,30 @@ onMounted(() => {
 
 <template>
   <div id="app">
-    <div class="theme-controls">
-      <button @click="showAuth = true" class="auth-btn">
-        Войти / Зарегистрироваться
-      </button>
+    <div v-if="!authStore.isAuth" class="welcome-screen">
+      <div class="welcome-content">
+        <h1 class="welcome-title">Добро пожаловать! </h1>
+        <p class="welcome-subtitle">Войдите или зарегистрируйтесь, чтобы начать общение</p>
+        <button @click="showAuth = true" class="auth-btn">
+          Войти / Зарегистрироваться
+        </button>
+      </div>
     </div>
 
-    <Auth v-if="showAuth" @close="showAuth = false" />
-    <Main />
-    
+      <Main v-else />
+
+    <Teleport to="body">
+      <Auth v-if="showAuth" @close="showAuth = false" />
+    </Teleport>
+
+    <Teleport to="body">
+      <CompleteProfile 
+        v-if="showCompleteProfile" 
+        @close="showCompleteProfile = false"
+        @complete="showCompleteProfile = false"
+      />
+    </Teleport>
+
     <label class="theme-toggle">
       <input
         type="checkbox"

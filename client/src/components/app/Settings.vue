@@ -1,71 +1,78 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from "vue";
+import AvatarGeneratorModal from "../Avatar.vue";
 
 defineProps<{
-  isOpen: boolean
-}>()
+  isOpen: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'close'): void
-}>()
+  (e: "close"): void;
+}>();
 
-const activeTab = ref<'profile' | 'chat'>('profile')
+const activeTab = ref<"profile" | "chat">("profile");
+const showAvatarModal = ref(false);
 
-const username = ref('Имя пользователя')
-const avatarPreview = ref('https://via.placeholder.com/100')
-const fileInput = ref<HTMLInputElement>()
+const username = ref("Имя пользователя");
+const avatarPreview = ref("https://via.placeholder.com/100");
+const fileInput = ref<HTMLInputElement>();
 
 const chatSettings = ref({
-  primaryColor: '#0084ff',
+  primaryColor: "#0084ff",
   fontSize: 16,
   messageSpacing: 12,
   showAvatars: true,
   showTimestamps: true,
-  enterToSend: false
-})
+  enterToSend: false,
+});
 
 const colorPresets = [
-  '#0084ff', 
-  '#00c851', 
-  '#ff4444', 
-  '#aa66cc', 
-  '#ffbb33', 
-  '#2BBBAD', 
-  '#4285F4', 
-  '#DB4437'  
-]
+  "#0084ff",
+  "#00c851",
+  "#ff4444",
+  "#aa66cc",
+  "#ffbb33",
+  "#2BBBAD",
+  "#4285F4",
+  "#DB4437",
+];
 
 const previewMessage = computed(() => ({
-  text: 'Привет! Это пример сообщения',
-  time: new Date().toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}))
+  text: "Привет! Это пример сообщения",
+  time: new Date().toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }),
+}));
 
 const handleAvatarUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
+  const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
-      avatarPreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
+      avatarPreview.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   }
-}
+};
 
 const resetAvatar = () => {
-  avatarPreview.value = 'https://via.placeholder.com/100'
-}
+  avatarPreview.value = "https://via.placeholder.com/100";
+};
+
+const handleAvatarGenerated = (avatarUrl: string) => {
+  avatarPreview.value = avatarUrl;
+  showAvatarModal.value = false;
+};
 
 const saveSettings = () => {
-  console.log('Сохранено:', {
+  console.log("Сохранено:", {
     username: username.value,
     avatar: avatarPreview.value,
-    chatSettings: chatSettings.value
-  })
-  emit('close')
-}
+    chatSettings: chatSettings.value,
+  });
+  emit("close");
+};
 </script>
 
 <template>
@@ -78,24 +85,36 @@ const saveSettings = () => {
         </div>
 
         <div class="tabs">
-          <button 
-            class="tab" 
+          <button
+            class="tab"
             :class="{ active: activeTab === 'profile' }"
             @click="activeTab = 'profile'"
           >
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg
+              class="tab-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
             Профиль
           </button>
-          <button 
-            class="tab" 
+          <button
+            class="tab"
             :class="{ active: activeTab === 'chat' }"
             @click="activeTab = 'chat'"
           >
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            <svg
+              class="tab-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              ></path>
             </svg>
             Чат
           </button>
@@ -107,7 +126,7 @@ const saveSettings = () => {
               <div class="avatar-label">Аватар профиля</div>
               <div class="avatar-upload">
                 <div class="avatar-preview">
-                  <img :src="avatarPreview" alt="avatar">
+                  <img :src="avatarPreview" alt="avatar" />
                   <button class="avatar-edit-btn" @click="fileInput?.click()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path d="M12 20h9M16.5 3.5L20 7l-9 9H7v-4l9-9z"></path>
@@ -115,15 +134,18 @@ const saveSettings = () => {
                   </button>
                 </div>
                 <div class="avatar-actions">
-                  <input 
+                  <input
                     ref="fileInput"
-                    type="file" 
+                    type="file"
                     accept="image/*"
                     class="hidden-input"
                     @change="handleAvatarUpload"
-                  >
+                  />
                   <button class="btn-secondary" @click="resetAvatar">
                     Сбросить
+                  </button>
+                  <button class="btn-primary" @click="showAvatarModal = true">
+                    Создать аватар
                   </button>
                 </div>
               </div>
@@ -131,12 +153,12 @@ const saveSettings = () => {
 
             <div class="input-group">
               <label class="input-label">Имя пользователя</label>
-              <input 
+              <input
                 v-model="username"
                 type="text"
                 class="input-field"
                 placeholder="Введите имя"
-              >
+              />
             </div>
           </div>
 
@@ -144,57 +166,65 @@ const saveSettings = () => {
             <div class="settings-group">
               <label class="settings-label">Цвет сообщений</label>
               <div class="color-picker">
-                <div 
-                  v-for="color in colorPresets" 
+                <div
+                  v-for="color in colorPresets"
                   :key="color"
                   class="color-option"
                   :style="{ backgroundColor: color }"
                   :class="{ active: chatSettings.primaryColor === color }"
                   @click="chatSettings.primaryColor = color"
                 ></div>
-                <input 
+                <input
                   v-model="chatSettings.primaryColor"
                   type="color"
                   class="color-input"
-                >
+                />
               </div>
             </div>
 
             <div class="settings-group">
               <div class="settings-header">
                 <label class="settings-label">Размер шрифта</label>
-                <span class="settings-value">{{ chatSettings.fontSize }}px</span>
+                <span class="settings-value"
+                  >{{ chatSettings.fontSize }}px</span
+                >
               </div>
-              <input 
+              <input
                 v-model.number="chatSettings.fontSize"
                 type="range"
                 min="12"
                 max="24"
                 step="1"
                 class="slider"
-              >
+              />
             </div>
 
             <div class="preview-section">
               <div class="preview-label">Предпросмотр</div>
               <div class="preview-message">
                 <div class="message bot-message">
-                  <div class="message-text" :style="{ fontSize: chatSettings.fontSize + 'px' }">
+                  <div
+                    class="message-text"
+                    :style="{ fontSize: chatSettings.fontSize + 'px' }"
+                  >
                     {{ previewMessage.text }}
                   </div>
                   <div v-if="chatSettings.showTimestamps" class="message-time">
                     {{ previewMessage.time }}
                   </div>
                 </div>
-                
-                <div 
-                  class="message user-message" 
-                  :style="{ 
+
+                <div
+                  class="message user-message"
+                  :style="{
                     marginTop: chatSettings.messageSpacing + 'px',
-                    backgroundColor: chatSettings.primaryColor 
+                    backgroundColor: chatSettings.primaryColor,
                   }"
                 >
-                  <div class="message-text" :style="{ fontSize: chatSettings.fontSize + 'px' }">
+                  <div
+                    class="message-text"
+                    :style="{ fontSize: chatSettings.fontSize + 'px' }"
+                  >
                     {{ previewMessage.text }}
                   </div>
                   <div v-if="chatSettings.showTimestamps" class="message-time">
@@ -207,9 +237,7 @@ const saveSettings = () => {
         </div>
 
         <div class="modal-footer">
-          <button class="btn-secondary" @click="emit('close')">
-            Отмена
-          </button>
+          <button class="btn-secondary" @click="emit('close')">Отмена</button>
           <button class="btn-primary" @click="saveSettings">
             Сохранить изменения
           </button>
@@ -217,4 +245,10 @@ const saveSettings = () => {
       </div>
     </div>
   </Teleport>
+
+  <AvatarGeneratorModal
+    :is-open="showAvatarModal"
+    @close="showAvatarModal = false"
+    @generate="handleAvatarGenerated"
+  />
 </template>

@@ -63,13 +63,13 @@
 
 .tabs {
   display: flex;
-  padding: 0 map-get($spacing, "lg");
+  padding: map-get($spacing, "sm") map-get($spacing, "lg") 0;
   gap: map-get($spacing, "md");
   border-bottom: 1px solid var(--chat-divider);
 }
 
 .tab {
-  padding: map-get($spacing, "sm") 0;
+  padding: map-get($spacing, "sm") map-get($spacing, "sm");
   background: none;
   border: none;
   font-size: 14px;
@@ -81,6 +81,7 @@
   gap: map-get($spacing, "xs");
   border-bottom: 2px solid transparent;
   transition: $transition;
+  margin-bottom: -1px;
 
   &:hover {
     color: var(--bg-dark);
@@ -143,6 +144,7 @@
   display: flex;
   align-items: center;
   gap: map-get($spacing, "lg");
+  position: relative;
 }
 
 .avatar-preview {
@@ -152,6 +154,7 @@
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--primary-alpha);
+  flex-shrink: 0;
 
   img {
     width: 100%;
@@ -190,6 +193,7 @@
 .avatar-actions {
   display: flex;
   gap: map-get($spacing, "xs");
+  flex-wrap: wrap;
 }
 
 .hidden-input {
@@ -395,7 +399,7 @@
 }
 
 .modal-footer {
-  padding: map-get($spacing, "md") map-get($spacing, "lg");
+  padding: map-get($spacing, "lg") map-get($spacing, "lg");
   border-top: 1px solid var(--chat-divider);
   display: flex;
   justify-content: flex-end;
@@ -408,8 +412,10 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: $transition;
+  transition: all 0.2s ease;
   border: none;
+  min-width: 100px;
+  text-align: center;
 }
 
 .btn-primary {
@@ -418,7 +424,12 @@
 
   &:hover {
     background: var(--chat-send-hover);
+    transform: translateY(-1px);
     box-shadow: var(--shadow-message-user);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -428,6 +439,11 @@
 
   &:hover {
     background: var(--chat-divider);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -447,7 +463,6 @@
   }
 }
 
-
 @media (max-width: 768px) {
   .modal-content {
     width: 95vw;
@@ -456,6 +471,11 @@
 
   .message {
     max-width: 85%;
+  }
+
+  .btn-primary, .btn-secondary {
+    min-width: 80px;
+    padding: map-get($spacing, "sm") map-get($spacing, "md");
   }
 }
 
@@ -475,5 +495,16 @@
 
   .color-picker {
     justify-content: center;
+  }
+
+  .modal-footer {
+    padding: map-get($spacing, "md");
+    flex-direction: column-reverse;
+    gap: map-get($spacing, "xs");
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    min-width: 100%;
   }
 }

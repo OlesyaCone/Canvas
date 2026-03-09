@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.4.0",
+    "@dicebear/core": "^9.4.0",
     "axios": "^1.13.5",
     "pinia": "^3.0.4",
     "scss": "^0.2.4",
