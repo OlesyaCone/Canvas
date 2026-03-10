@@ -126,6 +126,7 @@
   display: flex;
   flex-direction: column;
   gap: map-get($spacing, "lg");
+  padding-top: map-get($spacing, "md");
 }
 
 .avatar-section {
@@ -163,10 +164,14 @@
   }
 }
 
+.avatar-actions {
+  display: flex;
+  gap: map-get($spacing, "xs");
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .avatar-edit-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -190,12 +195,6 @@
   }
 }
 
-.avatar-actions {
-  display: flex;
-  gap: map-get($spacing, "xs");
-  flex-wrap: wrap;
-}
-
 .hidden-input {
   display: none;
 }
@@ -210,6 +209,20 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--bg-dark);
+}
+
+.input-with-button {
+  display: flex;
+  gap: map-get($spacing, "sm");
+  align-items: center;
+
+  .input-field {
+    flex: 1;
+  }
+
+  .btn-secondary {
+    white-space: nowrap;
+  }
 }
 
 .input-field {
@@ -374,7 +387,7 @@
 
 .user-message {
   align-self: flex-end;
-  background-color: var(--chat-user-bg); 
+  background-color: var(--chat-user-bg);
   color: var(--chat-user-text);
   border-bottom-right-radius: map-get($spacing, "xs");
   box-shadow: var(--shadow-message-user);
@@ -394,7 +407,7 @@
   text-align: right;
 
   .user-message & {
-    color: rgba(255, 255, 255, 0.8);  
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
@@ -406,7 +419,8 @@
   gap: map-get($spacing, "sm");
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: map-get($spacing, "sm") map-get($spacing, "lg");
   border-radius: map-get($border-radius, "md");
   font-size: 14px;
@@ -448,8 +462,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -473,7 +491,8 @@
     max-width: 85%;
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary,
+  .btn-secondary {
     min-width: 80px;
     padding: map-get($spacing, "sm") map-get($spacing, "md");
   }
@@ -493,6 +512,15 @@
     align-items: flex-start;
   }
 
+  .input-with-button {
+    flex-direction: column;
+    align-items: stretch;
+
+    .btn-secondary {
+      width: 100%;
+    }
+  }
+
   .color-picker {
     justify-content: center;
   }
@@ -503,7 +531,8 @@
     gap: map-get($spacing, "xs");
   }
 
-  .btn-primary, .btn-secondary {
+  .btn-primary,
+  .btn-secondary {
     width: 100%;
     min-width: 100%;
   }

@@ -190,53 +190,6 @@
     z-index: 10;
     border-bottom: 1px solid var(--chat-divider);
     flex-shrink: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .filters-panel {
-    position: sticky;
-    top: 60px;
-    background: var(--white);
-    padding: map-get($spacing, "md") map-get($spacing, "lg");
-    margin: 0;
-    z-index: 9;
-    border-bottom: 1px solid var(--chat-divider);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: map-get($spacing, "sm");
-  }
-  
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    
-    label {
-      font-size: 12px;
-      color: var(--sidebar-secondary-text);
-    }
-    
-    select {
-      padding: map-get($spacing, "xs");
-      border: 1px solid var(--chat-divider);
-      border-radius: map-get($border-radius, "md");
-      background: var(--white);
-    }
-    
-    &.checkbox {
-      flex-direction: row;
-      align-items: center;
-      gap: map-get($spacing, "xs");
-      
-      label {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        cursor: pointer;
-      }
-    }
   }
   
   .avatars-grid {
@@ -318,16 +271,9 @@
   }
 }
 
-.back-btn, .filter-btn {
+.back-btn {
   min-width: auto;
   padding: map-get($spacing, "xs") map-get($spacing, "sm");
-}
-
-.btn-secondary.small {
-  padding: map-get($spacing, "xs") map-get($spacing, "sm");
-  font-size: 12px;
-  min-width: auto;
-  grid-column: 1 / -1;
 }
 
 @media (max-width: 600px) {
@@ -345,12 +291,6 @@
   
   .action-buttons {
     flex-direction: column;
-  }
-  
-  .all-avatars {
-    .filters-panel {
-      grid-template-columns: 1fr;
-    }
   }
   
   .avatars-grid {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import AvatarGeneratorModal from "../Avatar.vue";
+import AvatarGeneratorModal from "./Avatar.vue";
 
 defineProps<{
   isOpen: boolean;
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 const activeTab = ref<"profile" | "chat">("profile");
 const showAvatarModal = ref(false);
 
-const username = ref("Имя пользователя");
+const username = ref("");
 const avatarPreview = ref("https://via.placeholder.com/100");
 const fileInput = ref<HTMLInputElement>();
 
@@ -63,6 +63,18 @@ const resetAvatar = () => {
 const handleAvatarGenerated = (avatarUrl: string) => {
   avatarPreview.value = avatarUrl;
   showAvatarModal.value = false;
+};
+
+const generateUsername = async () => {
+  try {
+    const response = await fetch("https://randomuser.me/api/");
+    const data = await response.json();
+    const user = data.results[0];
+    username.value = user.login.username;
+  } catch (error) {
+    console.error("Ошибка генерации имени:", error);
+    username.value = "user_" + Math.random().toString(36).substring(2, 10);
+  }
 };
 
 const saveSettings = () => {
@@ -127,11 +139,6 @@ const saveSettings = () => {
               <div class="avatar-upload">
                 <div class="avatar-preview">
                   <img :src="avatarPreview" alt="avatar" />
-                  <button class="avatar-edit-btn" @click="fileInput?.click()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M12 20h9M16.5 3.5L20 7l-9 9H7v-4l9-9z"></path>
-                    </svg>
-                  </button>
                 </div>
                 <div class="avatar-actions">
                   <input
@@ -147,18 +154,28 @@ const saveSettings = () => {
                   <button class="btn-primary" @click="showAvatarModal = true">
                     Создать аватар
                   </button>
+                  <button class="avatar-edit-btn" @click="fileInput?.click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M12 20h9M16.5 3.5L20 7l-9 9H7v-4l9-9z"></path>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
 
             <div class="input-group">
               <label class="input-label">Имя пользователя</label>
-              <input
-                v-model="username"
-                type="text"
-                class="input-field"
-                placeholder="Введите имя"
-              />
+              <div class="input-with-button">
+                <input
+                  v-model="username"
+                  type="text"
+                  class="input-field"
+                  placeholder="Введите имя"
+                />
+                <button class="btn-secondary" @click="generateUsername">
+                  Сгенерировать
+                </button>
+              </div>
             </div>
           </div>
 
