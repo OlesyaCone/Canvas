@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import Auth from "./components/Auth.vue";
-
 import Main from "./components/Main.vue";
 import { useAuthStore } from "./store/auth";
-
+import Settings from "./components/app/Settings.vue";
+  
 const authStore = useAuthStore();
 const showAuth = ref(false);
 const showCompleteProfile = ref(false);
@@ -13,11 +13,26 @@ const isDark = ref(false);
 watch(() => authStore.isAuth, (newVal) => {
   if (newVal) {
     showAuth.value = false;
-    if (!authStore.tempUser) {
-      showCompleteProfile.value = false;
+    if (authStore.tempUser) {
+      showCompleteProfile.value = true;
     }
   }
 });
+
+watch(() => authStore.tempUser, (newVal) => {
+  if (newVal) {
+    showCompleteProfile.value = true;
+  }
+}, { deep: true });
+
+const handleCloseSettings = () => {
+  showCompleteProfile.value = false;
+};
+
+const handleProfileComplete = () => {
+  showCompleteProfile.value = false;
+  authStore.tempUser = null;
+};
 
 const toggleTheme = (): void => {
   applyTheme();
@@ -43,7 +58,7 @@ onMounted(() => {
   <div id="app">
     <div v-if="!authStore.isAuth" class="welcome-screen">
       <div class="welcome-content">
-        <h1 class="welcome-title">Добро пожаловать! </h1>
+        <h1 class="welcome-title">Добро пожаловать!</h1>
         <p class="welcome-subtitle">Войдите или зарегистрируйтесь, чтобы начать общение</p>
         <button @click="showAuth = true" class="auth-btn">
           Войти / Зарегистрироваться
@@ -51,17 +66,18 @@ onMounted(() => {
       </div>
     </div>
 
-      <Main v-else />
+    <Main v-else />
 
     <Teleport to="body">
-      <Auth v-if="showAuth" @close="showAuth = false" />
+      <Auth v-if="!showAuth" @close="showAuth = false" />
     </Teleport>
 
     <Teleport to="body">
-      <CompleteProfile 
+      <Settings
         v-if="showCompleteProfile" 
-        @close="showCompleteProfile = false"
-        @complete="showCompleteProfile = false"
+        :is-open="showCompleteProfile"
+        @close="handleCloseSettings"
+        @complete="handleProfileComplete"
       />
     </Teleport>
 

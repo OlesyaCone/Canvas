@@ -27,6 +27,8 @@ const handleSubmit = async () => {
 }
 
 const handleGoogleLogin = () => {
+  // Сохраняем текущий путь для редиректа обратно
+  localStorage.setItem('google_redirect', window.location.pathname)
   window.location.href = `${API_URL}/api/auth/google`
 }
 </script>

@@ -5,10 +5,8 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as any,
     tempUser: null as any,
-
     accessToken: localStorage.getItem('accessToken'),
     isAuth: !!localStorage.getItem('accessToken'),
-
     profileCompleted: false
   }),
 
@@ -16,39 +14,38 @@ export const useAuthStore = defineStore('auth', {
 
     async login(email: string, password: string) {
       const response = await $api.post('/login', { email, password })
-
-      this.accessToken = response.data.accessToken
-      this.user = response.data.user
-      this.profileCompleted = response.data.user.profileCompleted
-
-      this.isAuth = true
-
-      localStorage.setItem('accessToken', response.data.accessToken)
-
-      if (!this.profileCompleted) {
-        this.tempUser = response.data.user
-      }
+      this.setAuthData(response.data)
     },
 
     async registration(email: string, password: string) {
       const response = await $api.post('/registration', { email, password })
-
-      this.accessToken = response.data.accessToken
-      this.user = response.data.user
-      this.profileCompleted = false
-
-      this.isAuth = true
+      this.setAuthData(response.data)
       this.tempUser = response.data.user
-
-      localStorage.setItem('accessToken', response.data.accessToken)
     },
 
-    async completeRegistration(data: any) {
-      const response = await $api.post('/complete-profile', data)
+    async googleLogin(token: string) {
+      const response = await $api.post('/google', { token })
 
-      this.user = response.data.user
-      this.profileCompleted = true
+      this.setAuthData(response.data)
+      this.tempUser = response.data.user
+    },
+
+    setAuthData(data: any) {
+      this.user = data.user
+      this.accessToken = data.accessToken
+      this.isAuth = true
+
+      localStorage.setItem('accessToken', data.accessToken)
+    },
+
+    logout() {
+      this.user = null
+      this.accessToken = null
+      this.isAuth = false
       this.tempUser = null
+
+      localStorage.removeItem('accessToken')
     }
+
   }
 })

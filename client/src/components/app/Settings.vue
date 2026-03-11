@@ -2,12 +2,13 @@
 import { ref, computed } from "vue";
 import AvatarGeneratorModal from "./Avatar.vue";
 
-defineProps<{
+const props = defineProps<{
   isOpen: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "close"): void;
+  (e: "complete"): void;
 }>();
 
 const activeTab = ref<"profile" | "chat">("profile");
@@ -83,6 +84,7 @@ const saveSettings = () => {
     avatar: avatarPreview.value,
     chatSettings: chatSettings.value,
   });
+  emit("complete");
   emit("close");
 };
 </script>
