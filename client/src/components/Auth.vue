@@ -15,19 +15,21 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const handleSubmit = async () => {
   try {
+
     if (isLogin.value) {
       await authStore.login(email.value, password.value)
+      emit('close')
+
     } else {
       await authStore.registration(email.value, password.value)
     }
-    emit('close')
+
   } catch (e) {
     console.error(e)
   }
 }
 
 const handleGoogleLogin = () => {
-  // Сохраняем текущий путь для редиректа обратно
   localStorage.setItem('google_redirect', window.location.pathname)
   window.location.href = `${API_URL}/api/auth/google`
 }

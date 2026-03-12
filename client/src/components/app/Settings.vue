@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import AvatarGeneratorModal from "./Avatar.vue";
+import { useAuthStore } from '../../store/auth'
 
-const props = defineProps<{
+defineProps<{
   isOpen: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "complete"): void;
 }>();
 
 const activeTab = ref<"profile" | "chat">("profile");
@@ -17,6 +17,7 @@ const showAvatarModal = ref(false);
 const username = ref("");
 const avatarPreview = ref("https://via.placeholder.com/100");
 const fileInput = ref<HTMLInputElement>();
+const authStore = useAuthStore()
 
 const chatSettings = ref({
   primaryColor: "#0084ff",
@@ -84,7 +85,9 @@ const saveSettings = () => {
     avatar: avatarPreview.value,
     chatSettings: chatSettings.value,
   });
-  emit("complete");
+
+  authStore.completeProfileSetup()
+
   emit("close");
 };
 </script>

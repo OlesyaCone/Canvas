@@ -2,37 +2,29 @@
 import { ref, onMounted, watch } from "vue";
 import Auth from "./components/Auth.vue";
 import Main from "./components/Main.vue";
-import { useAuthStore } from "./store/auth";
 import Settings from "./components/app/Settings.vue";
-  
+import { useAuthStore } from "./store/auth";
+
 const authStore = useAuthStore();
 const showAuth = ref(false);
-const showCompleteProfile = ref(false);
 const isDark = ref(false);
+const showSettings = ref(false);
 
 watch(() => authStore.isAuth, (newVal) => {
   if (newVal) {
     showAuth.value = false;
-    if (authStore.tempUser) {
-      showCompleteProfile.value = true;
+
+    if (authStore.needsProfileSetup) {
+      showSettings.value = true;
     }
   }
 });
 
-watch(() => authStore.tempUser, (newVal) => {
-  if (newVal) {
-    showCompleteProfile.value = true;
+watch(() => authStore.needsProfileSetup, (val) => {
+  if (val && authStore.isAuth) {
+    showSettings.value = true;
   }
-}, { deep: true });
-
-const handleCloseSettings = () => {
-  showCompleteProfile.value = false;
-};
-
-const handleProfileComplete = () => {
-  showCompleteProfile.value = false;
-  authStore.tempUser = null;
-};
+});
 
 const toggleTheme = (): void => {
   applyTheme();
@@ -46,14 +38,32 @@ const applyTheme = (): void => {
   );
 };
 
-onMounted(() => {
+onMounted(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("accessToken");
+  const isNewUser = params.get("isNewUser");
+
+  if (token) {
+
+    localStorage.setItem("accessToken", token);
+
+    authStore.accessToken = token;
+    authStore.isAuth = true;
+
+    if (isNewUser === "true") {
+      authStore.tempUser = {};
+    }
+    window.history.replaceState({}, document.title, "/");
+  }
+  await authStore.checkAuth();
   const savedTheme = localStorage.getItem("theme");
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
   isDark.value = savedTheme ? savedTheme === "dark" : systemDark;
+
   applyTheme();
 });
 </script>
-
 <template>
   <div id="app">
     <div v-if="!authStore.isAuth" class="welcome-screen">
@@ -69,15 +79,14 @@ onMounted(() => {
     <Main v-else />
 
     <Teleport to="body">
-      <Auth v-if="!showAuth" @close="showAuth = false" />
+      <Auth v-if="showAuth" @close="showAuth = false" />
     </Teleport>
 
     <Teleport to="body">
       <Settings
-        v-if="showCompleteProfile" 
-        :is-open="showCompleteProfile"
-        @close="handleCloseSettings"
-        @complete="handleProfileComplete"
+        v-if="showSettings"
+        :is-open="showSettings"
+        @close="showSettings = false"
       />
     </Teleport>
 
