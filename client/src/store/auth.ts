@@ -1,82 +1,89 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 import $api from '../api/axios'
+import type { User } from '../types/user'
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null as any,
-    tempUser: null as any,
-    accessToken: localStorage.getItem('accessToken') as string | null,
-    isAuth: false,
-    profileCompleted: false
-  }),
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref<User | null>(null)  
+  const tempUser = ref<User | null>(null)
+  const accessToken = ref<string | null>(localStorage.getItem('accessToken'))
+  const isAuth = ref<boolean>(false)
+  const profileCompleted = ref<boolean>(false)
 
-  getters: {
-    needsProfileSetup: (state) => {
-      return !!state.tempUser && !state.profileCompleted
+  const needsProfileSetup = computed<boolean>(() => {
+    return !!tempUser.value && !profileCompleted.value
+  })
+
+  async function checkAuth() {
+    const token = localStorage.getItem('accessToken')
+
+    if (!token) {
+      isAuth.value = false
+      return
     }
-  },
 
-  actions: {
+    try {
+      const response = await $api.get('/refresh')
 
-    async checkAuth() {
-      try {
-        const token = localStorage.getItem('accessToken')
-
-        if (!token) {
-          this.isAuth = false
-          return
-        }
-
-        const response = await $api.get('/refresh')
-
-        this.user = response.data.user
-        this.accessToken = response.data.accessToken
-        this.isAuth = true
-
-        localStorage.setItem('accessToken', response.data.accessToken)
-
-      } catch (e) {
-        this.isAuth = false
-        this.user = null
-        localStorage.removeItem('accessToken')
-      }
-    },
-
-    async login(email: string, password: string) {
-      const response = await $api.post('/login', { email, password })
-
-      this.user = response.data.user
-      this.accessToken = response.data.accessToken
-      this.isAuth = true
+      user.value = response.data.user
+      accessToken.value = response.data.accessToken
+      isAuth.value = true
 
       localStorage.setItem('accessToken', response.data.accessToken)
-    },
-
-    async registration(email: string, password: string) {
-      const response = await $api.post('/registration', { email, password })
-
-      this.user = response.data.user
-      this.accessToken = response.data.accessToken
-      this.isAuth = true
-      this.tempUser = response.data.user
-
-      localStorage.setItem('accessToken', response.data.accessToken)
-    },
-
-    completeProfileSetup() {
-      this.profileCompleted = true
-      this.tempUser = null
-    },
-
-    logout() {
-      this.user = null
-      this.tempUser = null
-      this.isAuth = false
-      this.accessToken = null
-      this.profileCompleted = false
-
+    } catch (e) {
+      isAuth.value = false
+      user.value = null
       localStorage.removeItem('accessToken')
     }
+  }
 
+  async function login(email: string, password: string) {
+    const response = await $api.post('/login', { email, password })
+
+    user.value = response.data.user
+    accessToken.value = response.data.accessToken
+    isAuth.value = true
+
+    localStorage.setItem('accessToken', response.data.accessToken)
+  }
+
+  async function registration(email: string, password: string) {
+    const response = await $api.post('/registration', { email, password })
+
+    user.value = response.data.user
+    accessToken.value = response.data.accessToken
+    isAuth.value = true
+    tempUser.value = response.data.user
+
+    localStorage.setItem('accessToken', response.data.accessToken)
+  }
+
+  function completeProfileSetup() {
+    profileCompleted.value = true
+    tempUser.value = null
+  }
+
+  function logout() {
+    user.value = null
+    tempUser.value = null
+    isAuth.value = false
+    accessToken.value = null
+    profileCompleted.value = false
+
+    localStorage.removeItem('accessToken')
+  }
+
+  return {
+    user,
+    tempUser,
+    accessToken,
+    isAuth,
+    profileCompleted,
+    needsProfileSetup,
+    checkAuth,
+    login,
+    registration,
+    completeProfileSetup,
+    logout
   }
 })
