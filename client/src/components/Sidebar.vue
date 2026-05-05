@@ -1,0 +1,39 @@
+<script setup lang="ts">
+import { useAuthStore } from "../../store/auth";
+import { storeToRefs } from "pinia";
+
+const authStore = useAuthStore();
+
+const { user, isAuth } =
+  storeToRefs(authStore);
+
+const emit = defineEmits<{
+  (e: "open-settings"): void;
+}>();
+</script>
+
+<template>
+  <aside class="sidebar">
+    <p>Панель инструментов</p>
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">
+          <img
+            :src="user?.avatar || 'https://via.placeholder.com/40'"
+            :alt="user?.displayName || 'User'"
+          />
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ user?.displayName || "Гость" }}</div>
+          <div class="user-status">{{ isAuth ? "онлайн" : "офлайн" }}</div>
+        </div>
+      </div>
+
+      <button class="setting-btn" @click="emit('open-settings')">
+        <span class="bar bar1"></span>
+        <span class="bar bar2"></span>
+        <span class="bar bar1"></span>
+      </button>
+    </div>
+  </aside>
+</template>

@@ -1,0 +1,125 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: $header-height;
+  background: $color-surface;
+  border-bottom: 1px solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+
+  &__title {
+    font-weight: 600;
+    font-size: $font-size-md;
+    color: $color-text;
+  }
+}
+
+.theme-controls {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+.theme-toggle {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 1000;
+  background: $color-surface;
+  border-radius: 50%;
+  padding: 8px;
+  transition: all 0.3s ease;
+  margin: 0;
+  animation: slideInFromTop 0.8s ease-out 0.5s both;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.theme-toggle-input {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.theme-toggle-svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease;
+  transform: rotate(40deg);
+  color: $color-primary;
+
+  .sun-moon {
+    transform-origin: center center;
+    transition: inherit;
+    transform: scale(1);
+  }
+
+  .sun-ray {
+    transform-origin: center center;
+    transform: scale(0);
+
+    &.ray-2 { animation-delay: 0.05s; }
+    &.ray-3 { animation-delay: 0.1s; }
+    &.ray-4 { animation-delay: 0.17s; }
+    &.ray-5 { animation-delay: 0.25s; }
+    &.ray-6 { animation-delay: 0.29s; }
+  }
+
+  mask {
+    circle {
+      transition: transform 0.64s cubic-bezier(0.41, 0.64, 0.32, 1.575);
+      transform: translate(0px, 0px);
+    }
+  }
+}
+
+.theme-toggle-input:checked ~ .theme-toggle-svg {
+  transform: rotate(90deg);
+  color: $color-primary;
+
+  mask circle {
+    transform: translate(16px, -3px);
+  }
+
+  .sun-moon {
+    transform: scale(0.55);
+  }
+
+  .sun-ray {
+    animation: showRay 0.4s ease 0s 1 forwards;
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.5);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes showRay {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
