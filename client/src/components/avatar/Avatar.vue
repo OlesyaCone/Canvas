@@ -2,27 +2,22 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { createAvatar } from "@dicebear/core";
 import * as styles from "@dicebear/collection";
-import { AVATAR_STYLES_LIST, AVATAR_STYLES, type AvatarStyleId } from "../../constants/avatar";
-
+import { AVATAR_STYLES_LIST, AVATAR_STYLES, type AvatarStyleId } from "./avatar";
 const props = defineProps<{
   isOpen: boolean;
 }>();
-
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "generate", avatarUrl: string): void;
 }>();
-
 const selectedStyle = ref<AvatarStyleId>(AVATAR_STYLES_LIST[0]?.id || "adventurer");
 const seedValue = ref(Math.random().toString());
 const avatarPreview = ref("");
 const showAllAvatars = ref(false);
 const carouselRef = ref<HTMLDivElement>();
-
 const currentStyle = computed(() => {
   return AVATAR_STYLES[selectedStyle.value];
 });
-
 const generateAvatar = (styleId?: AvatarStyleId, customSeed?: string) => {
   const styleData = styleId ? AVATAR_STYLES[styleId] : currentStyle.value;
   if (!styleData) return;
@@ -46,52 +41,43 @@ const generateAvatar = (styleId?: AvatarStyleId, customSeed?: string) => {
     console.error('Ошибка генерации аватара:', error);
   }
 };
-
 const selectStyle = (styleId: AvatarStyleId) => {
   selectedStyle.value = styleId;
   seedValue.value = Math.random().toString();
   generateAvatar(styleId);
   showAllAvatars.value = false;
 };
-
 const randomAvatar = () => {
   seedValue.value = Math.random().toString();
   generateAvatar();
 };
-
 const applyAvatar = () => {
   if (avatarPreview.value) {
     emit("generate", avatarPreview.value);
     emit("close");
   }
 };
-
 const handleOverlayClick = () => {
   emit("close");
 };
-
 const showAll = () => {
   showAllAvatars.value = true;
 };
-
 const selectFromAll = (seed: string) => {
   seedValue.value = seed;
   generateAvatar(selectedStyle.value, seed);
   showAllAvatars.value = false;
 };
-
 const scrollLeft = () => {
   if (carouselRef.value) {
     carouselRef.value.scrollBy({ left: -200, behavior: 'smooth' });
   }
 };
-
 const scrollRight = () => {
   if (carouselRef.value) {
     carouselRef.value.scrollBy({ left: 200, behavior: 'smooth' });
   }
 };
-
 const allSeeds = computed(() => {
   const seeds = [];
   for (let i = 1; i <= 1000; i++) {
@@ -99,13 +85,11 @@ const allSeeds = computed(() => {
   }
   return seeds;
 });
-
 onMounted(() => {
   if (props.isOpen) {
     generateAvatar();
   }
 });
-
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     generateAvatar();
@@ -181,10 +165,10 @@ watch(() => props.isOpen, (newVal) => {
             </div>
 
             <div class="action-buttons">
-              <button class="btn-secondary" @click="randomAvatar">
+              <button class="btn-primary" @click="randomAvatar">
                 Случайный
               </button>
-              <button class="btn-secondary" @click="showAll">
+              <button class="btn-primary" @click="showAll">
                 Показать все
               </button>
               <button class="btn-primary" @click="applyAvatar">

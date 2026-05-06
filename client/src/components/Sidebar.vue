@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { useAuthStore } from "../../store/auth";
-import { storeToRefs } from "pinia";
+import { useAuthStore } from "../store/auth"
+import { storeToRefs } from "pinia"
 
-const authStore = useAuthStore();
-
-const { user, isAuth } =
-  storeToRefs(authStore);
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 
 const emit = defineEmits<{
-  (e: "open-settings"): void;
-}>();
+  (e: "open-settings"): void
+}>()
 </script>
 
 <template>
@@ -25,7 +23,6 @@ const emit = defineEmits<{
         </div>
         <div class="user-info">
           <div class="user-name">{{ user?.displayName || "Гость" }}</div>
-          <div class="user-status">{{ isAuth ? "онлайн" : "офлайн" }}</div>
         </div>
       </div>
 
