@@ -1,10 +1,33 @@
-import axios from 'axios'
+const API_URL = 'http://localhost:5000/api'
 
-export const API_URL = 'http://localhost:5000/api'
+interface RequestOptions {
+  method?: string
+  body?: unknown
+  token?: string
+}
 
-const $api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true
-})
+export const api = async (endpoint: string, options: RequestOptions = {}) => {
+  const { method = 'GET', body, token } = options
 
-export default $api
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Ошибка запроса')
+  }
+
+  return data
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import AvatarGeneratorModal from "./Avatar.vue";
-import { useAuthStore } from '../../store/auth'
+import { useAuthStore } from '../../stores/auth'
 
 defineProps<{
   isOpen: boolean;

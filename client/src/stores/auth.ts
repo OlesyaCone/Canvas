@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { User} from '../types/index'
+import type { User } from '../types/index'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const isAuth = ref(false)
   const isProfileSetup = ref(false)
+  const accessToken = ref<string | null>(null)
+  const refreshToken = ref<string | null>(null)
 
   const userName = computed(() => user.value?.displayName || 'Гость')
   const userAvatar = computed(() => user.value?.avatar || 'https://via.placeholder.com/40')
@@ -20,21 +22,28 @@ export const useAuthStore = defineStore('auth', () => {
     isAuth.value = true
   }
 
+  const setAuth = (data: { user: User; accessToken: string; refreshToken: string }) => {
+    user.value = data.user
+    isAuth.value = true
+    accessToken.value = data.accessToken
+    refreshToken.value = data.refreshToken
+    localStorage.setItem('refreshToken', data.refreshToken)
+  }
+
   const logout = () => {
     user.value = null
     isAuth.value = false
     isProfileSetup.value = false
+    accessToken.value = null
+    refreshToken.value = null
     localStorage.removeItem('profileSetup')
+    localStorage.removeItem('refreshToken')
   }
 
   return {
-    user,
-    isAuth,
-    isProfileSetup,
-    userName,
-    userAvatar,
-    completeProfileSetup,
-    setUser,
-    logout
+    user, isAuth, isProfileSetup,
+    accessToken, refreshToken,
+    userName, userAvatar,
+    completeProfileSetup, setUser, setAuth, logout
   }
 })
