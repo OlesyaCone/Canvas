@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User } from '../types/index'
+import { api } from '../../api/axios'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -17,17 +18,35 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('profileSetup', 'true')
   }
 
-  const setUser = (userData: User) => {
-    user.value = userData
-    isAuth.value = true
-  }
-
   const setAuth = (data: { user: User; accessToken: string; refreshToken: string }) => {
     user.value = data.user
     isAuth.value = true
     accessToken.value = data.accessToken
     refreshToken.value = data.refreshToken
     localStorage.setItem('refreshToken', data.refreshToken)
+  }
+
+  const register = async (email: string, username: string, password: string) => {
+    const data = await api('/auth/register', {
+      method: 'POST',
+      body: { email, username, password },
+    })
+    return data
+  }
+
+  const login = async (email: string, password: string) => {
+    const data = await api('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    })
+
+    setAuth({
+      user: data.user,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+    })
+
+    return data
   }
 
   const logout = () => {
@@ -44,6 +63,6 @@ export const useAuthStore = defineStore('auth', () => {
     user, isAuth, isProfileSetup,
     accessToken, refreshToken,
     userName, userAvatar,
-    completeProfileSetup, setUser, setAuth, logout
+    completeProfileSetup, register, login, setAuth, logout
   }
 })

@@ -14,6 +14,8 @@ export interface IUser {
   isVerified: boolean;
   lastLogin: Date;
   createdAt: Date;
+  verificationToken?: string;
+  verifiedAt?: Date;
   comparePassword(p: string): Promise<boolean>;
 }
 
@@ -28,6 +30,8 @@ const userSchema = new mongoose.Schema<IUser>(
     googleId: { type: String, sparse: true },
     isVerified: { type: Boolean, default: false },
     lastLogin: Date,
+    verificationToken: String,
+    verifiedAt: Date,
   },
   { timestamps: true },
 );

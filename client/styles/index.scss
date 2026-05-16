@@ -1,6 +1,6 @@
-@import './variables';
+@use './variables' as *;
 
-@import './components/base';
-@import './components/header';
-@import './components/sidebar';
-@import './components/register';
+@use './components/base';
+@use './components/header';
+@use './components/sidebar';
+@use './components/register';

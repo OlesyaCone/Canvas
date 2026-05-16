@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User';
+import PendingUser from '../../models/PendingUser';
 import { generateAccessToken, generateRefreshToken } from './generation';
 
 export const refresh = async (req: Request, res: Response): Promise<void> => {
@@ -40,6 +41,42 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
       await user.save();
     }
     res.json({ message: 'Выход выполнен' });
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.params;
+
+    const pending = await PendingUser.findOne({ verificationToken: token });
+    if (!pending) {
+      res.status(400).json({ message: 'Неверный или просроченный токен' });
+      return;
+    }
+
+    const user = await User.create({
+      email: pending.email,
+      username: pending.username,
+      password: pending.password,
+      isVerified: true,
+      verifiedAt: new Date(),
+    });
+    await PendingUser.deleteOne({ _id: pending._id });
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.json({
+      message: 'Email подтверждён',
+      accessToken,
+      refreshToken,
+      user: { id: user._id, email: user.email, username: user.username },
+    });
   } catch (error) {
     res.status(500).json({ message: 'Ошибка сервера' });
   }

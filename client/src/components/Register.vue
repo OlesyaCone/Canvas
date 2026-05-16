@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { api } from '../../api/axios'
 
 const auth = useAuthStore()
 const emit = defineEmits<{ close: [] }>()
@@ -27,20 +26,12 @@ const submit = async () => {
   loading.value = true
 
   try {
-    const endpoint = isLogin.value ? '/auth/login' : '/auth/register'
-    const body: Record<string, string> = { email: email.value, password: password.value }
-    
-    if (!isLogin.value) {
-      body.username = username.value
+    if (isLogin.value) {
+      await auth.login(email.value, password.value)
+    } else {
+      const data = await auth.register(email.value, username.value, password.value)
+      error.value = data.message
     }
-
-    const data = await api(endpoint, { method: 'POST', body })
-
-    auth.setAuth({
-      user: data.user,
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-    })
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Ошибка'
   } finally {
