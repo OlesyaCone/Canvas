@@ -15,17 +15,31 @@ const verifyStatus = ref<'loading' | 'success' | 'error' | null>(null)
 onMounted(async () => {
   const params = new URLSearchParams(window.location.search)
   const token = params.get('token')
+  const accessToken = params.get('accessToken')
+  const refreshToken = params.get('refreshToken')
+  const userParam = params.get('user')
+
+  if (accessToken && refreshToken) {
+    let userData: { id: string; username: string; avatar: string }
+
+    if (userParam) {
+      userData = JSON.parse(decodeURIComponent(userParam))
+    } else {
+      const payload = JSON.parse(atob(accessToken.split('.')[1]))
+      userData = { id: payload.id, username: 'Пользователь', avatar: '' }
+    }
+
+    auth.setAuth({ user: userData, accessToken, refreshToken })
+    window.history.replaceState({}, '', '/')
+    return
+  }
 
   if (token) {
     verifyStatus.value = 'loading'
     try {
       const data = await api(`/auth/verify/${token}`)
       if (data.accessToken) {
-        auth.setAuth({
-          user: data.user,
-          accessToken: data.accessToken,
-          refreshToken: data.refreshToken,
-        })
+        auth.setAuth(data)
         verifyStatus.value = null
         window.history.replaceState({}, '', '/')
         return
@@ -39,20 +53,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="app">
-    <template v-if="auth.isAuth">
-      <TheHeader />
-      <div class="main">
-        <TheSidebar @open-settings="showSettings = true" />
-        <TheCanvas />
-      </div>
-      <SettingsModal :is-open="showSettings" @close="showSettings = false" />
-    </template>
-
-    <template v-else>
-      <div v-if="verifyStatus" class="verify-banner" :class="verifyStatus">
-      </div>
-      <Register />
-    </template>
+  <div class="app" v-if="auth.isAuth">
+    <TheHeader />
+    <div class="main">
+      <TheSidebar @open-settings="showSettings = true" />
+      <TheCanvas />
+    </div>
+    <SettingsModal :is-open="showSettings" @close="showSettings = false" />
   </div>
+  <Register v-else />
 </template>

@@ -1,12 +1,6 @@
 import nodemailer from 'nodemailer';
 
 export const sendVerificationEmail = async (to: string, token: string) => {
-  console.log('Mail config:', {
-    host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
-    user: process.env.MAIL_USER,
-  });
-
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: Number(process.env.MAIL_PORT),

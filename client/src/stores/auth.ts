@@ -6,17 +6,11 @@ import { api } from '../../api/axios'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const isAuth = ref(false)
-  const isProfileSetup = ref(false)
   const accessToken = ref<string | null>(null)
   const refreshToken = ref<string | null>(null)
 
-  const userName = computed(() => user.value?.displayName || 'Гость')
+  const userName = computed(() => user.value?.username || 'Гость')
   const userAvatar = computed(() => user.value?.avatar || 'https://via.placeholder.com/40')
-
-  const completeProfileSetup = () => {
-    isProfileSetup.value = true
-    localStorage.setItem('profileSetup', 'true')
-  }
 
   const setAuth = (data: { user: User; accessToken: string; refreshToken: string }) => {
     user.value = data.user
@@ -27,11 +21,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const register = async (email: string, username: string, password: string) => {
-    const data = await api('/auth/register', {
+    return await api('/auth/register', {
       method: 'POST',
       body: { email, username, password },
     })
-    return data
   }
 
   const login = async (email: string, password: string) => {
@@ -39,30 +32,17 @@ export const useAuthStore = defineStore('auth', () => {
       method: 'POST',
       body: { email, password },
     })
-
-    setAuth({
-      user: data.user,
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-    })
-
+    setAuth(data)
     return data
   }
 
   const logout = () => {
     user.value = null
     isAuth.value = false
-    isProfileSetup.value = false
     accessToken.value = null
     refreshToken.value = null
-    localStorage.removeItem('profileSetup')
     localStorage.removeItem('refreshToken')
   }
 
-  return {
-    user, isAuth, isProfileSetup,
-    accessToken, refreshToken,
-    userName, userAvatar,
-    completeProfileSetup, register, login, setAuth, logout
-  }
+  return { user, isAuth, accessToken, refreshToken, userName, userAvatar, setAuth, register, login, logout }
 })

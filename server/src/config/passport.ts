@@ -19,19 +19,18 @@ passport.use(
         });
 
         if (user) {
-          if (!user.googleId) {
-            user.googleId = profile.id;
-            user.provider = "google";
-            user.isVerified = true;
-            await user.save();
-          }
+          user.googleId = profile.id;
+          user.provider = "google";
+          user.isVerified = true;
+          user.avatar = profile.photos?.[0].value || user.avatar;
+          username: profile.emails?.[0].value?.split("@")[0] || 'user',
+          await user.save();
         } else {
           user = await User.create({
             email: profile.emails?.[0].value,
             googleId: profile.id,
-            displayName: profile.displayName,
-            avatar: profile.photos?.[0].value,
             username: profile.emails?.[0].value?.split("@")[0],
+            avatar: profile.photos?.[0].value || '',
             provider: "google",
             isVerified: true,
           });
@@ -41,7 +40,6 @@ passport.use(
           _id: user._id.toString(),
           email: user.email,
           username: user.username,
-          displayName: user.displayName,
           avatar: user.avatar,
           provider: user.provider,
           isVerified: user.isVerified,

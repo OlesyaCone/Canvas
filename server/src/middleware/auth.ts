@@ -11,7 +11,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
     }
 
     if (!token) {
-      res.status(401).json({ message: 'Нет доступа. Требуется авторизация.' });
+      res.status(401).json({ message: 'Нет доступа' });
       return;
     }
 
@@ -23,7 +23,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
       return;
     }
 
-    req.user = user;  
+    req.user = user;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Токен недействителен' });

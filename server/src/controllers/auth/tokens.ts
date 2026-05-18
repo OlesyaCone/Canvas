@@ -61,7 +61,6 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
       username: pending.username,
       password: pending.password,
       isVerified: true,
-      verifiedAt: new Date(),
     });
     await PendingUser.deleteOne({ _id: pending._id });
 

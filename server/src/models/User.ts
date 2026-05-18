@@ -6,16 +6,11 @@ export interface IUser {
   email: string;
   username: string;
   password?: string;
-  displayName: string;
   avatar: string;
   provider: "local" | "google";
   googleId?: string;
   refreshToken?: string;
   isVerified: boolean;
-  lastLogin: Date;
-  createdAt: Date;
-  verificationToken?: string;
-  verifiedAt?: Date;
   comparePassword(p: string): Promise<boolean>;
 }
 
@@ -24,14 +19,11 @@ const userSchema = new mongoose.Schema<IUser>(
     email: { type: String, required: true, unique: true, lowercase: true },
     username: { type: String, unique: true, sparse: true },
     password: { type: String, select: false },
-    displayName: String,
     avatar: { type: String, default: "" },
     provider: { type: String, enum: ["local", "google"], default: "local" },
     googleId: { type: String, sparse: true },
+    refreshToken: String,
     isVerified: { type: Boolean, default: false },
-    lastLogin: Date,
-    verificationToken: String,
-    verifiedAt: Date,
   },
   { timestamps: true },
 );

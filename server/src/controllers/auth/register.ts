@@ -61,7 +61,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const refreshToken = generateRefreshToken(user._id);
 
     user.refreshToken = refreshToken;
-    user.lastLogin = new Date();
     await user.save();
 
     res.json({
@@ -70,7 +69,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       user: { id: user._id, email: user.email, username: user.username },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };

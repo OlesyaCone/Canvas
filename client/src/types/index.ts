@@ -1,2 +1,3 @@
 export * from './user'
-export * from './chat'
+
+export type Theme = 'light' | 'dark'
