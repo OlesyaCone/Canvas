@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { storeToRefs } from "pinia";
 import AvatarGeneratorModal from "./Avatar.vue";
 import { useAuthStore } from '../../stores/auth'
 
@@ -11,11 +12,20 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-const showAvatarModal = ref(false);
-const username = ref("");
-const avatarPreview = ref("https://via.placeholder.com/100");
-const fileInput = ref<HTMLInputElement>();
 const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
+
+const showAvatarModal = ref(false);
+const username = ref(user.value?.username || "");
+const avatarPreview = ref(user.value?.avatar || "https://via.placeholder.com/100");
+const fileInput = ref<HTMLInputElement>();
+
+watch(() => user.value, (newUser) => {
+  if (newUser) {
+    username.value = newUser.username || "";
+    avatarPreview.value = newUser.avatar || "https://via.placeholder.com/100";
+  }
+})
 
 const handleAvatarUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -44,19 +54,17 @@ const generateUsername = async () => {
     const user = data.results[0];
     username.value = user.login.username;
   } catch (error) {
-    console.error("Ошибка генерации имени:", error);
     username.value = "user_" + Math.random().toString(36).substring(2, 10);
   }
 };
 
-const saveSettings = () => {
-  console.log("Сохранено:", {
-    username: username.value,
-    avatar: avatarPreview.value,
-  });
-  authStore.completeProfileSetup()
-  emit("close");
-};
+const saveSettings = async () => {
+  console.log('Сохраняем username:', username.value)
+  console.log('Сохраняем avatar (первые 50 символов):', avatarPreview.value.substring(0, 50))
+  console.log('Длина avatar:', avatarPreview.value.length)
+  await authStore.completeProfileSetup(username.value, avatarPreview.value)
+  emit("close")
+}
 </script>
 
 <template>

@@ -27,9 +27,7 @@ const submit = async () => {
     }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Ошибка'
-  } finally {
-    loading.value = false
-  }
+  } 
 }
 
 const googleLogin = () => {
