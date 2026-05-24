@@ -33,12 +33,18 @@ const login = async (email: string, password: string) => {
 }
 
 const completeProfileSetup = async (username: string, avatar: string) => {
-  const { data } = await api.patch('/auth/profile', { username, avatar })
-  if (data.user) {
-    user.value = data.user
-  }
-  return data
-}
+  const { data } = await api.patch('/auth/profile', { username, avatar });
+  if (data.user) user.value = data.user;
+  return data;
+};
+
+const completeProfileSetupWithFile = async (formData: FormData) => {
+  const { data } = await api.patch('/auth/profile', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  if (data.user) user.value = data.user;
+  return data;
+};
 
 
   const logout = () => {
@@ -49,5 +55,5 @@ const completeProfileSetup = async (username: string, avatar: string) => {
     localStorage.removeItem('refreshToken')
   }
 
-  return { user, isAuth, accessToken, refreshToken, userName, userAvatar, setAuth, register, login, logout, completeProfileSetup }
+  return { user, isAuth, accessToken, refreshToken, userName, userAvatar, setAuth, register, login, logout, completeProfileSetup, completeProfileSetupWithFile }
 })

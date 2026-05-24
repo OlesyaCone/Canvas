@@ -59,12 +59,24 @@ const generateUsername = async () => {
 };
 
 const saveSettings = async () => {
-  console.log('Сохраняем username:', username.value)
-  console.log('Сохраняем avatar (первые 50 символов):', avatarPreview.value.substring(0, 50))
-  console.log('Длина avatar:', avatarPreview.value.length)
-  await authStore.completeProfileSetup(username.value, avatarPreview.value)
-  emit("close")
-}
+  try {
+    const file = fileInput.value?.files?.[0];
+    
+    if (file) {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      formData.append('username', username.value);
+      
+      await authStore.completeProfileSetupWithFile(formData);
+    } else {
+      await authStore.completeProfileSetup(username.value, avatarPreview.value);
+    }
+    
+    emit("close");
+  } catch (error) {
+    console.error('Ошибка сохранения:', error);
+  }
+};
 </script>
 
 <template>

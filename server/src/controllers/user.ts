@@ -11,7 +11,10 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     }
 
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
-    const { username, avatar } = req.body;
+    const username = req.body.username;
+    const avatar = req.file 
+      ? `/uploads/avatars/${req.file.filename}` 
+      : req.body.avatar;
 
     const user = await UserModel.findByIdAndUpdate(
       decoded.id,

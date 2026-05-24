@@ -10,6 +10,9 @@ api.interceptors.request.use((config) => {
   if (authStore.accessToken) {
     config.headers.Authorization = `Bearer ${authStore.accessToken}`
   }
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
   return config
 })
 
