@@ -7,13 +7,16 @@ import {
   AVATAR_STYLES,
   type AvatarStyleId,
 } from "./avatar";
+
 const props = defineProps<{
   isOpen: boolean;
 }>();
+
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "generate", avatarUrl: string): void;
 }>();
+
 const selectedStyle = ref<AvatarStyleId>(
   AVATAR_STYLES_LIST[0]?.id || "adventurer",
 );
@@ -24,6 +27,7 @@ const carouselRef = ref<HTMLDivElement>();
 const currentStyle = computed(() => {
   return AVATAR_STYLES[selectedStyle.value];
 });
+
 const generateAvatar = (styleId?: AvatarStyleId, customSeed?: string) => {
   const styleData = styleId ? AVATAR_STYLES[styleId] : currentStyle.value;
   if (!styleData) return;
@@ -47,6 +51,7 @@ const generateAvatar = (styleId?: AvatarStyleId, customSeed?: string) => {
     console.error("Ошибка генерации аватара:", error);
   }
 };
+
 const selectStyle = (styleId: AvatarStyleId) => {
   selectedStyle.value = styleId;
   seedValue.value = Math.random().toString();

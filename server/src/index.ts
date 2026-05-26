@@ -5,9 +5,8 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import authRoutes from './routes';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import authRoutes from './routes/index';
+import { getFile } from './controllers/upload';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,9 +18,8 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.get('/uploads/:path(*)', getFile);
+app.use('/api/auth', authRoutes);
 
 mongoose.connect(process.env.MONGODB_URI as string)
   .then(() => console.log('MongoDB подключена'))
@@ -29,8 +27,6 @@ mongoose.connect(process.env.MONGODB_URI as string)
     console.error('Ошибка MongoDB:', err.message);
     process.exit(1);
   });
-
-app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен: http://localhost:${PORT}`);

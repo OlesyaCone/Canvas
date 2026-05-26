@@ -63,9 +63,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     user.refreshToken = refreshToken;
     await user.save();
 
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
+
     res.json({
       accessToken,
-      refreshToken,
       user: { id: user._id, email: user.email, username: user.username },
     });
   } catch (error) {

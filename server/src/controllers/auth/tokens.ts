@@ -6,17 +6,17 @@ import { generateAccessToken, generateRefreshToken } from './generation';
 
 export const refresh = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { refreshToken } = req.body;
+    const token = req.cookies.refreshToken;
 
-    if (!refreshToken) {
+    if (!token) {
       res.status(400).json({ message: 'Refresh token обязателен' });
       return;
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string) as { id: string };
     const user = await User.findById(decoded.id);
 
-    if (!user || user.refreshToken !== refreshToken) {
+    if (!user || user.refreshToken !== token) {
       res.status(401).json({ message: 'Невалидный refresh token' });
       return;
     }
@@ -27,7 +27,14 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
     user.refreshToken = newRefreshToken;
     await user.save();
 
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken: newAccessToken });
   } catch (error) {
     res.status(401).json({ message: 'Невалидный refresh token' });
   }
@@ -35,11 +42,15 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await User.findOne({ refreshToken: req.body.refreshToken });
-    if (user) {
-      user.refreshToken = undefined;
-      await user.save();
+    const token = req.cookies.refreshToken;
+    if (token) {
+      const user = await User.findOne({ refreshToken: token });
+      if (user) {
+        user.refreshToken = undefined;
+        await user.save();
+      }
     }
+    res.clearCookie('refreshToken');
     res.json({ message: 'Выход выполнен' });
   } catch (error) {
     res.status(500).json({ message: 'Ошибка сервера' });
@@ -70,10 +81,16 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
     user.refreshToken = refreshToken;
     await user.save();
 
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     res.json({
       message: 'Email подтверждён',
       accessToken,
-      refreshToken,
       user: { id: user._id, email: user.email, username: user.username },
     });
   } catch (error) {

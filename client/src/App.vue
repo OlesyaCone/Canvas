@@ -1,52 +1,77 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useAuthStore } from "./stores/auth";
-import TheHeader from "./components/Header.vue";
-import TheSidebar from "./components/Sidebar.vue";
-import TheCanvas from "./components/Canvas.vue";
-import SettingsModal from "./components/avatar/Settings.vue";
-import Register from "./components/Register.vue";
-import api from "../api/axios";
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from './stores/auth';
+import TheHeader from './components/Header.vue';
+import TheSidebar from './components/Sidebar.vue';
+import TheCanvas from './components/Canvas.vue';
+import SettingsModal from './components/avatar/Settings.vue';
+import Register from './components/Register.vue';
+import api from '../api/axios';
 
 const auth = useAuthStore();
 const showSettings = ref(false);
-const verifyStatus = ref<"loading" | "success" | "error" | null>(null);
+const verifyStatus = ref<'loading' | 'success' | 'error' | null>(null);
 
 onMounted(async () => {
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get("token");
-  const accessToken = params.get("accessToken");
-  const refreshToken = params.get("refreshToken");
-  const userParam = params.get("user");
+  try {
+    const { data } = await api.post('/auth/refresh');
+    if (data.accessToken) {
+      auth.accessToken = data.accessToken;
+      auth.isAuth = true;
+      const profile = await api.get('/auth/profile');
+      if (profile.data.user) auth.user = profile.data.user;
+      return;
+    }
+  } catch (e) {
+  }
 
-  if (accessToken && refreshToken) {
-    let userData: { id: string; username: string; avatar: string };
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const accessToken = params.get('accessToken');
+  const userParam = params.get('user');
+
+  if (accessToken) {
+    let userData: { id: string; username: string; avatar: string } = {
+      id: '',
+      username: 'Пользователь',
+      avatar: '',
+    };
 
     if (userParam) {
       userData = JSON.parse(decodeURIComponent(userParam));
     } else {
-      const payload = JSON.parse(atob(accessToken.split(".")[1]));
-      userData = { id: payload.id, username: "Пользователь", avatar: "" };
+      try {
+        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        userData.id = payload.id;
+      } catch (e) {}
     }
 
-    auth.setAuth({ user: userData, accessToken, refreshToken });
-    window.history.replaceState({}, "", "/");
+    auth.setAuth({ user: userData, accessToken });
+
+    try {
+      const { data } = await api.get('/auth/profile');
+      if (data.user) auth.user = data.user;
+    } catch (e) {
+      console.error('Ошибка загрузки профиля:', e);
+    }
+
+    window.history.replaceState({}, '', '/');
     return;
   }
 
   if (token) {
-    verifyStatus.value = "loading";
+    verifyStatus.value = 'loading';
     try {
       const { data } = await api(`/auth/verify/${token}`);
       if (data.accessToken) {
         auth.setAuth(data);
         verifyStatus.value = null;
-        window.history.replaceState({}, "", "/");
+        window.history.replaceState({}, '', '/');
         return;
       }
-      verifyStatus.value = "success";
+      verifyStatus.value = 'success';
     } catch {
-      verifyStatus.value = "error";
+      verifyStatus.value = 'error';
     }
   }
 });

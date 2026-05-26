@@ -20,6 +20,13 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
 
     await UserModel.findByIdAndUpdate(user._id, { refreshToken });
 
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     const userData = encodeURIComponent(JSON.stringify({
       id: user._id,
       username: user.username || user.email?.split('@')[0],
@@ -28,9 +35,10 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
     }));
 
     res.redirect(
-      `${process.env.CLIENT_URL}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&user=${userData}`
+      `${process.env.CLIENT_URL}/auth/callback?accessToken=${accessToken}&user=${userData}`
     );
   } catch (error) {
+    console.error('Ошибка в googleCallback:', error);
     res.redirect(`${process.env.CLIENT_URL}/auth/error`);
   }
 };

@@ -13,19 +13,30 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore()
-const { user } = storeToRefs(authStore)
+const { user, userAvatar } = storeToRefs(authStore)  
 
 const showAvatarModal = ref(false);
 const username = ref(user.value?.username || "");
-const avatarPreview = ref(user.value?.avatar || "https://via.placeholder.com/100");
+const avatarPreview = ref(
+  user.value?.avatar
+    ? (user.value.avatar.startsWith('http') || user.value.avatar.startsWith('data:')
+        ? user.value.avatar
+        : `http://localhost:5000${user.value.avatar}`)
+    : "https://via.placeholder.com/100"
+);
 const fileInput = ref<HTMLInputElement>();
 
 watch(() => user.value, (newUser) => {
   if (newUser) {
     username.value = newUser.username || "";
-    avatarPreview.value = newUser.avatar || "https://via.placeholder.com/100";
+    avatarPreview.value = newUser.avatar
+      ? (newUser.avatar.startsWith('http') || newUser.avatar.startsWith('data:')
+          ? newUser.avatar
+          : `http://localhost:5000${newUser.avatar}`)
+      : "https://via.placeholder.com/100";
   }
 })
+
 
 const handleAvatarUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -66,8 +77,17 @@ const saveSettings = async () => {
       const formData = new FormData();
       formData.append('avatar', file);
       formData.append('username', username.value);
-      
-      await authStore.completeProfileSetupWithFile(formData);
+      await authStore.completeProfileSetup(username.value, formData);
+    } else if (avatarPreview.value.startsWith('data:')) {
+      const response = await fetch(avatarPreview.value);
+      const blob = await response.blob();
+      const mimeType = blob.type || 'image/svg+xml';
+      const ext = mimeType.includes('svg') ? 'svg' : 'png';
+      const newFile = new File([blob], `avatar.${ext}`, { type: mimeType });
+      const formData = new FormData();
+      formData.append('avatar', newFile);
+      formData.append('username', username.value);
+      await authStore.completeProfileSetup(username.value, formData);
     } else {
       await authStore.completeProfileSetup(username.value, avatarPreview.value);
     }
@@ -94,7 +114,7 @@ const saveSettings = async () => {
               <div class="avatar-label">Аватар профиля</div>
               <div class="avatar-upload">
                 <div class="avatar-preview">
-                  <img :src="avatarPreview" alt="avatar" />
+                  <img :src="userAvatar" alt="avatar" />
                 </div>
                 <div class="avatar-actions">
                   <input

@@ -3,7 +3,7 @@ import { useAuthStore } from "../stores/auth"
 import { storeToRefs } from "pinia"
 
 const authStore = useAuthStore()
-const { user } = storeToRefs(authStore)
+const { user, userAvatar } = storeToRefs(authStore)
 
 const emit = defineEmits<{
   (e: "open-settings"): void
@@ -16,7 +16,7 @@ const emit = defineEmits<{
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar">
-          <img :src="user?.avatar || 'https://via.placeholder.com/40'" />
+          <img :src="userAvatar" />
         </div>
         <div class="user-info">
           <div class="user-name">{{ user?.username }}</div>

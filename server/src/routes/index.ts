@@ -4,8 +4,8 @@ import { refresh, logout, verifyEmail } from '../controllers/auth/tokens';
 import { protect } from '../middleware/auth';
 import passport from '../config/passport';
 import { googleCallback } from '../controllers/auth/google';
-import { updateProfile } from '../controllers/user';
-import { upload } from '../controllers/upload';
+import { getProfile, updateProfile } from '../controllers/user';
+import { uploadAvatar, upload, getFile } from '../controllers/upload';
 
 const router = Router();
 
@@ -18,5 +18,7 @@ router.get('/google/callback', passport.authenticate('google', { session: false,
 router.get('/verify/:token', verifyEmail);
 
 router.patch('/profile', protect, upload.single('avatar'), updateProfile);
+router.get('/profile', protect, getProfile);
+router.get('/uploads/*', getFile);
 
 export default router;
