@@ -2,7 +2,7 @@
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import AvatarGeneratorModal from "./Avatar.vue";
-import { useAuthStore } from '../../stores/auth'
+import { useAuthStore } from '../../stores/auth.ts'
 
 defineProps<{
   isOpen: boolean;

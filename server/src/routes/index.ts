@@ -1,24 +1,53 @@
-import { Router } from 'express';
-import { register, login } from '../controllers/auth/register';
-import { refresh, logout, verifyEmail } from '../controllers/auth/tokens';
-import { protect } from '../middleware/auth';
-import passport from '../config/passport';
-import { googleCallback } from '../controllers/auth/google';
-import { getProfile, updateProfile } from '../controllers/user';
-import { uploadAvatar, upload, getFile } from '../controllers/upload';
+import { Router } from "express";
+import { register, login } from "../controllers/auth/register";
+import { refresh, logout, verifyEmail } from "../controllers/auth/tokens";
+import { protect } from "../middleware/auth";
+import passport from "../config/passport";
+import { googleCallback } from "../controllers/auth/google";
+import { getProfile, updateProfile } from "../controllers/user";
+import {
+  getMyTests,
+  getPassedTests,
+  createTest,
+  getTestById,
+} from "../controllers/tests";
+import { upload, uploadTestImage, getFile } from "../controllers/upload";
 
-const router = Router();
+const authRouter = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/refresh', refresh);
-router.post('/logout', protect, logout);
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: '/' }), googleCallback);
-router.get('/verify/:token', verifyEmail);
+authRouter.post("/register", register);
+authRouter.post("/login", login);
+authRouter.post("/refresh", refresh);
+authRouter.post("/logout", protect, logout);
+authRouter.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+authRouter.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false, failureRedirect: "/" }),
+  googleCallback
+);
+authRouter.get("/verify/:token", verifyEmail);
+authRouter.patch("/profile", protect, upload.single("avatar"), updateProfile);
+authRouter.get("/profile", protect, getProfile);
+authRouter.get("/uploads/*", getFile);
 
-router.patch('/profile', protect, upload.single('avatar'), updateProfile);
-router.get('/profile', protect, getProfile);
-router.get('/uploads/*', getFile);
+const testRouter = Router();
+testRouter.get("/my", protect, getMyTests);
+testRouter.get("/passed", protect, getPassedTests);
+testRouter.post(
+  "/",
+  protect,
+  uploadTestImage.fields([
+    { name: "img", maxCount: 1 },
+    { name: "questionImgs", maxCount: 20 },
+  ]),
+  createTest
+);
+testRouter.get("/:id", protect, getTestById);
 
-export default router;
+export const setupRoutes = (app: any) => {
+  app.use("/api/auth", authRouter);
+  app.use("/api/tests", testRouter);
+};

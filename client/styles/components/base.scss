@@ -10,7 +10,7 @@
 
 html, body, #app {
   height: 100%;
-  overflow: hidden;
+  overflow: hidden;   
 }
 
 body {
@@ -40,7 +40,7 @@ button {
 .main {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  overflow: hidden;  
 }
 
 .sidebar {
@@ -55,7 +55,5 @@ button {
   flex: 1;
   background: $color-bg;
   padding: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow-y: auto;   
 }

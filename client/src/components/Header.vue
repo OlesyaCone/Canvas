@@ -42,7 +42,7 @@ onMounted(() => {
 
 <template>
   <header class="header">
-    <span class="header__title">Constructor</span>
+    <span class="header__title">Canvas</span>
     
     <label class="theme-toggle">
       <input

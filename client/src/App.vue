@@ -4,13 +4,14 @@ import { useAuthStore } from './stores/auth';
 import TheHeader from './components/Header.vue';
 import TheSidebar from './components/Sidebar.vue';
 import TheCanvas from './components/Canvas.vue';
-import SettingsModal from './components/avatar/Settings.vue';
+import SettingsModal from './components/user/Settings.vue';
 import Register from './components/Register.vue';
 import api from '../api/axios';
 
 const auth = useAuthStore();
 const showSettings = ref(false);
 const verifyStatus = ref<'loading' | 'success' | 'error' | null>(null);
+const currentPage = ref<'personal' | 'completed' | 'creating'>('personal');
 
 onMounted(async () => {
   try {
@@ -22,8 +23,7 @@ onMounted(async () => {
       if (profile.data.user) auth.user = profile.data.user;
       return;
     }
-  } catch (e) {
-  }
+  } catch (e) {}
 
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
@@ -36,7 +36,6 @@ onMounted(async () => {
       username: 'Пользователь',
       avatar: '',
     };
-
     if (userParam) {
       userData = JSON.parse(decodeURIComponent(userParam));
     } else {
@@ -45,16 +44,11 @@ onMounted(async () => {
         userData.id = payload.id;
       } catch (e) {}
     }
-
     auth.setAuth({ user: userData, accessToken });
-
     try {
       const { data } = await api.get('/auth/profile');
       if (data.user) auth.user = data.user;
-    } catch (e) {
-      console.error('Ошибка загрузки профиля:', e);
-    }
-
+    } catch (e) {}
     window.history.replaceState({}, '', '/');
     return;
   }
@@ -81,8 +75,11 @@ onMounted(async () => {
   <div class="app" v-if="auth.isAuth">
     <TheHeader />
     <div class="main">
-      <TheSidebar @open-settings="showSettings = true" />
-      <TheCanvas />
+      <TheSidebar
+        @open-settings="showSettings = true"
+        @navigate="currentPage = $event"
+      />
+      <TheCanvas :currentPage="currentPage" />
     </div>
     <SettingsModal :is-open="showSettings" @close="showSettings = false" />
   </div>

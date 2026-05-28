@@ -11,6 +11,8 @@ export interface IUser {
   googleId?: string;
   refreshToken?: string;
   isVerified: boolean;
+  myTests: mongoose.Types.ObjectId[];
+  passedTests: mongoose.Types.ObjectId[];
   comparePassword(p: string): Promise<boolean>;
 }
 
@@ -24,8 +26,10 @@ const userSchema = new mongoose.Schema<IUser>(
     googleId: { type: String, sparse: true },
     refreshToken: String,
     isVerified: { type: Boolean, default: false },
+    myTests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Test" }],
+    passedTests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Test" }],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {
@@ -39,5 +43,4 @@ userSchema.methods.comparePassword = async function (p: string) {
   return this.password ? bcrypt.compare(p, this.password) : false;
 };
 
-const UserModel = mongoose.model<IUser>("User", userSchema);
-export default UserModel;
+export default mongoose.model<IUser>("User", userSchema);

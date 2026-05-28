@@ -5,7 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import authRoutes from './routes/index';
+import { setupRoutes } from './routes';
 import { getFile } from './controllers/upload';
 
 const app = express();
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/uploads/:path(*)', getFile);
-app.use('/api/auth', authRoutes);
+setupRoutes(app);
 
 mongoose.connect(process.env.MONGODB_URI as string)
   .then(() => console.log('MongoDB подключена'))
