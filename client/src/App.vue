@@ -11,7 +11,8 @@ import api from '../api/axios';
 const auth = useAuthStore();
 const showSettings = ref(false);
 const verifyStatus = ref<'loading' | 'success' | 'error' | null>(null);
-const currentPage = ref<'personal' | 'completed' | 'creating'>('personal');
+const currentPage = ref<'personal' | 'completed' | 'creating' | 'playing'>('personal');
+const playingTestId = ref<string | null>(null);
 
 onMounted(async () => {
   try {
@@ -69,6 +70,21 @@ onMounted(async () => {
     }
   }
 });
+
+const onNavigate = (page: 'personal' | 'completed' | 'creating') => {
+  currentPage.value = page;
+  playingTestId.value = null;
+};
+
+const onStartTest = (testId: string) => {
+  currentPage.value = 'playing';
+  playingTestId.value = testId;
+};
+
+const onBackToTests = () => {
+  currentPage.value = 'personal';
+  playingTestId.value = null;
+};
 </script>
 
 <template>
@@ -77,9 +93,14 @@ onMounted(async () => {
     <div class="main">
       <TheSidebar
         @open-settings="showSettings = true"
-        @navigate="currentPage = $event"
+        @navigate="onNavigate"
       />
-      <TheCanvas :currentPage="currentPage" />
+      <TheCanvas
+        :currentPage="currentPage"
+        :playingTestId="playingTestId"
+        @start-test="onStartTest"
+        @back-to-tests="onBackToTests"
+      />
     </div>
     <SettingsModal :is-open="showSettings" @close="showSettings = false" />
   </div>

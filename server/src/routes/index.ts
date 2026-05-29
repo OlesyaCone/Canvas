@@ -10,6 +10,7 @@ import {
   getPassedTests,
   createTest,
   getTestById,
+  submitTest
 } from "../controllers/tests";
 import { upload, uploadTestImage, getFile } from "../controllers/upload";
 
@@ -45,6 +46,7 @@ testRouter.post(
   ]),
   createTest
 );
+testRouter.post('/:id/submit', protect, submitTest);
 testRouter.get("/:id", protect, getTestById);
 
 export const setupRoutes = (app: any) => {

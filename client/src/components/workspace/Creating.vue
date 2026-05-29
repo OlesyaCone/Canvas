@@ -41,7 +41,6 @@ const onQuestionImageChange = (e: Event) => {
     const file = target.files?.[0];
     if (file) {
         newQuestion.value.imgFile = file;
-        // генерируем base64 для превью
         const reader = new FileReader();
         reader.onload = (ev) => {
             newQuestion.value.imgPreview = ev.target?.result as string;
@@ -71,7 +70,6 @@ const addQuestion = () => {
         imgPreview: q.imgPreview,
     });
 
-    // сброс
     newQuestion.value = {
         question: '',
         answers: ['', ''],

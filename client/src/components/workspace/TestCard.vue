@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { Test } from '../../stores/test';
+import noPhoto from '../../assets/nophoto.png';
 import { computed } from 'vue';
 
 const props = defineProps<{
   test: Test;
+}>();
+
+const emit = defineEmits<{
+  (e: 'start', testId: string): void;
 }>();
 
 const coverImage = computed(() => {
@@ -13,7 +18,7 @@ const coverImage = computed(() => {
   if (props.test.img) {
     return `http://localhost:5000${props.test.img}`;
   }
-  return 'https://via.placeholder.com/300x200?text=Test';
+  return noPhoto; 
 });
 
 const questionCount = computed(() => props.test.question?.length || 0);
@@ -30,9 +35,8 @@ const questionCount = computed(() => props.test.question?.length || 0);
         <span>Автор: {{ test.author?.username || 'Неизвестный' }}</span>
       </div>
       <div class="test-actions">
-        <button class="btn btn-primary">Пройти</button>
+        <button class="btn btn-primary" @click="() => { console.log('click', test._id); emit('start', test._id); }">Пройти</button>
       </div>
     </div>
   </div>
 </template>
-

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import Test from "../models/Test";
 import UserModel from "../models/User";
+import mongoose from "mongoose";
 
 const getUserId = (req: Request): string | null => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -9,7 +10,7 @@ const getUserId = (req: Request): string | null => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_ACCESS_SECRET as string
+      process.env.JWT_ACCESS_SECRET as string,
     ) as { id: string };
     return decoded.id;
   } catch {
@@ -19,7 +20,7 @@ const getUserId = (req: Request): string | null => {
 
 export const getMyTests = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
@@ -34,7 +35,7 @@ export const getMyTests = async (
 
 export const getPassedTests = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
@@ -49,7 +50,7 @@ export const getPassedTests = async (
 
 export const createTest = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
@@ -59,19 +60,20 @@ export const createTest = async (
 
   const { title, description, questions } = req.body;
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
- 
+
   const img = files?.img?.[0]
     ? `/uploads/tests/${files.img[0].filename}`
     : req.body.img || "";
 
-  let parsedQuestions = typeof questions === "string" ? JSON.parse(questions) : questions;
+  let parsedQuestions =
+    typeof questions === "string" ? JSON.parse(questions) : questions;
 
   const questionImgs = files?.questionImgs || [];
   const indexes = Array.isArray(req.body.questionImgIndexes)
     ? req.body.questionImgIndexes
     : req.body.questionImgIndexes
-    ? [req.body.questionImgIndexes]
-    : [];
+      ? [req.body.questionImgIndexes]
+      : [];
 
   questionImgs.forEach((file, i) => {
     const idx = parseInt(indexes[i], 10);
@@ -97,15 +99,58 @@ export const createTest = async (
 
 export const getTestById = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const test = await Test.findById(req.params.id).populate(
     "author",
-    "username avatar"
+    "username avatar",
   );
   if (!test) {
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
   res.json(test);
+};
+
+export const submitTest = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const userId = getUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Не авторизован" });
+    return;
+  }
+
+  const test = await Test.findById(req.params.id);
+  if (!test) {
+    res.status(404).json({ message: "Тест не найден" });
+    return;
+  }
+
+  const { answers } = req.body as {
+    answers: { questionIndex: number; answer: string }[];
+  };
+
+  let correctCount = 0;
+  answers.forEach((a) => {
+    const question = test.question[a.questionIndex];
+    if (question && question.correctAnswer === a.answer) {
+      correctCount++;
+    }
+  });
+
+  if (!test.users.some((id) => id.toString() === userId)) {
+    test.users.push(new mongoose.Types.ObjectId(userId));
+    await test.save();
+  }
+
+  await UserModel.findByIdAndUpdate(userId, {
+    $addToSet: { passedTests: test._id },
+  });
+
+  res.json({
+    score: correctCount,
+    total: test.question.length,
+  });
 };

@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import api from '../../api/axios';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import api from "../../api/axios";
 
 export interface Question {
   question: string;
@@ -25,7 +25,7 @@ export interface Test {
   updatedAt: string;
 }
 
-export const useTestStore = defineStore('test', () => {
+export const useTestStore = defineStore("test", () => {
   const myTests = ref<Test[]>([]);
   const passedTests = ref<Test[]>([]);
   const currentTest = ref<Test | null>(null);
@@ -34,10 +34,10 @@ export const useTestStore = defineStore('test', () => {
   const fetchMyTests = async () => {
     loading.value = true;
     try {
-      const { data } = await api.get('/tests/my');
+      const { data } = await api.get("/tests/my");
       myTests.value = data;
     } catch (e) {
-      console.error('Ошибка загрузки моих тестов:', e);
+      console.error("Ошибка загрузки моих тестов:", e);
     } finally {
       loading.value = false;
     }
@@ -46,18 +46,18 @@ export const useTestStore = defineStore('test', () => {
   const fetchPassedTests = async () => {
     loading.value = true;
     try {
-      const { data } = await api.get('/tests/passed');
+      const { data } = await api.get("/tests/passed");
       passedTests.value = data;
     } catch (e) {
-      console.error('Ошибка загрузки пройденных тестов:', e);
+      console.error("Ошибка загрузки пройденных тестов:", e);
     } finally {
       loading.value = false;
     }
   };
 
   const createTest = async (formData: FormData) => {
-    const { data } = await api.post('/tests', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    const { data } = await api.post("/tests", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     myTests.value.unshift(data);
     return data;
