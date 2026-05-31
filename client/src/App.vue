@@ -11,8 +11,9 @@ import api from '../api/axios';
 const auth = useAuthStore();
 const showSettings = ref(false);
 const verifyStatus = ref<'loading' | 'success' | 'error' | null>(null);
-const currentPage = ref<'personal' | 'completed' | 'creating' | 'playing'>('personal');
+const currentPage = ref<'personal' | 'completed' | 'creating' | 'playing' | 'editing'>('personal');
 const playingTestId = ref<string | null>(null);
+const editingTestId = ref<string | null>(null);
 
 onMounted(async () => {
   try {
@@ -24,7 +25,7 @@ onMounted(async () => {
       if (profile.data.user) auth.user = profile.data.user;
       return;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
@@ -43,13 +44,13 @@ onMounted(async () => {
       try {
         const payload = JSON.parse(atob(accessToken.split('.')[1]));
         userData.id = payload.id;
-      } catch (e) {}
+      } catch (e) { }
     }
     auth.setAuth({ user: userData, accessToken });
     try {
       const { data } = await api.get('/auth/profile');
       if (data.user) auth.user = data.user;
-    } catch (e) {}
+    } catch (e) { }
     window.history.replaceState({}, '', '/');
     return;
   }
@@ -81,9 +82,15 @@ const onStartTest = (testId: string) => {
   playingTestId.value = testId;
 };
 
+const onEditTest = (testId: string) => {
+  currentPage.value = 'editing';
+  editingTestId.value = testId;
+};
+
 const onBackToTests = () => {
   currentPage.value = 'personal';
   playingTestId.value = null;
+  editingTestId.value = null;
 };
 </script>
 
@@ -91,16 +98,9 @@ const onBackToTests = () => {
   <div class="app" v-if="auth.isAuth">
     <TheHeader />
     <div class="main">
-      <TheSidebar
-        @open-settings="showSettings = true"
-        @navigate="onNavigate"
-      />
-      <TheCanvas
-        :currentPage="currentPage"
-        :playingTestId="playingTestId"
-        @start-test="onStartTest"
-        @back-to-tests="onBackToTests"
-      />
+      <TheSidebar @open-settings="showSettings = true" @navigate="onNavigate" />
+      <TheCanvas :currentPage="currentPage" :playingTestId="playingTestId" :editingTestId="editingTestId"
+        @start-test="onStartTest" @edit-test="onEditTest" @back-to-tests="onBackToTests" />
     </div>
     <SettingsModal :is-open="showSettings" @close="showSettings = false" />
   </div>

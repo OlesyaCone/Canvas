@@ -154,3 +154,75 @@ export const submitTest = async (
     total: test.question.length,
   });
 };
+
+export const updateTest = async (req: Request, res: Response): Promise<void> => {
+  const userId = getUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: 'Не авторизован' });
+    return;
+  }
+
+  const test = await Test.findById(req.params.id);
+  if (!test) {
+    res.status(404).json({ message: 'Тест не найден' });
+    return;
+  }
+  if (test.author?.toString() !== userId) {
+    res.status(403).json({ message: 'Нет прав' });
+    return;
+  }
+
+  const { title, description, questions } = req.body;
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+  const img = files?.img?.[0]
+    ? `/uploads/tests/${files.img[0].filename}`
+    : req.body.img || test.img;
+
+  let parsedQuestions = typeof questions === 'string' ? JSON.parse(questions) : questions || test.question;
+
+  const questionImgs = files?.questionImgs || [];
+  const indexes = Array.isArray(req.body.questionImgIndexes)
+    ? req.body.questionImgIndexes
+    : req.body.questionImgIndexes
+    ? [req.body.questionImgIndexes]
+    : [];
+
+  questionImgs.forEach((file, i) => {
+    const idx = parseInt(indexes[i], 10);
+    if (!isNaN(idx) && parsedQuestions[idx]) {
+      parsedQuestions[idx].img = `/uploads/tests/${file.filename}`;
+    }
+  });
+
+  const updated = await Test.findByIdAndUpdate(
+    req.params.id,
+    { title, img, description, question: parsedQuestions },
+    { new: true }
+  );
+
+  res.json(updated);
+};
+
+export const deleteTest = async (req: Request, res: Response): Promise<void> => {
+  const userId = getUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: 'Не авторизован' });
+    return;
+  }
+
+  const test = await Test.findById(req.params.id);
+  if (!test) {
+    res.status(404).json({ message: 'Тест не найден' });
+    return;
+  }
+  if (test.author?.toString() !== userId) {
+    res.status(403).json({ message: 'Нет прав' });
+    return;
+  }
+
+  await Test.findByIdAndDelete(req.params.id);
+  await UserModel.findByIdAndUpdate(userId, { $pull: { myTests: req.params.id } });
+
+  res.json({ message: 'Тест удалён' });
+};

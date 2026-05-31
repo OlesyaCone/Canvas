@@ -10,7 +10,9 @@ import {
   getPassedTests,
   createTest,
   getTestById,
-  submitTest
+  submitTest,
+  updateTest,
+  deleteTest
 } from "../controllers/tests";
 import { upload, uploadTestImage, getFile } from "../controllers/upload";
 
@@ -53,3 +55,9 @@ export const setupRoutes = (app: any) => {
   app.use("/api/auth", authRouter);
   app.use("/api/tests", testRouter);
 };
+
+testRouter.patch('/:id', protect, uploadTestImage.fields([
+  { name: 'img', maxCount: 1 },
+  { name: 'questionImgs', maxCount: 20 }
+]), updateTest);
+testRouter.delete('/:id', protect, deleteTest);

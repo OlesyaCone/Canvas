@@ -69,6 +69,20 @@ export const useTestStore = defineStore("test", () => {
     return data;
   };
 
+  const updateTest = async (id: string, formData: FormData) => {
+    const { data } = await api.patch(`/tests/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    const index = myTests.value.findIndex((t) => t._id === id);
+    if (index !== -1) myTests.value[index] = data;
+    return data;
+  };
+
+  const deleteTest = async (id: string) => {
+    await api.delete(`/tests/${id}`);
+    myTests.value = myTests.value.filter((t) => t._id !== id);
+  };
+
   return {
     myTests,
     passedTests,
@@ -78,5 +92,7 @@ export const useTestStore = defineStore("test", () => {
     fetchPassedTests,
     createTest,
     fetchTestById,
+    updateTest,
+    deleteTest,
   };
 });
