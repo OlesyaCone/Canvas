@@ -1,0 +1,132 @@
+@use '../variables' as *;
+
+.sidebar {
+  width: $sidebar-width;
+  background: $color-surface;
+  border-right: 1px solid $color-border;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-lg;
+  gap: $spacing-xl;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  &:focus-within { border-color: $color-primary; }
+}
+
+.search-icon {
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: $color-text;
+  font-size: $font-size-sm;
+  font-family: inherit;
+  &::placeholder { color: $color-text-secondary; }
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.nav-item {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-fast;
+  &:hover {
+    background: $primary-alpha;
+    color: $color-text;
+  }
+}
+
+.sidebar-footer {
+  border-top: 1px solid $color-border;
+  padding-top: $spacing-md;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-full;
+  overflow: hidden;
+  border: 2px solid $color-border;
+  flex-shrink: 0;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: $font-size-md;
+  font-weight: 500;
+  color: $color-text;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.setting-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  background: $color-bg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: $transition-base;
+  &:hover {
+    background: $color-surface;
+    border-color: $color-primary;
+  }
+}
+
+.bar {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: $color-text-secondary;
+  border-radius: 1px;
+  .setting-btn:hover & { background: $color-primary; }
+}
+
+.bar2 { width: 12px; }

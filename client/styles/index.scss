@@ -1,7 +1,14 @@
 @use './variables' as *;
 
-@use './components/base';
-@use './components/header';
-@use './components/sidebar';
-@use './components/register';
-@use './components/workspace';
+@use './base/reset';
+@use './base/typography';
+@use './base/layout';
+
+@use './ui/buttons';
+@use './ui/forms';
+@use './ui/modal';
+
+@use './layout/header';
+@use './layout/sidebar';
+
+@use './pages/register';

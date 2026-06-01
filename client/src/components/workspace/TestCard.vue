@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import type { Test } from '../../stores/test';
-import { computed } from 'vue';
-import { useAuthStore } from '../../stores/auth';
-import { useTestStore } from '../../stores/test';
+import type { Test } from "../../types/index";
+import { computed } from "vue";
+import { useAuthStore } from "../../stores/auth";
+import { useTestStore } from "../../stores/test";
+import noPhoto from "../../assets/nophoto.png";
 
 const props = defineProps<{ test: Test }>();
 const emit = defineEmits<{
-  (e: 'start', testId: string): void;
-  (e: 'edit', testId: string): void;
+  (e: "start", testId: string): void;
+  (e: "edit", testId: string): void;
 }>();
 
 const auth = useAuthStore();
@@ -15,8 +16,9 @@ const testStore = useTestStore();
 const isAuthor = computed(() => auth.user?.id === props.test.author._id);
 
 const coverImage = computed(() => {
-  if (props.test.img?.startsWith('http') || props.test.img?.startsWith('data:')) return props.test.img;
-  return props.test.img ? `http://localhost:5000${props.test.img}` : 'https://via.placeholder.com/300x200?text=Test';
+  if (props.test.img?.startsWith("http") || props.test.img?.startsWith("data:")) return props.test.img;
+  if (props.test.img) return `http://localhost:5000${props.test.img}`;
+  return noPhoto;
 });
 
 const handleDelete = async () => {
@@ -57,12 +59,19 @@ const handleDelete = async () => {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
-          {{ test.author?.username || 'Неизвестный' }}
+          {{ test.author?.username || "Неизвестный" }}
         </span>
       </div>
       <button class="btn-start" @click="emit('start', test._id)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
         Пройти тест
       </button>
     </div>
   </div>
 </template>
+
+<style lang="scss">
+@use '../../../styles/pages/tests';
+</style>

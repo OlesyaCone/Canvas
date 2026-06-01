@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const pendingSchema = new mongoose.Schema({
   email: String,
@@ -8,4 +8,4 @@ const pendingSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now, expires: 3600 },
 });
 
-export default mongoose.model('PendingUser', pendingSchema);
+export default mongoose.model("PendingUser", pendingSchema);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import api from '../../../api/axios';
+import api from '../../api/axios';
 import { useTestStore } from '../../stores/test';
 const props = defineProps<{
   testId: string;
@@ -137,3 +137,7 @@ const goBack = () => emit('back');
     </template>
   </div>
 </template>
+
+<style lang="scss">
+@use '../../../styles/pages/tests';
+</style>

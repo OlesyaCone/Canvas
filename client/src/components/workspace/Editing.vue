@@ -193,3 +193,7 @@ const submit = async () => {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+@use '../../../styles/pages/tests';
+</style>

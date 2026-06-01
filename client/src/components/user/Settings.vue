@@ -2,7 +2,7 @@
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import AvatarGeneratorModal from "./Avatar.vue";
-import { useAuthStore } from '../../stores/auth.ts'
+import { useAuthStore } from '../../stores/auth'
 
 defineProps<{
   isOpen: boolean;
@@ -13,30 +13,22 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore()
-const { user, userAvatar } = storeToRefs(authStore)  
+const { user, userAvatar } = storeToRefs(authStore)
 
 const showAvatarModal = ref(false);
 const username = ref(user.value?.username || "");
-const avatarPreview = ref(
-  user.value?.avatar
-    ? (user.value.avatar.startsWith('http') || user.value.avatar.startsWith('data:')
-        ? user.value.avatar
-        : `http://localhost:5000${user.value.avatar}`)
-    : "https://via.placeholder.com/100"
-);
+const avatarPreview = ref(userAvatar.value);
 const fileInput = ref<HTMLInputElement>();
+
+watch(userAvatar, (newAvatar) => {
+  avatarPreview.value = newAvatar;
+});
 
 watch(() => user.value, (newUser) => {
   if (newUser) {
     username.value = newUser.username || "";
-    avatarPreview.value = newUser.avatar
-      ? (newUser.avatar.startsWith('http') || newUser.avatar.startsWith('data:')
-          ? newUser.avatar
-          : `http://localhost:5000${newUser.avatar}`)
-      : "https://via.placeholder.com/100";
   }
-})
-
+});
 
 const handleAvatarUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -72,7 +64,7 @@ const generateUsername = async () => {
 const saveSettings = async () => {
   try {
     const file = fileInput.value?.files?.[0];
-    
+
     if (file) {
       const formData = new FormData();
       formData.append('avatar', file);
@@ -91,7 +83,7 @@ const saveSettings = async () => {
     } else {
       await authStore.completeProfileSetup(username.value, avatarPreview.value);
     }
-    
+
     emit("close");
   } catch (error) {
     console.error('Ошибка сохранения:', error);
@@ -114,22 +106,13 @@ const saveSettings = async () => {
               <div class="avatar-label">Аватар профиля</div>
               <div class="avatar-upload">
                 <div class="avatar-preview">
-                  <img :src="userAvatar" alt="avatar" />
+                  <img :src="avatarPreview" alt="avatar" />
                 </div>
                 <div class="avatar-actions">
-                  <input
-                    ref="fileInput"
-                    type="file"
-                    accept="image/*"
-                    class="hidden-input"
-                    @change="handleAvatarUpload"
-                  />
-                  <button class="btn-secondary" @click="resetAvatar">
-                    Сбросить
-                  </button>
-                  <button class="btn-primary" @click="showAvatarModal = true">
-                    Создать аватар
-                  </button>
+                  <input ref="fileInput" type="file" accept="image/*" class="hidden-input"
+                    @change="handleAvatarUpload" />
+                  <button class="btn-secondary" @click="resetAvatar">Сбросить</button>
+                  <button class="btn-primary" @click="showAvatarModal = true">Создать аватар</button>
                   <button class="avatar-edit-btn" @click="fileInput?.click()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path d="M12 20h9M16.5 3.5L20 7l-9 9H7v-4l9-9z"></path>
@@ -142,15 +125,8 @@ const saveSettings = async () => {
             <div class="input-group">
               <label class="input-label">Имя пользователя</label>
               <div class="input-with-button">
-                <input
-                  v-model="username"
-                  type="text"
-                  class="input-field"
-                  placeholder="Введите имя"
-                />
-                <button class="btn-secondary" @click="generateUsername">
-                  Сгенерировать
-                </button>
+                <input v-model="username" type="text" class="input-field" placeholder="Введите имя" />
+                <button class="btn-secondary" @click="generateUsername">Сгенерировать</button>
               </div>
             </div>
           </div>
@@ -158,17 +134,16 @@ const saveSettings = async () => {
 
         <div class="modal-footer">
           <button class="btn-secondary" @click="emit('close')">Отмена</button>
-          <button class="btn-primary" @click="saveSettings">
-            Сохранить
-          </button>
+          <button class="btn-primary" @click="saveSettings">Сохранить</button>
         </div>
       </div>
     </div>
   </Teleport>
 
-  <AvatarGeneratorModal
-    :is-open="showAvatarModal"
-    @close="showAvatarModal = false"
-    @generate="handleAvatarGenerated"
-  />
+  <AvatarGeneratorModal :is-open="showAvatarModal" @close="showAvatarModal = false" @generate="handleAvatarGenerated" />
 </template>
+
+<style lang="scss">
+@use '../../../styles/ui/modal';
+@use '../../../styles/pages/settings';
+</style>

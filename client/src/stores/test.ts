@@ -1,29 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import api from "../../api/axios";
-
-export interface Question {
-  question: string;
-  img?: string;
-  answers: string[];
-  correctAnswer: string;
-}
-
-export interface Test {
-  _id: string;
-  title: string;
-  img?: string;
-  description?: string;
-  author: {
-    _id: string;
-    username: string;
-    avatar?: string;
-  };
-  question: Question[];
-  users: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Test } from "../types/index";
+import api from "../api/axios";
 
 export const useTestStore = defineStore("test", () => {
   const myTests = ref<Test[]>([]);
@@ -63,12 +41,6 @@ export const useTestStore = defineStore("test", () => {
     return data;
   };
 
-  const fetchTestById = async (id: string) => {
-    const { data } = await api.get(`/tests/${id}`);
-    currentTest.value = data;
-    return data;
-  };
-
   const updateTest = async (id: string, formData: FormData) => {
     const { data } = await api.patch(`/tests/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -83,6 +55,12 @@ export const useTestStore = defineStore("test", () => {
     myTests.value = myTests.value.filter((t) => t._id !== id);
   };
 
+  const fetchTestById = async (id: string) => {
+    const { data } = await api.get(`/tests/${id}`);
+    currentTest.value = data;
+    return data;
+  };
+
   return {
     myTests,
     passedTests,
@@ -91,8 +69,8 @@ export const useTestStore = defineStore("test", () => {
     fetchMyTests,
     fetchPassedTests,
     createTest,
-    fetchTestById,
     updateTest,
     deleteTest,
+    fetchTestById,
   };
 });

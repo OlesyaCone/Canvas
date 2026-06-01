@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import { useTestStore } from '../../stores/test';
 
+const emit = defineEmits<{ (e: 'back'): void }>();
+
 const testStore = useTestStore();
 
 const title = ref('');
@@ -118,6 +120,7 @@ const submit = async () => {
         description.value = '';
         questions.value = [];
         imgFile.value = null;
+        emit('back');
     } catch (e) {
         console.error('Ошибка создания теста:', e);
     }
@@ -220,3 +223,7 @@ const submit = async () => {
     </button>
   </div>
 </template>
+
+<style lang="scss">
+@use '../../../styles/pages/tests';
+</style>

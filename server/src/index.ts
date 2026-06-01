@@ -5,7 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import { setupRoutes } from './routes';
+import { setupRoutes } from './routes/auth';
 import { getFile } from './controllers/upload';
 
 const app = express();

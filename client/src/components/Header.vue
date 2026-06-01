@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, watch } from "vue"
 
 const getSystemTheme = (): boolean => {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -15,9 +15,12 @@ const applyTheme = (): void => {
 }
 
 const toggleTheme = (): void => {
-  applyTheme()
   localStorage.setItem("theme", isDark.value ? "dark" : "light")
 }
+
+watch(isDark, () => {
+  applyTheme()
+})
 
 onMounted(() => {
   const savedTheme = localStorage.getItem("theme")
@@ -30,7 +33,6 @@ onMounted(() => {
   
   applyTheme()
   
-  
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     if (!localStorage.getItem("theme")) {
       isDark.value = e.matches
@@ -42,7 +44,7 @@ onMounted(() => {
 
 <template>
   <header class="header">
-    <span class="header__title">Canvas</span>
+    <span class="header__title">Сanvas</span>
     
     <label class="theme-toggle">
       <input

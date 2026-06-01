@@ -226,3 +226,8 @@ watch(
     </div>
   </Teleport>
 </template>
+
+<style lang="scss">
+@use '../../../styles/ui/modal';
+@use '../../../styles/pages/avatar';
+</style>
