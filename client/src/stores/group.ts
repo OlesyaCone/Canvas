@@ -59,11 +59,19 @@ export const useGroupStore = defineStore("group", () => {
       currentGroup.value.members = currentGroup.value.members.filter(
         (m) => m._id !== userId,
       );
+      currentGroup.value.moderators = currentGroup.value.moderators.filter(
+        (m) => m._id !== userId,
+      );
     }
   };
 
   const promoteMember = async (groupId: string, userId: string) => {
     const { data } = await api.post(`/groups/${groupId}/promote/${userId}`);
+    if (currentGroup.value) currentGroup.value.moderators = data.moderators;
+  };
+
+  const demoteMember = async (groupId: string, userId: string) => {
+    const { data } = await api.post(`/groups/${groupId}/demote/${userId}`);
     if (currentGroup.value) currentGroup.value.moderators = data.moderators;
   };
 
@@ -105,6 +113,7 @@ export const useGroupStore = defineStore("group", () => {
     leaveGroup,
     kickMember,
     promoteMember,
+    demoteMember,
     fetchGroupTests,
     assignTest,
     fetchGroupResults,

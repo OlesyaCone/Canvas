@@ -9,7 +9,7 @@ const testStore = useTestStore();
 const title = ref('');
 const description = ref('');
 const imgFile = ref<File | null>(null);
-const existingCover = ref(''); 
+const existingCover = ref('');
 
 const questions = ref<
   {
@@ -131,7 +131,8 @@ const submit = async () => {
       <div class="form-group">
         <label>Обложка теста</label>
         <div v-if="existingCover && !imgFile" class="image-preview">
-          <img :src="existingCover.startsWith('http') ? existingCover : `http://localhost:5000${existingCover}`" alt="текущая обложка" />
+          <img :src="existingCover.startsWith('http') ? existingCover : `http://localhost:5000${existingCover}`"
+            alt="текущая обложка" />
         </div>
         <div class="file-upload-wrapper">
           <label for="edit-cover" class="file-upload-btn">Выберите файл</label>
@@ -164,7 +165,8 @@ const submit = async () => {
           </div>
           <div class="file-upload-wrapper">
             <label :for="'edit-q-img-' + idx" class="file-upload-btn">Выберите файл</label>
-            <input :id="'edit-q-img-' + idx" type="file" accept="image/*" @change="(e) => onQuestionImageChange(e, idx)" class="file-input-hidden" />
+            <input :id="'edit-q-img-' + idx" type="file" accept="image/*" @change="(e) => onQuestionImageChange(e, idx)"
+              class="file-input-hidden" />
             <span class="file-name">{{ q.imgFile ? q.imgFile.name : 'Файл не выбран' }}</span>
           </div>
         </div>
@@ -173,7 +175,8 @@ const submit = async () => {
           <label>Варианты ответов</label>
           <div v-for="(_, aIdx) in q.answers" :key="aIdx" class="answer-row">
             <input v-model="q.answers[aIdx]" class="input" :placeholder="'Ответ ' + (aIdx + 1)" />
-            <button v-if="q.answers.length > 1" class="btn-icon" @click="removeAnswer(idx, aIdx)" title="Удалить вариант">✕</button>
+            <button v-if="q.answers.length > 1" class="btn-icon" @click="removeAnswer(idx, aIdx)"
+              title="Удалить вариант">✕</button>
           </div>
           <button class="btn btn-add" @click="addAnswer(idx)">+ Добавить вариант</button>
         </div>

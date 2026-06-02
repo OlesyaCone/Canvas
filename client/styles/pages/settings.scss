@@ -5,17 +5,20 @@
   flex-direction: column;
   gap: $spacing-sm;
 }
+
 .avatar-label {
   font-size: $font-size-md;
   font-weight: 500;
   color: $color-text;
 }
+
 .avatar-upload {
   display: flex;
   align-items: center;
   gap: $spacing-lg;
   position: relative;
 }
+
 .avatar-preview {
   position: relative;
   width: 100px;
@@ -24,21 +27,24 @@
   overflow: hidden;
   border: 2px solid $primary-alpha;
   flex-shrink: 0;
+
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 }
+
 .avatar-actions {
   display: flex;
-  gap: $spacing-xs;
+  gap: $spacing-sm;
   flex-wrap: wrap;
   align-items: center;
 }
+
 .avatar-edit-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: $radius-full;
   background: $color-primary;
@@ -48,39 +54,44 @@
   justify-content: center;
   cursor: pointer;
   transition: $transition-base;
+
   &:hover {
     background: $primary-hover;
     transform: scale(1.1);
   }
+
   svg {
     width: $font-size-lg;
     height: $font-size-lg;
   }
 }
+
 .hidden-input {
   display: none;
 }
+
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .input-label {
   font-size: $font-size-md;
   font-weight: 500;
   color: $color-text;
 }
+
 .input-with-button {
   display: flex;
   gap: $spacing-sm;
   align-items: center;
+
   .input-field {
     flex: 1;
   }
-  .btn-secondary {
-    white-space: nowrap;
-  }
 }
+
 .input-field {
   padding: $spacing-sm $spacing-md;
   border: 1px solid $color-border;
@@ -89,40 +100,74 @@
   background: $color-surface;
   color: $color-text;
   transition: $transition-base;
+
   &:focus {
     outline: none;
     border-color: $color-primary;
     box-shadow: 0 0 0 3px $primary-alpha;
   }
+
   &::placeholder {
     color: $color-text-secondary;
   }
 }
+
 .settings-group {
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
   padding-bottom: $spacing-md;
   border-bottom: 1px solid $color-border;
+
   &:last-child {
     border-bottom: none;
     padding-bottom: 0;
   }
 }
+
 .settings-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .settings-label {
   font-size: $font-size-md;
   font-weight: 500;
   color: $color-text;
 }
+
 .settings-value {
   font-size: $font-size-md;
   color: $color-text-secondary;
   background: $primary-alpha;
   padding: 2px 8px;
   border-radius: 12px;
+}
+
+button.btn,
+button.btn-primary,
+button.btn-secondary {
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+button.btn-primary {
+  background: var(--color-primary) !important;
+  color: white !important;
+}
+
+button.btn-secondary {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
 }

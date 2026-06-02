@@ -1,4 +1,4 @@
-@use '../variables' as *;
+@use "../variables" as *;
 
 .btn {
   padding: 10px 24px;
@@ -7,15 +7,24 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  &:active { transform: scale(0.98); }
+  transition:
+    opacity 0.2s,
+    transform 0.1s;
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .btn-primary {
   background: var(--color-primary);
   color: white;
-  &:hover { opacity: 0.9; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover {
+    opacity: 0.9;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .btn-secondary {
@@ -28,11 +37,15 @@
   background: var(--color-primary);
   color: white;
   margin-top: 10px;
-  &:hover { opacity: 0.9; }
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 .btn-danger {
   background: #e74c3c;
   color: white;
-  &:hover { opacity: 0.9; }
+  &:hover {
+    opacity: 0.9;
+  }
 }

@@ -120,7 +120,7 @@ onMounted(() => {
     generateAvatar();
   }
 });
-           
+
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -149,25 +149,14 @@ watch(
         <div class="modal-body">
           <div v-if="showAllAvatars" class="all-avatars">
             <div class="style-info">
-              <button
-                class="btn-secondary back-btn"
-                @click="showAllAvatars = false"
-              >
+              <button class="btn-secondary back-btn" @click="showAllAvatars = false">
                 ← Назад
               </button>
             </div>
 
             <div class="avatars-grid">
-              <div
-                v-for="seed in allSeeds"
-                :key="seed"
-                class="avatar-card"
-                @click="selectFromAll(seed)"
-              >
-                <img
-                  :src="`https://api.dicebear.com/9.x/${currentStyle?.urlKey}/svg?seed=${seed}`"
-                  :alt="seed"
-                />
+              <div v-for="seed in allSeeds" :key="seed" class="avatar-card" @click="selectFromAll(seed)">
+                <img :src="`https://api.dicebear.com/9.x/${currentStyle?.urlKey}/svg?seed=${seed}`" :alt="seed" />
               </div>
             </div>
           </div>
@@ -189,17 +178,9 @@ watch(
                   ‹
                 </button>
                 <div class="carousel" ref="carouselRef">
-                  <div
-                    v-for="style in AVATAR_STYLES_LIST"
-                    :key="style.id"
-                    class="carousel-item"
-                    :class="{ active: selectedStyle === style.id }"
-                    @click="selectStyle(style.id)"
-                  >
-                    <img
-                      :src="`https://api.dicebear.com/9.x/${style.urlKey}/svg?seed=preview`"
-                      :alt="style.name"
-                    />
+                  <div v-for="style in AVATAR_STYLES_LIST" :key="style.id" class="carousel-item"
+                    :class="{ active: selectedStyle === style.id }" @click="selectStyle(style.id)">
+                    <img :src="`https://api.dicebear.com/9.x/${style.urlKey}/svg?seed=preview`" :alt="style.name" />
                     <span class="style-name">{{ style.name }}</span>
                   </div>
                 </div>

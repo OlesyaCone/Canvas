@@ -87,49 +87,28 @@ const goBack = () => emit('back');
         <div v-if="currentQuestion.img" class="question-image">
           <img
             :src="currentQuestion.img.startsWith('http') ? currentQuestion.img : `http://localhost:5000${currentQuestion.img}`"
-            alt="изображение вопроса"
-          />
+            alt="изображение вопроса" />
         </div>
         <div class="answers-grid">
-          <label
-            v-for="(ans, i) in currentQuestion.answers"
-            :key="i"
-            class="answer-option"
-            :class="{ selected: selectedAnswers[currentIndex] === ans }"
-          >
-            <input
-              type="radio"
-              :name="`question-${currentIndex}`"
-              :value="ans"
-              v-model="selectedAnswers[currentIndex]"
-            />
+          <label v-for="(ans, i) in currentQuestion.answers" :key="i" class="answer-option"
+            :class="{ selected: selectedAnswers[currentIndex] === ans }">
+            <input type="radio" :name="`question-${currentIndex}`" :value="ans"
+              v-model="selectedAnswers[currentIndex]" />
             {{ ans }}
           </label>
         </div>
 
         <div class="nav-buttons">
-          <button
-            v-if="currentIndex > 0"
-            class="btn btn-secondary"
-            @click="goPrev"
-          >
+          <button v-if="currentIndex > 0" class="btn btn-secondary" @click="goPrev">
             ← Назад
           </button>
           <div v-if="currentIndex === 0" class="btn-placeholder"></div>
 
-          <button
-            v-if="currentIndex < totalQuestions - 1"
-            class="btn btn-primary"
-            @click="goNext"
-          >
+          <button v-if="currentIndex < totalQuestions - 1" class="btn btn-primary" @click="goNext">
             Далее →
           </button>
-          <button
-            v-else
-            class="btn btn-primary submit-btn"
-            :disabled="Object.keys(selectedAnswers).length !== totalQuestions"
-            @click="submitAnswers"
-          >
+          <button v-else class="btn btn-primary submit-btn"
+            :disabled="Object.keys(selectedAnswers).length !== totalQuestions" @click="submitAnswers">
             Отправить ответы
           </button>
         </div>

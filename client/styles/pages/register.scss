@@ -1,4 +1,4 @@
-@use '../variables' as *;
+@use "../variables" as *;
 
 .auth-overlay {
   inset: 0;
@@ -15,7 +15,7 @@
   border-radius: 12px;
   padding: 32px;
   width: 360px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 .auth-title {
@@ -55,7 +55,9 @@
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s ease;
-  &:focus { border-color: var(--color-primary); }
+  &:focus {
+    border-color: var(--color-primary);
+  }
 }
 
 .auth-error {
@@ -74,8 +76,13 @@
   font-family: inherit;
   cursor: pointer;
   transition: opacity 0.15s ease;
-  &:hover { opacity: 0.9; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover {
+    opacity: 0.9;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .auth-toggle {
@@ -92,7 +99,9 @@
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
-  &:hover { text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .auth-divider {
@@ -101,13 +110,16 @@
   margin: 20px 0;
   color: var(--color-text-secondary);
   font-size: 12px;
-  &::before, &::after {
-    content: '';
+  &::before,
+  &::after {
+    content: "";
     flex: 1;
     height: 1px;
     background: var(--color-border);
   }
-  span { padding: 0 12px; }
+  span {
+    padding: 0 12px;
+  }
 }
 
 .google-btn {
@@ -125,5 +137,7 @@
   justify-content: center;
   gap: 8px;
   transition: background 0.15s ease;
-  &:hover { background: var(--color-surface); }
+  &:hover {
+    background: var(--color-surface);
+  }
 }

@@ -1,4 +1,4 @@
-import { 
+import {
   adventurer,
   adventurerNeutral,
   avataaars,
@@ -55,199 +55,199 @@ export const STYLE_URL_MAP: Record<string, string> = {
   pixelArtNeutral: "pixel-art-neutral",
   rings: "rings",
   shapes: "shapes",
-  thumbs: "thumbs"
+  thumbs: "thumbs",
 };
 
 export const AVATAR_STYLES = {
   adventurer: {
-    id: 'adventurer',
+    id: "adventurer",
     name: "Приключенец",
     style: adventurer,
     description: "Классический стиль приключений",
-    urlKey: STYLE_URL_MAP.adventurer
+    urlKey: STYLE_URL_MAP.adventurer,
   },
   adventurerNeutral: {
-    id: 'adventurerNeutral',
+    id: "adventurerNeutral",
     name: "Приключенец (нейтральный)",
     style: adventurerNeutral,
     description: "Нейтральная версия приключенца",
-    urlKey: STYLE_URL_MAP.adventurerNeutral
+    urlKey: STYLE_URL_MAP.adventurerNeutral,
   },
   avataaars: {
-    id: 'avataaars',
+    id: "avataaars",
     name: "Аватаары",
     style: avataaars,
     description: "Популярный стиль с множеством вариаций",
-    urlKey: STYLE_URL_MAP.avataaars
+    urlKey: STYLE_URL_MAP.avataaars,
   },
   avataaarsNeutral: {
-    id: 'avataaarsNeutral',
+    id: "avataaarsNeutral",
     name: "Аватаары (нейтральный)",
     style: avataaarsNeutral,
     description: "Нейтральные аватаары",
-    urlKey: STYLE_URL_MAP.avataaarsNeutral
+    urlKey: STYLE_URL_MAP.avataaarsNeutral,
   },
   bigEars: {
-    id: 'bigEars',
+    id: "bigEars",
     name: "Большие уши",
     style: bigEars,
     description: "Милые персонажи с большими ушами",
-    urlKey: STYLE_URL_MAP.bigEars
+    urlKey: STYLE_URL_MAP.bigEars,
   },
   bigEarsNeutral: {
-    id: 'bigEarsNeutral',
+    id: "bigEarsNeutral",
     name: "Большие уши (нейтральный)",
     style: bigEarsNeutral,
     description: "Нейтральные персонажи с большими ушами",
-    urlKey: STYLE_URL_MAP.bigEarsNeutral
+    urlKey: STYLE_URL_MAP.bigEarsNeutral,
   },
   bigSmile: {
-    id: 'bigSmile',
+    id: "bigSmile",
     name: "Большая улыбка",
     style: bigSmile,
     description: "Весёлые персонажи с улыбками",
-    urlKey: STYLE_URL_MAP.bigSmile
+    urlKey: STYLE_URL_MAP.bigSmile,
   },
   bottts: {
-    id: 'bottts',
+    id: "bottts",
     name: "Роботы",
     style: bottts,
     description: "Роботизированные аватары",
-    urlKey: STYLE_URL_MAP.bottts
+    urlKey: STYLE_URL_MAP.bottts,
   },
   botttsNeutral: {
-    id: 'botttsNeutral',
+    id: "botttsNeutral",
     name: "Роботы (нейтральный)",
     style: botttsNeutral,
     description: "Нейтральные роботы",
-    urlKey: STYLE_URL_MAP.botttsNeutral
+    urlKey: STYLE_URL_MAP.botttsNeutral,
   },
   croodles: {
-    id: 'croodles',
+    id: "croodles",
     name: "Крудельс",
     style: croodles,
     description: "Забавные каракульные персонажи",
-    urlKey: STYLE_URL_MAP.croodles
+    urlKey: STYLE_URL_MAP.croodles,
   },
   croodlesNeutral: {
-    id: 'croodlesNeutral',
+    id: "croodlesNeutral",
     name: "Крудельс (нейтральный)",
     style: croodlesNeutral,
     description: "Нейтральные каракульные персонажи",
-    urlKey: STYLE_URL_MAP.croodlesNeutral
+    urlKey: STYLE_URL_MAP.croodlesNeutral,
   },
   funEmoji: {
-    id: 'funEmoji',
+    id: "funEmoji",
     name: "Весёлые эмодзи",
     style: funEmoji,
     description: "Разнообразные смайлики",
-    urlKey: STYLE_URL_MAP.funEmoji
+    urlKey: STYLE_URL_MAP.funEmoji,
   },
   icons: {
-    id: 'icons',
+    id: "icons",
     name: "Иконки",
     style: icons,
     description: "Набор различных иконок",
-    urlKey: STYLE_URL_MAP.icons
+    urlKey: STYLE_URL_MAP.icons,
   },
   identicon: {
-    id: 'identicon',
+    id: "identicon",
     name: "Идентикон",
     style: identicon,
     description: "Уникальные идентификаторы на основе seed",
-    urlKey: STYLE_URL_MAP.identicon
+    urlKey: STYLE_URL_MAP.identicon,
   },
   lorelei: {
-    id: 'lorelei',
+    id: "lorelei",
     name: "Лорелей",
     style: lorelei,
     description: "Стилизованные человеческие аватары",
-    urlKey: STYLE_URL_MAP.lorelei
+    urlKey: STYLE_URL_MAP.lorelei,
   },
   loreleiNeutral: {
-    id: 'loreleiNeutral',
+    id: "loreleiNeutral",
     name: "Лорелей (нейтральный)",
     style: loreleiNeutral,
     description: "Нейтральные стилизованные аватары",
-    urlKey: STYLE_URL_MAP.loreleiNeutral
+    urlKey: STYLE_URL_MAP.loreleiNeutral,
   },
   micah: {
-    id: 'micah',
+    id: "micah",
     name: "Майка",
     style: micah,
     description: "Уникальные персонажи в стиле Майки",
-    urlKey: STYLE_URL_MAP.micah
+    urlKey: STYLE_URL_MAP.micah,
   },
   miniavs: {
-    id: 'miniavs',
+    id: "miniavs",
     name: "Мини-аватары",
     style: miniavs,
     description: "Маленькие детализированные аватары",
-    urlKey: STYLE_URL_MAP.miniavs
+    urlKey: STYLE_URL_MAP.miniavs,
   },
   notionists: {
-    id: 'notionists',
+    id: "notionists",
     name: "Ноушионисты",
     style: notionists,
     description: "Стиль вдохновленный Notion",
-    urlKey: STYLE_URL_MAP.notionists
+    urlKey: STYLE_URL_MAP.notionists,
   },
   notionistsNeutral: {
-    id: 'notionistsNeutral',
+    id: "notionistsNeutral",
     name: "Ноушионисты (нейтральный)",
     style: notionistsNeutral,
     description: "Нейтральная версия стиля Notion",
-    urlKey: STYLE_URL_MAP.notionistsNeutral
+    urlKey: STYLE_URL_MAP.notionistsNeutral,
   },
   openPeeps: {
-    id: 'openPeeps',
+    id: "openPeeps",
     name: "Open Peeps",
     style: openPeeps,
     description: "Открытые персонажи из библиотеки Peeps",
-    urlKey: STYLE_URL_MAP.openPeeps
+    urlKey: STYLE_URL_MAP.openPeeps,
   },
   personas: {
-    id: 'personas',
+    id: "personas",
     name: "Персонажи",
     style: personas,
     description: "Различные человеческие персонажи",
-    urlKey: STYLE_URL_MAP.personas
+    urlKey: STYLE_URL_MAP.personas,
   },
   pixelArt: {
-    id: 'pixelArt',
+    id: "pixelArt",
     name: "Пиксель-арт",
     style: pixelArt,
     description: "Пиксельные аватары",
-    urlKey: STYLE_URL_MAP.pixelArt
+    urlKey: STYLE_URL_MAP.pixelArt,
   },
   pixelArtNeutral: {
-    id: 'pixelArtNeutral',
+    id: "pixelArtNeutral",
     name: "Пиксель-арт (нейтральный)",
     style: pixelArtNeutral,
     description: "Нейтральные пиксельные аватары",
-    urlKey: STYLE_URL_MAP.pixelArtNeutral
+    urlKey: STYLE_URL_MAP.pixelArtNeutral,
   },
   rings: {
-    id: 'rings',
+    id: "rings",
     name: "Кольца",
     style: rings,
     description: "Геометрические аватары из колец",
-    urlKey: STYLE_URL_MAP.rings
+    urlKey: STYLE_URL_MAP.rings,
   },
   shapes: {
-    id: 'shapes',
+    id: "shapes",
     name: "Фигуры",
     style: shapes,
     description: "Аватары из геометрических фигур",
-    urlKey: STYLE_URL_MAP.shapes
+    urlKey: STYLE_URL_MAP.shapes,
   },
   thumbs: {
-    id: 'thumbs',
+    id: "thumbs",
     name: "Большие пальцы",
     style: thumbs,
     description: "Милые персонажи с большими пальцами",
-    urlKey: STYLE_URL_MAP.thumbs
-  }
+    urlKey: STYLE_URL_MAP.thumbs,
+  },
 } as const;
 
 export const AVATAR_STYLES_LIST = Object.values(AVATAR_STYLES);

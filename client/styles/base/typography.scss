@@ -1,4 +1,4 @@
-@use '../variables' as *;
+@use "../variables" as *;
 
 body {
   font-family: $font-family;
@@ -7,7 +7,9 @@ body {
   background-color: $color-bg;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-weight: 600;
   line-height: 1.3;
 }

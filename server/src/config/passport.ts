@@ -1,7 +1,7 @@
-import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import User from '../models/User';
-import dotenv from 'dotenv';
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import User from "../models/User";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -20,16 +20,16 @@ passport.use(
 
         if (user) {
           user.googleId = profile.id;
-          user.provider = 'google';
+          user.provider = "google";
           user.isVerified = true;
           await user.save();
         } else {
           user = await User.create({
             email: profile.emails?.[0].value,
             googleId: profile.id,
-            username: profile.emails?.[0].value?.split('@')[0],
-            avatar: profile.photos?.[0].value || '',
-            provider: 'google',
+            username: profile.emails?.[0].value?.split("@")[0],
+            avatar: profile.photos?.[0].value || "",
+            provider: "google",
             isVerified: true,
           });
         }
@@ -45,8 +45,8 @@ passport.use(
       } catch (error) {
         done(error as Error);
       }
-    }
-  )
+    },
+  ),
 );
 
 export default passport;

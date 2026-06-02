@@ -17,12 +17,8 @@ onMounted(() => testStore.fetchPassedTests());
     <div v-if="testStore.loading" class="loading">Загрузка...</div>
     <div v-else-if="testStore.passedTests.length === 0" class="empty">Вы ещё не прошли ни одного теста.</div>
     <div v-else class="tests-grid">
-      <TestCard
-        v-for="test in testStore.passedTests"
-        :key="test._id"
-        :test="test"
-        @start="(id: string) => emit('start', id)"
-      />
+      <TestCard v-for="test in testStore.passedTests" :key="test._id" :test="test"
+        @start="(id: string) => emit('start', id)" />
     </div>
   </div>
 </template>

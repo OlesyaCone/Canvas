@@ -15,8 +15,15 @@ authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/refresh", refresh);
 authRouter.post("/logout", protect, logout);
-authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-authRouter.get("/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/" }), googleCallback);
+authRouter.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+authRouter.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false, failureRedirect: "/" }),
+  googleCallback,
+);
 authRouter.get("/verify/:token", verifyEmail);
 authRouter.patch("/profile", protect, upload.single("avatar"), updateProfile);
 authRouter.get("/profile", protect, getProfile);

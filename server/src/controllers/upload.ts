@@ -29,7 +29,7 @@ const createStorage = (subfolder: string) =>
 const fileFilter = (
   req: any,
   file: Express.Multer.File,
-  cb: multer.FileFilterCallback
+  cb: multer.FileFilterCallback,
 ) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
@@ -60,7 +60,7 @@ export const getFile = async (req: Request, res: Response): Promise<void> => {
       "..",
       "..",
       "uploads",
-      req.params.path
+      req.params.path,
     );
     if (!fs.existsSync(filePath)) {
       res.status(404).json({ message: "Файл не найден" });
@@ -74,7 +74,7 @@ export const getFile = async (req: Request, res: Response): Promise<void> => {
 
 export const uploadAvatar = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     if (!req.file) {

@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema<IUser>(
     passedTests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Test" }],
     groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.pre("save", async function (next) {

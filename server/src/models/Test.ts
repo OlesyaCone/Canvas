@@ -16,7 +16,7 @@ const testingSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Test", testingSchema);

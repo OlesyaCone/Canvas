@@ -1,9 +1,24 @@
 import { Router } from "express";
 import { protect } from "../middleware/auth";
-import { createGroup, updateGroup, deleteGroup, getGroup, getMyGroups } from "../controllers/groups/crud";
-import { joinGroup, leaveGroup, kickMember, promoteMember } from "../controllers/groups/members";
+import {
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  getGroup,
+  getMyGroups,
+} from "../controllers/groups/crud";
+import {
+  joinGroup,
+  leaveGroup,
+  kickMember,
+  promoteMember,
+  demoteMember,
+} from "../controllers/groups/members";
 import { assignTest, getGroupTests } from "../controllers/groups/tests";
-import { submitGroupResult, getGroupResults } from "../controllers/groups/results";
+import {
+  submitGroupResult,
+  getGroupResults,
+} from "../controllers/groups/results";
 import { upload } from "../controllers/upload";
 
 const router = Router();
@@ -18,6 +33,7 @@ router.post("/:id/join", protect, joinGroup);
 router.post("/:id/leave", protect, leaveGroup);
 router.post("/:id/kick/:userId", protect, kickMember);
 router.post("/:id/promote/:userId", protect, promoteMember);
+router.post("/:id/demote/:userId", protect, demoteMember);
 
 router.post("/:id/tests", protect, assignTest);
 router.get("/:id/tests", protect, getGroupTests);

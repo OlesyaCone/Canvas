@@ -1,4 +1,4 @@
-@use '../variables' as *;
+@use "../variables" as *;
 
 .sidebar {
   width: $sidebar-width;
@@ -18,7 +18,9 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
   padding: $spacing-sm $spacing-md;
-  &:focus-within { border-color: $color-primary; }
+  &:focus-within {
+    border-color: $color-primary;
+  }
 }
 
 .search-icon {
@@ -34,7 +36,9 @@
   color: $color-text;
   font-size: $font-size-sm;
   font-family: inherit;
-  &::placeholder { color: $color-text-secondary; }
+  &::placeholder {
+    color: $color-text-secondary;
+  }
 }
 
 .sidebar-nav {
@@ -126,7 +130,11 @@
   height: 2px;
   background: $color-text-secondary;
   border-radius: 1px;
-  .setting-btn:hover & { background: $color-primary; }
+  .setting-btn:hover & {
+    background: $color-primary;
+  }
 }
 
-.bar2 { width: 12px; }
+.bar2 {
+  width: 12px;
+}

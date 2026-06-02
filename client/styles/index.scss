@@ -1,14 +1,14 @@
-@use './variables' as *;
+@use "./variables" as *;
 
-@use './base/reset';
-@use './base/typography';
-@use './base/layout';
+@use "./base/reset";
+@use "./base/typography";
+@use "./base/layout";
 
-@use './ui/buttons';
-@use './ui/forms';
-@use './ui/modal';
+@use "./ui/buttons";
+@use "./ui/forms";
+@use "./ui/modal";
 
-@use './layout/header';
-@use './layout/sidebar';
+@use "./layout/header";
+@use "./layout/sidebar";
 
-@use './pages/register';
+@use "./pages/register";
