@@ -8,15 +8,16 @@ import MyGroups from "./groups/MyGroups.vue";
 import CreateGroup from "./groups/CreateGroup.vue";
 import GroupView from "./groups/GroupView.vue";
 
-const props = defineProps<{
+defineProps<{
   currentPage: "personal" | "completed" | "creating" | "playing" | "editing" | "myGroups" | "createGroup" | "groupView";
   playingTestId?: string | null;
+  playingGroupTestId?: string | null;
   editingTestId?: string | null;
   viewingGroupId?: string | null;
 }>();
 
 const emit = defineEmits<{
-  (e: "start-test", testId: string): void;
+  (e: "start-test", testId: string, groupTestId?: string): void;
   (e: "edit-test", testId: string): void;
   (e: "back-to-tests"): void;
   (e: "select-group", groupId: string): void;
@@ -32,7 +33,7 @@ const emit = defineEmits<{
     <Completed v-else-if="currentPage === 'completed'" @start="(id: string) => emit('start-test', id)" />
     <Creating v-else-if="currentPage === 'creating'" @back="emit('back-to-tests')" />
     <Playing v-else-if="currentPage === 'playing' && playingTestId" :testId="playingTestId"
-      @back="emit('back-to-tests')" />
+      :groupTestId="playingGroupTestId || undefined" @back="emit('back-to-tests')" />
     <Editing v-else-if="currentPage === 'editing' && editingTestId" :testId="editingTestId"
       @back="emit('back-to-tests')" />
     <MyGroups v-else-if="currentPage === 'myGroups'" @select="(id: string) => emit('select-group', id)"
@@ -40,6 +41,7 @@ const emit = defineEmits<{
     <CreateGroup v-else-if="currentPage === 'createGroup'" @back="emit('back-to-groups')"
       @created="(id: string) => emit('select-group', id)" />
     <GroupView v-else-if="currentPage === 'groupView' && viewingGroupId" :groupId="viewingGroupId"
-      @back="emit('back-to-groups')" @startTest="(id: string) => emit('start-test', id)" />
+      @back="emit('back-to-groups')"
+      @startTest="(testId: string, groupTestId?: string) => emit('start-test', testId, groupTestId)" />
   </div>
 </template>

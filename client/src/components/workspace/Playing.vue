@@ -2,8 +2,10 @@
 import { ref, onMounted, computed } from 'vue';
 import api from '../../api/axios';
 import { useTestStore } from '../../stores/test';
+
 const props = defineProps<{
   testId: string;
+  groupTestId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -52,9 +54,15 @@ const submitAnswers = async () => {
   }));
 
   try {
-    const { data } = await api.post(`/tests/${props.testId}/submit`, { answers });
-    score.value = data.score;
-    total.value = data.total;
+    if (props.groupTestId) {
+      const { data } = await api.post(`/groups/${props.groupTestId}/tests/${props.testId}/submit`, { answers });
+      score.value = data.score;
+      total.value = data.total;
+    } else {
+      const { data } = await api.post(`/tests/${props.testId}/submit`, { answers });
+      score.value = data.score;
+      total.value = data.total;
+    }
     submitted.value = true;
   } catch (e) {
     console.error('Ошибка отправки ответов:', e);
@@ -79,7 +87,7 @@ const goBack = () => emit('back');
       <div v-if="submitted" class="result-card card">
         <h3>Результат</h3>
         <p class="score">{{ score }} / {{ total }}</p>
-        <button class="btn btn-primary" @click="goBack">Вернуться к тестам</button>
+        <button class="btn btn-primary" @click="goBack">Вернуться</button>
       </div>
 
       <div v-else-if="currentQuestion" class="question-card">
@@ -99,24 +107,14 @@ const goBack = () => emit('back');
         </div>
 
         <div class="nav-buttons">
-          <button v-if="currentIndex > 0" class="btn btn-secondary" @click="goPrev">
-            ← Назад
-          </button>
-          <div v-if="currentIndex === 0" class="btn-placeholder"></div>
-
-          <button v-if="currentIndex < totalQuestions - 1" class="btn btn-primary" @click="goNext">
-            Далее →
-          </button>
+          <button v-if="currentIndex > 0" class="btn btn-secondary" @click="goPrev">← Назад</button>
+          <div v-else class="btn-placeholder"></div>
+          <button v-if="currentIndex < totalQuestions - 1" class="btn btn-primary" @click="goNext">Далее →</button>
           <button v-else class="btn btn-primary submit-btn"
-            :disabled="Object.keys(selectedAnswers).length !== totalQuestions" @click="submitAnswers">
-            Отправить ответы
-          </button>
+            :disabled="Object.keys(selectedAnswers).length !== totalQuestions" @click="submitAnswers">Отправить
+            ответы</button>
         </div>
       </div>
     </template>
   </div>
 </template>
-
-<style lang="scss">
-@use '../../../styles/pages/tests';
-</style>

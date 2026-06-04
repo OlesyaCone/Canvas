@@ -9,7 +9,7 @@ const props = defineProps<{ groupId: string }>();
 
 const emit = defineEmits<{
   (e: "back"): void;
-  (e: "startTest", testId: string): void;
+  (e: "startTest", testId: string, groupTestId: string): void;
 }>();
 
 const groupStore = useGroupStore();
@@ -27,6 +27,17 @@ const getAvatarUrl = (avatar?: string) => {
   if (!avatar) return noPhoto;
   if (avatar.startsWith("http") || avatar.startsWith("data:")) return avatar;
   return `http://localhost:5000${avatar}`;
+};
+
+const getUserResult = (gt: any) => {
+  if (!gt.results) return null;
+  return gt.results.find(
+    (r: any) => (r.user?._id || r.user) === authStore.user?.id
+  );
+};
+
+const isExpired = (deadline: string) => {
+  return new Date(deadline) < new Date();
 };
 
 const loadData = async () => {
@@ -50,22 +61,22 @@ const handleAssignTest = async () => {
   await groupStore.assignTest(props.groupId, selectedTest.value, deadline.value || undefined);
   selectedTest.value = "";
   deadline.value = "";
-  await groupStore.fetchGroupTests(props.groupId);
+  await loadData();
 };
 
 const handleKick = async (userId: string) => {
   await groupStore.kickMember(props.groupId, userId);
-  await groupStore.fetchGroup(props.groupId);
+  await loadData();
 };
 
 const handlePromote = async (userId: string) => {
   await groupStore.promoteMember(props.groupId, userId);
-  await groupStore.fetchGroup(props.groupId);
+  await loadData();
 };
 
 const handleDemote = async (userId: string) => {
   await groupStore.demoteMember(props.groupId, userId);
-  await groupStore.fetchGroup(props.groupId);
+  await loadData();
 };
 
 const handleLeave = async () => {
@@ -111,15 +122,12 @@ const handleLeave = async () => {
         <img :src="getAvatarUrl(member.avatar)" class="member-img" alt="avatar" />
         <span class="member-name">{{ member.username }}</span>
         <span v-if="member._id === groupStore.currentGroup.admin._id" class="role-tag admin">Админ</span>
-        <span v-else-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)"
-          class="role-tag moderator">Модер</span>
+        <span v-else-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)" class="role-tag moderator">Модер</span>
         <span v-else class="role-tag member">Участник</span>
 
         <div v-if="isAdmin && member._id !== authStore.user?.id" class="member-controls">
-          <button v-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)" class="btn-icon-sm demote"
-            @click="handleDemote(member._id)" title="Понизить до участника">⬇</button>
-          <button v-else class="btn-icon-sm promote" @click="handlePromote(member._id)"
-            title="Повысить до модератора">⬆</button>
+          <button v-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)" class="btn-icon-sm demote" @click="handleDemote(member._id)" title="Понизить до участника">⬇</button>
+          <button v-else class="btn-icon-sm promote" @click="handlePromote(member._id)" title="Повысить до модератора">⬆</button>
           <button class="btn-icon-sm kick" @click="handleKick(member._id)" title="Кикнуть">✕</button>
         </div>
       </div>
@@ -140,8 +148,19 @@ const handleLeave = async () => {
       <div v-if="groupStore.groupTests.length === 0" class="empty">Нет назначенных тестов</div>
       <div v-for="gt in groupStore.groupTests" :key="gt._id" class="test-row">
         <div class="test-title">{{ gt.test.title }}</div>
-        <div class="test-deadline" v-if="gt.deadline">До {{ new Date(gt.deadline).toLocaleDateString() }}</div>
-        <button class="btn btn-primary btn-sm" @click="emit('startTest', gt.test._id)">Пройти</button>
+        <div class="test-deadline" v-if="gt.deadline">
+          До {{ new Date(gt.deadline).toLocaleDateString() }}
+        </div>
+
+        <template v-if="getUserResult(gt)">
+          <div class="test-result">
+            {{ getUserResult(gt)?.score }} / {{ getUserResult(gt)?.total }}
+          </div>
+        </template>
+        <template v-else-if="gt.deadline && isExpired(gt.deadline)">
+          <span class="test-expired">Просрочен</span>
+        </template>
+        <button v-else class="btn btn-primary btn-sm" @click="emit('startTest', gt.test._id, gt._id)">Пройти</button>
       </div>
     </div>
   </div>

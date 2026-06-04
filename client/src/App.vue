@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "./stores/auth";
+import { useTestStore } from "./stores/test";
+import { useGroupStore } from "./stores/group";
 import TheHeader from "./components/Header.vue";
 import TheSidebar from "./components/Sidebar.vue";
 import TheCanvas from "./components/Canvas.vue";
@@ -9,9 +11,12 @@ import Register from "./components/Register.vue";
 import api from "./api/axios";
 
 const auth = useAuthStore();
+const testStore = useTestStore();
+const groupStore = useGroupStore();
 const showSettings = ref(false);
 const currentPage = ref<"personal" | "completed" | "creating" | "playing" | "editing" | "myGroups" | "createGroup" | "groupView">("personal");
 const playingTestId = ref<string | null>(null);
+const playingGroupTestId = ref<string | null>(null);
 const editingTestId = ref<string | null>(null);
 const viewingGroupId = ref<string | null>(null);
 
@@ -77,16 +82,22 @@ onMounted(async () => {
   }
 });
 
-const onNavigate = (page: "personal" | "completed" | "creating" | "myGroups") => {
+const onNavigate = async (page: "personal" | "completed" | "creating" | "myGroups") => {
   currentPage.value = page;
   playingTestId.value = null;
+  playingGroupTestId.value = null;
   editingTestId.value = null;
   viewingGroupId.value = null;
+
+  if (page === "personal") await testStore.fetchMyTests();
+  if (page === "completed") await testStore.fetchPassedTests();
+  if (page === "myGroups") await groupStore.fetchMyGroups();
 };
 
-const onStartTest = (testId: string) => {
+const onStartTest = (testId: string, groupTestId?: string) => {
   currentPage.value = "playing";
   playingTestId.value = testId;
+  playingGroupTestId.value = groupTestId || null;
 };
 
 const onEditTest = (testId: string) => {
@@ -106,18 +117,15 @@ const onCreateGroup = () => {
 const onBackToTests = () => {
   currentPage.value = "personal";
   playingTestId.value = null;
+  playingGroupTestId.value = null;
   editingTestId.value = null;
+  testStore.fetchMyTests();
 };
 
 const onBackToGroups = () => {
   currentPage.value = "myGroups";
   viewingGroupId.value = null;
-};
-
-const openSettings = () => {
-  console.log('openSettings в App, showSettings было:', showSettings.value);
-  showSettings.value = true;
-  console.log('openSettings в App, showSettings стало:', showSettings.value);
+  groupStore.fetchMyGroups();
 };
 </script>
 
@@ -125,11 +133,11 @@ const openSettings = () => {
   <div class="app" v-if="auth.isAuth">
     <TheHeader />
     <div class="main">
-      <TheSidebar @open-settings="openSettings" @navigate="onNavigate" />
-      <TheCanvas :currentPage="currentPage" :playingTestId="playingTestId" :editingTestId="editingTestId"
-        :viewingGroupId="viewingGroupId" @start-test="onStartTest" @edit-test="onEditTest"
-        @back-to-tests="onBackToTests" @select-group="onSelectGroup" @create-group="onCreateGroup"
-        @back-to-groups="onBackToGroups" />
+      <TheSidebar @open-settings="showSettings = true" @navigate="onNavigate" />
+      <TheCanvas :currentPage="currentPage" :playingTestId="playingTestId" :playingGroupTestId="playingGroupTestId"
+        :editingTestId="editingTestId" :viewingGroupId="viewingGroupId" @start-test="onStartTest"
+        @edit-test="onEditTest" @back-to-tests="onBackToTests" @select-group="onSelectGroup"
+        @create-group="onCreateGroup" @back-to-groups="onBackToGroups" />
     </div>
     <SettingsModal :is-open="showSettings" @close="showSettings = false" />
   </div>
