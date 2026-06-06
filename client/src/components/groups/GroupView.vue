@@ -18,7 +18,7 @@ const authStore = useAuthStore();
 const inviteCodeCopied = ref(false);
 const selectedTest = ref("");
 const deadline = ref("");
-const activeTab = ref<"members" | "tests">("members");
+const activeTab = ref<"members" | "tests" | "results">("members");
 
 const isAdmin = computed(() => authStore.user?.id === groupStore.currentGroup?.admin._id);
 const isModerator = computed(() => groupStore.currentGroup?.moderators.some((m) => m._id === authStore.user?.id));
@@ -44,6 +44,9 @@ const loadData = async () => {
   await groupStore.fetchGroup(props.groupId);
   await groupStore.fetchGroupTests(props.groupId);
   await testStore.fetchMyTests();
+  if (isAdmin.value || isModerator.value) {
+    await groupStore.fetchGroupResults(props.groupId);
+  }
 };
 
 onMounted(loadData);
@@ -115,6 +118,9 @@ const handleLeave = async () => {
       <button class="tab" :class="{ active: activeTab === 'tests' }" @click="activeTab = 'tests'">
         Тесты ({{ groupStore.groupTests.length }})
       </button>
+      <button v-if="isAdmin || isModerator" class="tab" :class="{ active: activeTab === 'results' }" @click="activeTab = 'results'">
+        Результаты
+      </button>
     </div>
 
     <div v-if="activeTab === 'members'" class="members-panel">
@@ -161,6 +167,38 @@ const handleLeave = async () => {
           <span class="test-expired">Просрочен</span>
         </template>
         <button v-else class="btn btn-primary btn-sm" @click="emit('startTest', gt.test._id, gt._id)">Пройти</button>
+      </div>
+    </div>
+
+    <div v-if="activeTab === 'results'" class="results-panel">
+      <div v-if="groupStore.groupResults.length === 0" class="empty">Нет результатов</div>
+
+      <div v-for="result in groupStore.groupResults" :key="result._id" class="result-block">
+        <h3 class="result-test-title">{{ result.test?.title || 'Тест' }}</h3>
+
+        <div class="result-table">
+          <div class="result-header">
+            <span>Участник</span>
+            <span>Результат</span>
+            <span>Процент</span>
+            <span>Дата</span>
+          </div>
+          <div v-for="r in result.results" :key="(r.user?._id || r.user?.toString())" class="result-row">
+            <span>{{ r.user?.username || 'Неизвестный' }}</span>
+            <span class="result-score">{{ r.score }} / {{ r.total }}</span>
+            <span
+              class="result-percent"
+              :class="{
+                high: (r.score / r.total) >= 0.8,
+                mid: (r.score / r.total) >= 0.5 && (r.score / r.total) < 0.8,
+                low: (r.score / r.total) < 0.5
+              }"
+            >
+              {{ Math.round((r.score / r.total) * 100) }}%
+            </span>
+            <span>{{ new Date(r.completedAt).toLocaleDateString() }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

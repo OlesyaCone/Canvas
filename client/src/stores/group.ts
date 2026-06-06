@@ -14,7 +14,7 @@ export const useGroupStore = defineStore("group", () => {
     loading.value = true;
     try {
       const { data } = await api.get("/groups/my");
-      myGroups.value = data;
+      myGroups.value = [...data];
     } catch (e) {
       console.error("Ошибка загрузки групп:", e);
     } finally {
@@ -38,13 +38,13 @@ export const useGroupStore = defineStore("group", () => {
     const { data } = await api.post("/groups", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    myGroups.value.unshift(data);
+    myGroups.value = [data, ...myGroups.value];
     return data;
   };
 
   const joinGroup = async (inviteCode: string) => {
     const { data } = await api.post(`/groups/join`, { inviteCode });
-    myGroups.value.unshift(data);
+    await fetchMyGroups();
     return data;
   };
 
@@ -56,28 +56,39 @@ export const useGroupStore = defineStore("group", () => {
   const kickMember = async (groupId: string, userId: string) => {
     await api.post(`/groups/${groupId}/kick/${userId}`);
     if (currentGroup.value) {
-      currentGroup.value.members = currentGroup.value.members.filter(
-        (m) => m._id !== userId,
-      );
-      currentGroup.value.moderators = currentGroup.value.moderators.filter(
-        (m) => m._id !== userId,
-      );
+      currentGroup.value = {
+        ...currentGroup.value,
+        members: currentGroup.value.members.filter((m) => m._id !== userId),
+        moderators: currentGroup.value.moderators.filter(
+          (m) => m._id !== userId,
+        ),
+      };
     }
   };
 
   const promoteMember = async (groupId: string, userId: string) => {
     const { data } = await api.post(`/groups/${groupId}/promote/${userId}`);
-    if (currentGroup.value) currentGroup.value.moderators = data.moderators;
+    if (currentGroup.value) {
+      currentGroup.value = {
+        ...currentGroup.value,
+        moderators: [...data.moderators],
+      };
+    }
   };
 
   const demoteMember = async (groupId: string, userId: string) => {
     const { data } = await api.post(`/groups/${groupId}/demote/${userId}`);
-    if (currentGroup.value) currentGroup.value.moderators = data.moderators;
+    if (currentGroup.value) {
+      currentGroup.value = {
+        ...currentGroup.value,
+        moderators: [...data.moderators],
+      };
+    }
   };
 
   const fetchGroupTests = async (groupId: string) => {
     const { data } = await api.get(`/groups/${groupId}/tests`);
-    groupTests.value = data;
+    groupTests.value = [...data];
     return data;
   };
 
@@ -90,13 +101,13 @@ export const useGroupStore = defineStore("group", () => {
       testId,
       deadline,
     });
-    groupTests.value.unshift(data);
+    groupTests.value = [data, ...groupTests.value];
     return data;
   };
 
   const fetchGroupResults = async (groupId: string) => {
     const { data } = await api.get(`/groups/${groupId}/results`);
-    groupResults.value = data;
+    groupResults.value = [...data];
     return data;
   };
 

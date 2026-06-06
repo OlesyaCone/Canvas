@@ -26,7 +26,7 @@ const router = Router();
 router.post("/", protect, upload.single("avatar"), createGroup);
 router.get("/my", protect, getMyGroups);
 
-router.post("/:id/join", protect, joinGroup);
+router.post("/join", protect, joinGroup);
 router.post("/:id/leave", protect, leaveGroup);
 router.post("/:id/kick/:userId", protect, kickMember);
 router.post("/:id/promote/:userId", protect, promoteMember);

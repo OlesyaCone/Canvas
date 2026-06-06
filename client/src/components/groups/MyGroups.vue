@@ -26,6 +26,7 @@ const handleJoin = async () => {
   try {
     await groupStore.joinGroup(inviteCode.value.trim());
     inviteCode.value = "";
+    await groupStore.fetchMyGroups();
   } catch (e) {
     console.error("Ошибка вступления:", e);
   }
@@ -52,7 +53,12 @@ const handleJoin = async () => {
       Вы пока не состоите ни в одной группе.
     </div>
     <div v-else class="groups-grid">
-      <div v-for="group in groupStore.myGroups" :key="group._id" class="group-card" @click="emit('select', group._id)">
+      <div
+        v-for="group in groupStore.myGroups"
+        :key="group._id"
+        class="group-card"
+        @click="emit('select', group._id)"
+      >
         <div class="group-avatar">
           <img :src="getAvatarUrl(group.avatar)" alt="group avatar" />
         </div>
