@@ -19,19 +19,14 @@ export const submitGroupResult = async (
   const testId = req.params.testId;
   const { answers } = req.body;
 
-  console.log("groupTestId:", groupTestId);
-  console.log("testId:", testId);
-
   const test = await Test.findById(testId);
   if (!test) {
-    console.log("Тест не найден");
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
 
   const groupTest = await GroupTest.findById(groupTestId);
   if (!groupTest) {
-    console.log("GroupTest не найден по _id:", groupTestId);
     res.status(404).json({ message: "Назначенный тест не найден" });
     return;
   }
@@ -59,7 +54,6 @@ export const submitGroupResult = async (
   });
   await groupTest.save();
 
-  console.log("Результат сохранён");
   res.json({
     message: "Результат сохранён",
     score: correctCount,
@@ -95,4 +89,75 @@ export const getGroupResults = async (
     .populate("results.user", "username avatar")
     .sort({ createdAt: -1 });
   res.json(results);
+};
+
+export const getTestStats = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const userId = getUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Не авторизован" });
+    return;
+  }
+
+  const groupTest = await GroupTest.findById(req.params.testId).populate(
+    "test",
+  );
+  if (!groupTest) {
+    res.status(404).json({ message: "Тест не найден" });
+    return;
+  }
+
+  const test = groupTest.test as any;
+  const results = groupTest.results;
+
+  const questionStats = test.question.map((q: any, idx: number) => {
+    const totalAnswers = results.filter((r: any) =>
+      r.answers?.some((a: any) => a.questionIndex === idx),
+    ).length;
+    const correctAnswers = results.filter((r: any) => {
+      const answer = r.answers?.find((a: any) => a.questionIndex === idx);
+      return answer && answer.answer === q.correctAnswer;
+    }).length;
+    return {
+      question: q.question,
+      total: totalAnswers,
+      correct: correctAnswers,
+      percentage:
+        totalAnswers > 0
+          ? Math.round((correctAnswers / totalAnswers) * 100)
+          : 0,
+    };
+  });
+
+  const distribution = [0, 0, 0, 0, 0];
+  results.forEach((r: any) => {
+    const percent = r.total > 0 ? (r.score / r.total) * 100 : 0;
+    if (percent <= 20) distribution[0]++;
+    else if (percent <= 40) distribution[1]++;
+    else if (percent <= 60) distribution[2]++;
+    else if (percent <= 80) distribution[3]++;
+    else distribution[4]++;
+  });
+
+  const scores = results.map((r: any) => r.score);
+  const avgScore =
+    scores.length > 0
+      ? Math.round(
+          (scores.reduce((a: number, b: number) => a + b, 0) / scores.length) *
+            100,
+        ) / 100
+      : 0;
+  const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
+  const totalPassed = results.length;
+
+  res.json({
+    questionStats,
+    distribution,
+    avgScore,
+    bestScore,
+    totalPassed,
+    totalQuestions: test.question.length,
+  });
 };

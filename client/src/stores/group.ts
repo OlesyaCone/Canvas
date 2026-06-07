@@ -8,7 +8,9 @@ export const useGroupStore = defineStore("group", () => {
   const currentGroup = ref<Group | null>(null);
   const groupTests = ref<GroupTest[]>([]);
   const groupResults = ref<GroupTest[]>([]);
+  const testStats = ref<any>(null);
   const loading = ref(false);
+  const loadingStats = ref(false);
 
   const fetchMyGroups = async () => {
     loading.value = true;
@@ -111,12 +113,29 @@ export const useGroupStore = defineStore("group", () => {
     return data;
   };
 
+  const fetchTestStats = async (groupId: string, testId: string) => {
+    loadingStats.value = true;
+    try {
+      const { data } = await api.get(
+        `/groups/${groupId}/tests/${testId}/stats`,
+      );
+      testStats.value = data;
+      return data;
+    } catch (e) {
+      console.error("Ошибка загрузки статистики:", e);
+    } finally {
+      loadingStats.value = false;
+    }
+  };
+
   return {
     myGroups,
     currentGroup,
     groupTests,
     groupResults,
+    testStats,
     loading,
+    loadingStats,
     fetchMyGroups,
     fetchGroup,
     createGroup,
@@ -128,5 +147,6 @@ export const useGroupStore = defineStore("group", () => {
     fetchGroupTests,
     assignTest,
     fetchGroupResults,
+    fetchTestStats,
   };
 });

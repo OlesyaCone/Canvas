@@ -18,6 +18,7 @@ import { assignTest, getGroupTests } from "../controllers/groups/tests";
 import {
   submitGroupResult,
   getGroupResults,
+  getTestStats,
 } from "../controllers/groups/results";
 import { upload } from "../controllers/upload";
 
@@ -35,6 +36,7 @@ router.post("/:id/demote/:userId", protect, demoteMember);
 router.post("/:id/tests", protect, assignTest);
 router.get("/:id/tests", protect, getGroupTests);
 router.post("/:id/tests/:testId/submit", protect, submitGroupResult);
+router.get("/:id/tests/:testId/stats", protect, getTestStats);
 router.get("/:id/results", protect, getGroupResults);
 
 router.get("/:id", protect, getGroup);
