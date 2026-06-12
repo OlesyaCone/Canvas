@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Test from "../../models/Test";
+import Test from "../../models/tests/Test";
 import { getUserId } from "../../utils/getUserId";
 
 export const getMyTests = async (

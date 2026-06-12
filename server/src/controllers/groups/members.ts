@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Group from "../../models/Group";
-import UserModel from "../../models/User";
+import Group from "../../models/groups/Group";
+import UserModel from "../../models/auth/User";
 import { getUserId } from "../../utils/getUserId";
 
 export const joinGroup = async (req: Request, res: Response): Promise<void> => {

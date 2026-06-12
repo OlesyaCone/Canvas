@@ -8,6 +8,7 @@ const testStore = useTestStore();
 
 const title = ref('');
 const description = ref('');
+const isPublic = ref(false);
 const imgFile = ref<File | null>(null);
 
 const questions = ref<
@@ -96,6 +97,7 @@ const submit = async () => {
   const formData = new FormData();
   formData.append('title', title.value);
   formData.append('description', description.value);
+  formData.append('visibility', isPublic.value ? 'public' : 'private');
   if (imgFile.value) {
     formData.append('img', imgFile.value);
   }
@@ -120,6 +122,7 @@ const submit = async () => {
     description.value = '';
     questions.value = [];
     imgFile.value = null;
+    isPublic.value = false;
     emit('back');
   } catch (e) {
     console.error('Ошибка создания теста:', e);
@@ -139,6 +142,12 @@ const submit = async () => {
       <div class="form-group">
         <label>Описание</label>
         <textarea v-model="description" class="input" rows="3" placeholder="Описание теста"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="isPublic" />
+          <span>Сделать тест публичным</span>
+        </label>
       </div>
       <div class="form-group">
         <label>Обложка теста</label>
@@ -201,9 +210,7 @@ const submit = async () => {
           <div v-for="(_, i) in newQuestion.answers" :key="i" class="answer-row">
             <input v-model="newQuestion.answers[i]" class="input" :placeholder="'Ответ ' + (i + 1)" />
             <button v-if="newQuestion.answers.length > 1" class="btn-icon" @click="removeAnswer(i)"
-              title="Удалить вариант">
-              ✕
-            </button>
+              title="Удалить вариант">✕</button>
           </div>
           <button class="btn btn-add" @click="addAnswer">+ Добавить вариант</button>
         </div>
@@ -211,9 +218,7 @@ const submit = async () => {
         <div class="form-group">
           <label>Правильный ответ</label>
           <input v-model="newQuestion.correctAnswer" class="input" placeholder="Введите правильный ответ" />
-          <small class="hint">
-            Этот вариант автоматически добавится в список ответов, если его там нет.
-          </small>
+          <small class="hint">Этот вариант автоматически добавится в список ответов, если его там нет.</small>
         </div>
 
         <button class="btn btn-add" @click="addQuestion">Добавить вопрос</button>

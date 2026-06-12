@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import Group from "../../models/Group";
-import GroupTest from "../../models/GroupTest";
-import Test from "../../models/Test";
+import Group from "../../models/groups/Group";
+import GroupTest from "../../models/groups/GroupTest";
+import Test from "../../models/tests/Test";
 import { getUserId } from "../../utils/getUserId";
 
 export const submitGroupResult = async (

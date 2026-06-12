@@ -7,24 +7,21 @@
   overflow: hidden;
   margin: 0 auto $spacing-md;
   border: 3px solid $color-primary;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 }
-
+.avatar-preview-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .style-selector {
   margin: $spacing-lg 0;
 }
-
 .carousel-container {
   position: relative;
   display: flex;
   align-items: center;
   gap: $spacing-xs;
 }
-
 .carousel {
   display: flex;
   overflow-x: auto;
@@ -32,11 +29,10 @@
   gap: $spacing-sm;
   padding: $spacing-sm 0;
   scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
-
+.carousel::-webkit-scrollbar {
+  display: none;
+}
 .carousel-item {
   flex-shrink: 0;
   width: 80px;
@@ -49,35 +45,34 @@
   cursor: pointer;
   transition: $transition-base;
   border: 2px solid transparent;
-  img {
-    width: 48px;
-    height: 48px;
-    border-radius: $radius-full;
-    background: $color-surface;
-  }
-  .style-name {
-    font-size: $font-size-xs;
-    color: $color-text-secondary;
-    text-align: center;
-    max-width: 70px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  &:hover {
-    background: $color-surface;
-    border-color: $color-border;
-  }
-  &.active {
-    background: $color-bg;
-    border-color: $color-primary;
-    .style-name {
-      color: $color-primary;
-      font-weight: 500;
-    }
-  }
 }
-
+.carousel-item img {
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-full;
+  background: $color-surface;
+}
+.carousel-item .style-name {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: center;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.carousel-item:hover {
+  background: $color-surface;
+  border-color: $color-border;
+}
+.carousel-item.active {
+  background: $color-bg;
+  border-color: $color-primary;
+}
+.carousel-item.active .style-name {
+  color: $color-primary;
+  font-weight: 500;
+}
 .carousel-arrow {
   width: 32px;
   height: 32px;
@@ -92,13 +87,12 @@
   color: $color-text;
   transition: $transition-base;
   flex-shrink: 0;
-  &:hover {
-    background: $color-surface;
-    border-color: $color-primary;
-    color: $color-primary;
-  }
 }
-
+.carousel-arrow:hover {
+  background: $color-surface;
+  border-color: $color-primary;
+  color: $color-primary;
+}
 .action-buttons {
   display: flex;
   gap: $spacing-sm;
@@ -111,26 +105,24 @@
   gap: $spacing-sm;
   margin-bottom: $spacing-md;
 }
-
 .avatars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: $spacing-sm;
   max-height: 400px;
   overflow-y: auto;
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: $color-border;
-    border-radius: $radius-xs;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: $color-text-secondary;
-    border-radius: $radius-xs;
-  }
 }
-
+.avatars-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.avatars-grid::-webkit-scrollbar-track {
+  background: $color-border;
+  border-radius: $radius-xs;
+}
+.avatars-grid::-webkit-scrollbar-thumb {
+  background: $color-text-secondary;
+  border-radius: $radius-xs;
+}
 .avatar-card {
   aspect-ratio: 1;
   border-radius: $radius-md;
@@ -138,17 +130,16 @@
   cursor: pointer;
   transition: $transition-base;
   border: 2px solid transparent;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  &:hover {
-    border-color: $color-primary;
-    transform: scale(1.05);
-  }
 }
-
+.avatar-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatar-card:hover {
+  border-color: $color-primary;
+  transform: scale(1.05);
+}
 .style-name {
   font-size: $font-size-sm;
   color: $color-text;

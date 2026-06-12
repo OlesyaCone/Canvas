@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import User from "../../models/User";
-import PendingUser from "../../models/PendingUser";
+import User from "../../models/auth/User";
+import PendingUser from "../../models/auth/PendingUser";
 import { generateAccessToken, generateRefreshToken } from "./generation";
 
 export const refresh = async (req: Request, res: Response): Promise<void> => {
   try {
     const token = req.cookies.refreshToken;
-
     if (!token) {
       res.status(400).json({ message: "Refresh token обязателен" });
       return;

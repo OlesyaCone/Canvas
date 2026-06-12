@@ -3,18 +3,19 @@ import { ref, onMounted } from "vue";
 import { useAuthStore } from "./stores/auth";
 import { useTestStore } from "./stores/test";
 import { useGroupStore } from "./stores/group";
-import TheHeader from "./components/Header.vue";
-import TheSidebar from "./components/Sidebar.vue";
-import TheCanvas from "./components/Canvas.vue";
+import TheHeader from "./components/layout/Header.vue";
+import TheSidebar from "./components/layout/Sidebar.vue";
+import TheCanvas from "./components/layout/Canvas.vue";
 import SettingsModal from "./components/user/Settings.vue";
-import Register from "./components/Register.vue";
+import Register from "./components/auth/Register.vue";
 import api from "./api/axios";
 
 const auth = useAuthStore();
 const testStore = useTestStore();
 const groupStore = useGroupStore();
 const showSettings = ref(false);
-const currentPage = ref<"personal" | "completed" | "creating" | "playing" | "editing" | "myGroups" | "createGroup" | "groupView">("personal");
+const currentPage = ref<"personal" | "completed" | "creating" | "playing" | "editing" | "public" | "profile" | "myGroups" | "createGroup" | "groupView">("personal");
+const previousPage = ref<"personal" | "completed" | "public" | "groupView">("personal");
 const playingTestId = ref<string | null>(null);
 const playingGroupTestId = ref<string | null>(null);
 const editingTestId = ref<string | null>(null);
@@ -26,11 +27,7 @@ onMounted(async () => {
     try {
       auth.accessToken = storedToken;
       const { data } = await api.get("/auth/profile");
-      if (data.user) {
-        auth.user = data.user;
-        auth.isAuth = true;
-        return;
-      }
+      if (data.user) { auth.user = data.user; auth.isAuth = true; return; }
     } catch (e) { }
   }
 
@@ -53,19 +50,10 @@ onMounted(async () => {
 
   if (accessToken) {
     let userData = { id: "", username: "Пользователь", avatar: "" };
-    if (userParam) {
-      userData = JSON.parse(decodeURIComponent(userParam));
-    } else {
-      try {
-        const payload = JSON.parse(atob(accessToken.split(".")[1]));
-        userData.id = payload.id;
-      } catch (e) { }
-    }
+    if (userParam) { userData = JSON.parse(decodeURIComponent(userParam)); }
+    else { try { const payload = JSON.parse(atob(accessToken.split(".")[1])); userData.id = payload.id; } catch (e) { } }
     auth.setAuth({ user: userData, accessToken });
-    try {
-      const { data } = await api.get("/auth/profile");
-      if (data.user) auth.user = data.user;
-    } catch (e) { }
+    try { const { data } = await api.get("/auth/profile"); if (data.user) auth.user = data.user; } catch (e) { }
     window.history.replaceState({}, "", "/");
     return;
   }
@@ -73,53 +61,44 @@ onMounted(async () => {
   if (token) {
     try {
       const { data } = await api(`/auth/verify/${token}`);
-      if (data.accessToken) {
-        auth.setAuth(data);
-        window.history.replaceState({}, "", "/");
-        return;
-      }
+      if (data.accessToken) { auth.setAuth(data); window.history.replaceState({}, "", "/"); return; }
     } catch { }
   }
 });
 
-const onNavigate = async (page: "personal" | "completed" | "creating" | "myGroups") => {
+const onNavigate = async (page: "personal" | "completed" | "creating" | "public" | "profile" | "myGroups") => {
   currentPage.value = page;
   playingTestId.value = null;
   playingGroupTestId.value = null;
   editingTestId.value = null;
   viewingGroupId.value = null;
-
   if (page === "personal") await testStore.fetchMyTests();
   if (page === "completed") await testStore.fetchPassedTests();
   if (page === "myGroups") await groupStore.fetchMyGroups();
 };
 
 const onStartTest = (testId: string, groupTestId?: string) => {
+  if (currentPage.value === 'public') previousPage.value = 'public';
+  else if (currentPage.value === 'groupView') previousPage.value = 'groupView';
+  else previousPage.value = 'personal';
+
   currentPage.value = "playing";
   playingTestId.value = testId;
   playingGroupTestId.value = groupTestId || null;
 };
 
-const onEditTest = (testId: string) => {
-  currentPage.value = "editing";
-  editingTestId.value = testId;
-};
-
-const onSelectGroup = (groupId: string) => {
-  currentPage.value = "groupView";
-  viewingGroupId.value = groupId;
-};
-
-const onCreateGroup = () => {
-  currentPage.value = "createGroup";
-};
+const onEditTest = (testId: string) => { currentPage.value = "editing"; editingTestId.value = testId; };
+const onSelectGroup = (groupId: string) => { currentPage.value = "groupView"; viewingGroupId.value = groupId; };
+const onCreateGroup = () => { currentPage.value = "createGroup"; };
 
 const onBackToTests = () => {
-  currentPage.value = "personal";
+  currentPage.value = previousPage.value;
   playingTestId.value = null;
   playingGroupTestId.value = null;
   editingTestId.value = null;
-  testStore.fetchMyTests();
+  if (previousPage.value === "personal") testStore.fetchMyTests();
+  if (previousPage.value === "completed") testStore.fetchPassedTests();
+  if (previousPage.value === "public") { }
 };
 
 const onBackToGroups = () => {

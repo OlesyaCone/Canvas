@@ -1,13 +1,7 @@
 import { Request, Response } from "express";
-import Test from "../../models/Test";
-import UserModel from "../../models/User";
+import Test from "../../models/tests/Test";
+import UserModel from "../../models/auth/User";
 import { getUserId } from "../../utils/getUserId";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const createTest = async (
   req: Request,
@@ -19,7 +13,7 @@ export const createTest = async (
     return;
   }
 
-  const { title, description, questions } = req.body;
+  const { title, description, questions, visibility } = req.body;
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const img = files?.img?.[0]
     ? `/uploads/tests/${files.img[0].filename}`
@@ -45,6 +39,7 @@ export const createTest = async (
     description,
     author: userId,
     question: parsedQuestions,
+    visibility: visibility || "private",
   });
   await UserModel.findByIdAndUpdate(userId, { $push: { myTests: test._id } });
   res.status(201).json(test);
@@ -72,12 +67,6 @@ export const updateTest = async (
 
   const { title, description, questions } = req.body;
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-  if (files?.img?.[0] && test.img?.startsWith("/uploads/tests/")) {
-    const oldPath = path.join(__dirname, "..", "..", "..", test.img);
-    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-  }
-
   const img = files?.img?.[0]
     ? `/uploads/tests/${files.img[0].filename}`
     : req.body.img || test.img;
@@ -125,17 +114,6 @@ export const deleteTest = async (
     res.status(403).json({ message: "Нет прав" });
     return;
   }
-
-  if (test.img?.startsWith("/uploads/tests/")) {
-    const imgPath = path.join(__dirname, "..", "..", "..", test.img);
-    if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-  }
-  test.question.forEach((q) => {
-    if (q.img?.startsWith("/uploads/tests/")) {
-      const qImgPath = path.join(__dirname, "..", "..", "..", q.img);
-      if (fs.existsSync(qImgPath)) fs.unlinkSync(qImgPath);
-    }
-  });
 
   await Test.findByIdAndDelete(req.params.id);
   await UserModel.findByIdAndUpdate(userId, {

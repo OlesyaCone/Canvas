@@ -12,9 +12,7 @@ const createStorage = (subfolder: string) =>
   multer.diskStorage({
     destination: (req, file, cb) => {
       const dir = path.join(__dirname, "..", "..", "uploads", subfolder);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       cb(null, dir);
     },
     filename: (req, file, cb) => {
@@ -43,14 +41,15 @@ export const upload = multer({
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 });
-
 export const uploadTestImage = multer({
   storage: createStorage("tests"),
   fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-    fieldSize: 10 * 1024 * 1024,
-  },
+  limits: { fileSize: 5 * 1024 * 1024, fieldSize: 10 * 1024 * 1024 },
+});
+export const uploadGroupAvatar = multer({
+  storage: createStorage("groups"),
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 export const getFile = async (req: Request, res: Response): Promise<void> => {

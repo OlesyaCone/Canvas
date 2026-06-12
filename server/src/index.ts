@@ -5,10 +5,13 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
+import { createServer } from "http";
+import { setupSocket } from "./services/socket";
 import { setupRoutes } from "./routes/auth";
 import { getFile } from "./controllers/upload";
 
 const app = express();
+const server = createServer(app);
 const PORT = process.env.PORT || 5000;
 
 app.use(
@@ -22,6 +25,7 @@ app.use(cookieParser());
 
 app.get("/uploads/:path(*)", getFile);
 setupRoutes(app);
+setupSocket(server);
 
 mongoose
   .connect(process.env.MONGODB_URI as string)
@@ -31,6 +35,6 @@ mongoose
     process.exit(1);
   });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Сервер запущен: http://localhost:${PORT}`);
 });

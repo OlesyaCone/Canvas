@@ -218,12 +218,12 @@ const openStats = async (testId: string) => {
               </div>
               <div class="stat-card">
                 <span class="stat-number">{{ groupStore.testStats.avgScore }}/{{ groupStore.testStats.totalQuestions
-                  }}</span>
+                }}</span>
                 <span class="stat-label">Средний балл</span>
               </div>
               <div class="stat-card">
                 <span class="stat-number">{{ groupStore.testStats.bestScore }}/{{ groupStore.testStats.totalQuestions
-                  }}</span>
+                }}</span>
                 <span class="stat-label">Лучший результат</span>
               </div>
             </div>

@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import Personal from "./workspace/Personal.vue";
-import Completed from "./workspace/Completed.vue";
-import Creating from "./workspace/Creating.vue";
-import Playing from "./workspace/Playing.vue";
-import Editing from "./workspace/Editing.vue";
-import MyGroups from "./groups/MyGroups.vue";
-import CreateGroup from "./groups/CreateGroup.vue";
-import GroupView from "./groups/GroupView.vue";
+import Personal from "../tests/Personal.vue";
+import Completed from "../tests/Completed.vue";
+import Creating from "../tests/Creating.vue";
+import Playing from "../tests/Playing.vue";
+import Editing from "../tests/Editing.vue";
+import Public from "../tests/Public.vue";
+import Profile from "../user/Profile.vue";
+import MyGroups from "../groups/MyGroups.vue";
+import CreateGroup from "../groups/CreateGroup.vue";
+import GroupView from "../groups/GroupView.vue";
 
 defineProps<{
-  currentPage: "personal" | "completed" | "creating" | "playing" | "editing" | "myGroups" | "createGroup" | "groupView";
+  currentPage: "personal" | "completed" | "creating" | "playing" | "editing" | "public" | "profile" | "myGroups" | "createGroup" | "groupView";
   playingTestId?: string | null;
   playingGroupTestId?: string | null;
   editingTestId?: string | null;
@@ -36,6 +38,8 @@ const emit = defineEmits<{
       :groupTestId="playingGroupTestId || undefined" @back="emit('back-to-tests')" />
     <Editing v-else-if="currentPage === 'editing' && editingTestId" :testId="editingTestId"
       @back="emit('back-to-tests')" />
+    <Public v-else-if="currentPage === 'public'" @startTest="(id: string) => emit('start-test', id)" />
+    <Profile v-else-if="currentPage === 'profile'" />
     <MyGroups v-else-if="currentPage === 'myGroups'" @select="(id: string) => emit('select-group', id)"
       @create="emit('create-group')" />
     <CreateGroup v-else-if="currentPage === 'createGroup'" @back="emit('back-to-groups')"

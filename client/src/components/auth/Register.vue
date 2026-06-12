@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from "../../stores/auth";
 
 const auth = useAuthStore()
 const isLogin = ref(true)
@@ -88,3 +88,6 @@ const googleLogin = () => {
     </div>
   </div>
 </template>
+<style lang="scss">
+@use '../../../styles/pages/register';
+</style>

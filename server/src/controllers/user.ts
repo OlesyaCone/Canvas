@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import UserModel from "../models/User";
+import UserModel from "../models/auth/User";
+import Test from "../models/tests/Test";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -86,6 +87,46 @@ export const getProfile = async (
         username: user.username,
         avatar: user.avatar,
       },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+export const getProfileStats = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      res.status(401).json({ message: "Нет токена" });
+      return;
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET as string,
+    ) as { id: string };
+    const user = await UserModel.findById(decoded.id);
+    if (!user) {
+      res.status(404).json({ message: "Пользователь не найден" });
+      return;
+    }
+
+    const testsCreated = await Test.countDocuments({ author: decoded.id });
+    const testsPassed = user.passedTests?.length || 0;
+    const groupsCount = user.groups?.length || 0;
+
+    res.json({
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        createdAt: user.createdAt,
+      },
+      stats: { testsCreated, testsPassed, groupsCount },
     });
   } catch (error) {
     res.status(500).json({ message: "Ошибка сервера" });

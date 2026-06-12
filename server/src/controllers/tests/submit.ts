@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import Test from "../../models/Test";
-import UserModel from "../../models/User";
+import Test from "../../models/tests/Test";
+import UserModel from "../../models/auth/User";
 import { getUserId } from "../../utils/getUserId";
 
 export const submitTest = async (
@@ -31,8 +31,9 @@ export const submitTest = async (
 
   if (!test.users.some((id) => id.toString() === userId)) {
     test.users.push(new mongoose.Types.ObjectId(userId));
-    await test.save();
   }
+  test.passes = (test.passes || 0) + 1;
+  await test.save();
 
   await UserModel.findByIdAndUpdate(userId, {
     $addToSet: { passedTests: test._id },

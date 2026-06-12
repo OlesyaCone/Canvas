@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
-import User from "../../models/User";
+import User from "../../models/auth/User";
+import PendingUser from "../../models/auth/PendingUser";
 import { sendVerificationEmail } from "../../services/mail";
 import { generateAccessToken, generateRefreshToken } from "./generation";
-import PendingUser from "../../models/PendingUser";
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -21,7 +21,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     const verificationToken = crypto.randomBytes(32).toString("hex");
-
     await PendingUser.create({ email, username, password, verificationToken });
     await sendVerificationEmail(email, verificationToken);
 

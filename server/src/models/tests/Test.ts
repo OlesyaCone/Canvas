@@ -15,6 +15,14 @@ const testingSchema = new mongoose.Schema(
         correctAnswer: String,
       },
     ],
+    visibility: {
+      type: String,
+      enum: ["public", "group", "private"],
+      default: "private",
+    },
+    likes: { type: Number, default: 0 },
+    dislikes: { type: Number, default: 0 },
+    passes: { type: Number, default: 0 },
   },
   { timestamps: true },
 );

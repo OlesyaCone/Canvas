@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useTestStore } from '../../stores/test';
+import { useTestStore } from '../../stores/test.ts';
 import TestCard from './TestCard.vue';
 
 const emit = defineEmits<{
@@ -22,3 +22,7 @@ onMounted(() => testStore.fetchPassedTests());
     </div>
   </div>
 </template>
+
+<style lang="scss">
+@use '../../../styles/pages/tests';
+</style>

@@ -14,6 +14,7 @@ export interface IUser {
   myTests: mongoose.Types.ObjectId[];
   passedTests: mongoose.Types.ObjectId[];
   groups: mongoose.Types.ObjectId[];
+  createdAt: Date;
   comparePassword(p: string): Promise<boolean>;
 }
 

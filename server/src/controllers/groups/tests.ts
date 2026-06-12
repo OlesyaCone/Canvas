@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import Group from "../../models/Group";
-import GroupTest from "../../models/GroupTest";
-import Test from "../../models/Test";
+import Group from "../../models/groups/Group";
+import GroupTest from "../../models/groups/GroupTest";
+import Test from "../../models/tests/Test";
 import { getUserId } from "../../utils/getUserId";
 import { sendTestAssignedEmail } from "../../services/mail";
 
@@ -18,7 +18,6 @@ export const assignTest = async (
   const group = await Group.findById(req.params.id).populate<{
     members: { email: string; username: string }[];
   }>("members", "email username");
-
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
     return;
@@ -46,7 +45,6 @@ export const assignTest = async (
   });
 
   const testLink = `${process.env.CLIENT_URL || "http://localhost:5173"}/groups/${group._id}`;
-
   for (const member of group.members) {
     try {
       await sendTestAssignedEmail(

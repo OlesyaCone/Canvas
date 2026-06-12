@@ -53,12 +53,7 @@ const handleJoin = async () => {
       Вы пока не состоите ни в одной группе.
     </div>
     <div v-else class="groups-grid">
-      <div
-        v-for="group in groupStore.myGroups"
-        :key="group._id"
-        class="group-card"
-        @click="emit('select', group._id)"
-      >
+      <div v-for="group in groupStore.myGroups" :key="group._id" class="group-card" @click="emit('select', group._id)">
         <div class="group-avatar">
           <img :src="getAvatarUrl(group.avatar)" alt="group avatar" />
         </div>
@@ -75,6 +70,6 @@ const handleJoin = async () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @use '../../../styles/pages/groups';
 </style>
