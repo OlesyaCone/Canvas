@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, onUnmounted, ref, computed, nextTick, watch } from "vue";
+import { io, Socket } from "socket.io-client";
 import { useGroupStore } from "../../stores/group";
 import { useTestStore } from "../../stores/test";
 import { useAuthStore } from "../../stores/auth";
 import noPhoto from "../../assets/nophoto.png";
+import api from "../../api/axios";
 
 const props = defineProps<{ groupId: string }>();
 
@@ -18,8 +20,13 @@ const authStore = useAuthStore();
 const inviteCodeCopied = ref(false);
 const selectedTest = ref("");
 const deadline = ref("");
-const activeTab = ref<"members" | "tests" | "results">("members");
+const activeTab = ref<"members" | "tests" | "results" | "chat">("members");
 const showStats = ref(false);
+
+const chatMessages = ref<any[]>([]);
+const chatText = ref("");
+const chatContainer = ref<HTMLDivElement>();
+let socket: Socket | null = null;
 
 const isAdmin = computed(() => authStore.user?.id === groupStore.currentGroup?.admin._id);
 const isModerator = computed(() => groupStore.currentGroup?.moderators.some((m) => m._id === authStore.user?.id));
@@ -50,7 +57,49 @@ const loadData = async () => {
   }
 };
 
-onMounted(loadData);
+const loadMessages = async () => {
+  const { data } = await api.get(`/groups/${props.groupId}/messages`);
+  chatMessages.value = data;
+  nextTick(() => {
+    if (chatContainer.value) {
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    }
+  });
+};
+
+watch(activeTab, (tab) => {
+  if (tab === "chat") loadMessages();
+});
+
+onMounted(async () => {
+  await loadData();
+
+  socket = io("http://localhost:5000", {
+    auth: { token: localStorage.getItem("accessToken") },
+  });
+  socket.emit("joinGroup", props.groupId);
+  socket.on("newMessage", (msg) => {
+    chatMessages.value.push(msg);
+    nextTick(() => {
+      if (chatContainer.value) {
+        chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+      }
+    });
+  });
+});
+
+onUnmounted(() => {
+  if (socket) {
+    socket.emit("leaveGroup", props.groupId);
+    socket.disconnect();
+  }
+});
+
+const sendMessage = () => {
+  if (!chatText.value.trim() || !socket) return;
+  socket.emit("sendMessage", { groupId: props.groupId, text: chatText.value });
+  chatText.value = "";
+};
 
 const copyInviteCode = () => {
   if (groupStore.currentGroup?.inviteCode) {
@@ -128,6 +177,9 @@ const openStats = async (testId: string) => {
         @click="activeTab = 'results'">
         Результаты
       </button>
+      <button class="tab" :class="{ active: activeTab === 'chat' }" @click="activeTab = 'chat'">
+        Чат
+      </button>
     </div>
 
     <div v-if="activeTab === 'members'" class="members-panel">
@@ -165,7 +217,6 @@ const openStats = async (testId: string) => {
       <div v-for="gt in groupStore.groupTests" :key="gt._id" class="test-row">
         <div class="test-title">{{ gt.test.title }}</div>
         <div class="test-deadline" v-if="gt.deadline">До {{ new Date(gt.deadline).toLocaleDateString() }}</div>
-
         <template v-if="getUserResult(gt)">
           <div class="test-result">{{ getUserResult(gt)?.score }} / {{ getUserResult(gt)?.total }}</div>
         </template>
@@ -203,6 +254,21 @@ const openStats = async (testId: string) => {
       </div>
     </div>
 
+    <div v-if="activeTab === 'chat'" class="chat-panel">
+      <div class="chat-messages" ref="chatContainer">
+        <div v-if="chatMessages.length === 0" class="empty">Нет сообщений</div>
+        <div v-for="msg in chatMessages" :key="msg._id" class="chat-msg"
+          :class="{ mine: msg.user?._id === authStore.user?.id || msg.user === authStore.user?.id }">
+          <span>{{ msg.text }}</span>
+          <strong>{{ msg.user?.username || 'Неизвестный' }}</strong>
+        </div>
+      </div>
+      <div class="chat-form">
+        <input v-model="chatText" class="input" placeholder="Сообщение..." @keyup.enter="sendMessage" />
+        <button class="btn btn-primary" @click="sendMessage">Отправить</button>
+      </div>
+    </div>
+
     <Teleport to="body">
       <div v-if="showStats" class="modal-overlay" @click.self="showStats = false">
         <div class="modal-content stats-modal">
@@ -218,16 +284,15 @@ const openStats = async (testId: string) => {
               </div>
               <div class="stat-card">
                 <span class="stat-number">{{ groupStore.testStats.avgScore }}/{{ groupStore.testStats.totalQuestions
-                }}</span>
+                  }}</span>
                 <span class="stat-label">Средний балл</span>
               </div>
               <div class="stat-card">
                 <span class="stat-number">{{ groupStore.testStats.bestScore }}/{{ groupStore.testStats.totalQuestions
-                }}</span>
+                  }}</span>
                 <span class="stat-label">Лучший результат</span>
               </div>
             </div>
-
             <h3>Распределение результатов</h3>
             <div class="distribution-bars">
               <div v-for="(count, i) in groupStore.testStats.distribution" :key="i" class="dist-bar-row">
@@ -239,7 +304,6 @@ const openStats = async (testId: string) => {
                 </div>
               </div>
             </div>
-
             <h3>Сложность вопросов</h3>
             <div v-for="(qs, i) in groupStore.testStats.questionStats" :key="i" class="question-stat-row">
               <span class="qs-number">{{ (i as number) + 1 }}</span>

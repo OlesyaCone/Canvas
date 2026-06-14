@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import Notification from "../models/social/Notification";
 
 export const sendVerificationEmail = async (to: string, token: string) => {
   const transporter = nodemailer.createTransport({
@@ -27,11 +28,11 @@ export const sendTestAssignedEmail = async (
   groupName: string,
   testTitle: string,
   link: string,
-  deadline?: string
+  deadline?: string,
 ) => {
   const deadlineText = deadline
     ? `<p>Дедлайн: <strong>${new Date(deadline).toLocaleDateString()}</strong></p>`
-    : '';
+    : "";
 
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -55,5 +56,21 @@ export const sendTestAssignedEmail = async (
       <p>Перейдите по ссылке, чтобы пройти тест:</p>
       <a href="${link}">${link}</a>
     `,
+  });
+};
+
+export const createNotification = async (
+  userId: string,
+  type: string,
+  text: string,
+  fromId?: string,
+  link?: string,
+) => {
+  await Notification.create({
+    user: userId,
+    from: fromId,
+    type,
+    text,
+    link,
   });
 };

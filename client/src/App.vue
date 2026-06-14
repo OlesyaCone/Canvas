@@ -20,6 +20,7 @@ const playingTestId = ref<string | null>(null);
 const playingGroupTestId = ref<string | null>(null);
 const editingTestId = ref<string | null>(null);
 const viewingGroupId = ref<string | null>(null);
+const viewingProfileId = ref<string | null>(null);
 
 onMounted(async () => {
   const storedToken = localStorage.getItem("accessToken");
@@ -72,6 +73,7 @@ const onNavigate = async (page: "personal" | "completed" | "creating" | "public"
   playingGroupTestId.value = null;
   editingTestId.value = null;
   viewingGroupId.value = null;
+  viewingProfileId.value = null;
   if (page === "personal") await testStore.fetchMyTests();
   if (page === "completed") await testStore.fetchPassedTests();
   if (page === "myGroups") await groupStore.fetchMyGroups();
@@ -81,7 +83,6 @@ const onStartTest = (testId: string, groupTestId?: string) => {
   if (currentPage.value === 'public') previousPage.value = 'public';
   else if (currentPage.value === 'groupView') previousPage.value = 'groupView';
   else previousPage.value = 'personal';
-
   currentPage.value = "playing";
   playingTestId.value = testId;
   playingGroupTestId.value = groupTestId || null;
@@ -91,6 +92,11 @@ const onEditTest = (testId: string) => { currentPage.value = "editing"; editingT
 const onSelectGroup = (groupId: string) => { currentPage.value = "groupView"; viewingGroupId.value = groupId; };
 const onCreateGroup = () => { currentPage.value = "createGroup"; };
 
+const onViewProfile = (userId: string) => {
+  viewingProfileId.value = userId;
+  currentPage.value = "profile";
+};
+
 const onBackToTests = () => {
   currentPage.value = previousPage.value;
   playingTestId.value = null;
@@ -98,7 +104,6 @@ const onBackToTests = () => {
   editingTestId.value = null;
   if (previousPage.value === "personal") testStore.fetchMyTests();
   if (previousPage.value === "completed") testStore.fetchPassedTests();
-  if (previousPage.value === "public") { }
 };
 
 const onBackToGroups = () => {
@@ -114,9 +119,9 @@ const onBackToGroups = () => {
     <div class="main">
       <TheSidebar @open-settings="showSettings = true" @navigate="onNavigate" />
       <TheCanvas :currentPage="currentPage" :playingTestId="playingTestId" :playingGroupTestId="playingGroupTestId"
-        :editingTestId="editingTestId" :viewingGroupId="viewingGroupId" @start-test="onStartTest"
-        @edit-test="onEditTest" @back-to-tests="onBackToTests" @select-group="onSelectGroup"
-        @create-group="onCreateGroup" @back-to-groups="onBackToGroups" />
+        :editingTestId="editingTestId" :viewingGroupId="viewingGroupId" :viewingProfileId="viewingProfileId"
+        @start-test="onStartTest" @edit-test="onEditTest" @back-to-tests="onBackToTests" @select-group="onSelectGroup"
+        @create-group="onCreateGroup" @back-to-groups="onBackToGroups" @view-profile="onViewProfile" />
     </div>
     <SettingsModal :is-open="showSettings" @close="showSettings = false" />
   </div>

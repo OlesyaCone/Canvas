@@ -20,6 +20,7 @@ import {
   getGroupResults,
   getTestStats,
 } from "../controllers/groups/results";
+import { getMessages } from "../controllers/social/messages";
 import { upload } from "../controllers/upload";
 
 const router = Router();
@@ -42,5 +43,7 @@ router.get("/:id/results", protect, getGroupResults);
 router.get("/:id", protect, getGroup);
 router.patch("/:id", protect, upload.single("avatar"), updateGroup);
 router.delete("/:id", protect, deleteGroup);
+
+router.get("/:id/messages", protect, getMessages);
 
 export default router;

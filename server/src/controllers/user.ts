@@ -118,6 +118,14 @@ export const getProfileStats = async (
     const testsPassed = user.passedTests?.length || 0;
     const groupsCount = user.groups?.length || 0;
 
+    const publicTests = await Test.find({
+      author: decoded.id,
+      visibility: "public",
+    })
+      .select("title img likes dislikes passes question")
+      .sort({ createdAt: -1 })
+      .limit(10);
+
     res.json({
       user: {
         id: user._id.toString(),
@@ -127,6 +135,7 @@ export const getProfileStats = async (
         createdAt: user.createdAt,
       },
       stats: { testsCreated, testsPassed, groupsCount },
+      publicTests,
     });
   } catch (error) {
     res.status(500).json({ message: "Ошибка сервера" });

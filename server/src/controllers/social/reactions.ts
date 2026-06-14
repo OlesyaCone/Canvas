@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Reaction from "../../models/social/Reaction";
 import Test from "../../models/tests/Test";
 import { getUserId } from "../../utils/getUserId";
+import { createNotification } from "../../services/mail";
 
 export const toggleReaction = async (
   req: Request,
@@ -15,6 +16,12 @@ export const toggleReaction = async (
 
   const { type } = req.body;
   const testId = req.params.id;
+
+  const test = await Test.findById(testId);
+  if (!test) {
+    res.status(404).json({ message: "Тест не найден" });
+    return;
+  }
 
   const existing = await Reaction.findOne({ user: userId, test: testId });
 
@@ -36,5 +43,15 @@ export const toggleReaction = async (
     await Reaction.create({ user: userId, test: testId, type });
     await Test.findByIdAndUpdate(testId, { $inc: { [type + "s"]: 1 } });
     res.json({ added: true, type });
+  }
+
+  if (test.author?.toString() !== userId) {
+    await createNotification(
+      test.author!.toString(),
+      type,
+      `Новая реакция на тест "${test.title}"`,
+      userId,
+      `/tests/${test._id}`,
+    );
   }
 };

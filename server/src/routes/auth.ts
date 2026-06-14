@@ -5,6 +5,10 @@ import { protect } from "../middleware/auth";
 import passport from "../config/passport";
 import { googleCallback } from "../controllers/auth/google";
 import {
+  getNotifications,
+  markRead,
+} from "../controllers/social/notifications";
+import {
   getProfile,
   updateProfile,
   getProfileStats,
@@ -46,6 +50,9 @@ authRouter.post("/tests/:id/reaction", protect, toggleReaction);
 authRouter.get("/tests/:id/comments", getComments);
 authRouter.post("/tests/:id/comments", protect, addComment);
 authRouter.delete("/tests/:id/comments/:commentId", protect, deleteComment);
+
+authRouter.get("/notifications", protect, getNotifications);
+authRouter.post("/notifications/read", protect, markRead);
 
 export const setupRoutes = (app: any) => {
   app.use("/api/auth", authRouter);

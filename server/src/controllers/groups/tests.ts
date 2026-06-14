@@ -3,7 +3,7 @@ import Group from "../../models/groups/Group";
 import GroupTest from "../../models/groups/GroupTest";
 import Test from "../../models/tests/Test";
 import { getUserId } from "../../utils/getUserId";
-import { sendTestAssignedEmail } from "../../services/mail";
+import { sendTestAssignedEmail, createNotification } from "../../services/mail";
 
 export const assignTest = async (
   req: Request,
@@ -16,8 +16,8 @@ export const assignTest = async (
   }
 
   const group = await Group.findById(req.params.id).populate<{
-    members: { email: string; username: string }[];
-  }>("members", "email username");
+    members: { _id: string; email: string; username: string }[];
+  }>("members", "_id email username");
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
     return;
@@ -55,6 +55,13 @@ export const assignTest = async (
         testLink,
         deadline || "",
       );
+      await createNotification(
+        member._id.toString(),
+        "test_assigned",
+        `Назначен тест "${test.title}" в группе "${group.name}"`,
+        userId,
+        testLink,
+      );
     } catch (e) {
       console.error(`Ошибка отправки письма для ${member.email}:`, e);
     }
@@ -72,7 +79,6 @@ export const getGroupTests = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
   const group = await Group.findById(req.params.id);
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
@@ -82,7 +88,6 @@ export const getGroupTests = async (
     res.status(403).json({ message: "Вы не участник группы" });
     return;
   }
-
   const tests = await GroupTest.find({ group: group._id })
     .populate("test")
     .populate("assignedBy", "username avatar")

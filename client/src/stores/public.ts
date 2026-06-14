@@ -4,7 +4,7 @@ import api from "../api/axios";
 
 export const usePublicStore = defineStore("public", () => {
   const tests = ref<any[]>([]);
-  const comments = ref<any[]>([]);
+  const commentsMap = ref<Record<string, any[]>>({});
   const loading = ref(false);
 
   const fetchPublicTests = async (search?: string, sort?: string) => {
@@ -15,6 +15,9 @@ export const usePublicStore = defineStore("public", () => {
       if (sort) params.sort = sort;
       const { data } = await api.get("/auth/tests/public", { params });
       tests.value = data;
+      data.forEach((test: any) => {
+        fetchComments(test._id);
+      });
     } catch (e) {
       console.error("Ошибка загрузки:", e);
     } finally {
@@ -29,7 +32,7 @@ export const usePublicStore = defineStore("public", () => {
 
   const fetchComments = async (testId: string) => {
     const { data } = await api.get(`/auth/tests/${testId}/comments`);
-    comments.value = data;
+    commentsMap.value[testId] = data;
   };
 
   const addComment = async (testId: string, text: string) => {
@@ -37,19 +40,18 @@ export const usePublicStore = defineStore("public", () => {
     await fetchComments(testId);
   };
 
-  const deleteComment = async (testId: string, commentId: string) => {
-    await api.delete(`/auth/tests/${testId}/comments/${commentId}`);
-    await fetchComments(testId);
+  const getComments = (testId: string) => {
+    return commentsMap.value[testId] || [];
   };
 
   return {
     tests,
-    comments,
+    commentsMap,
     loading,
     fetchPublicTests,
     toggleReaction,
     fetchComments,
     addComment,
-    deleteComment,
+    getComments,
   };
 });

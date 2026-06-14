@@ -16,6 +16,7 @@ defineProps<{
   playingGroupTestId?: string | null;
   editingTestId?: string | null;
   viewingGroupId?: string | null;
+  viewingProfileId?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -25,6 +26,7 @@ const emit = defineEmits<{
   (e: "select-group", groupId: string): void;
   (e: "create-group"): void;
   (e: "back-to-groups"): void;
+  (e: "view-profile", userId: string): void;
 }>();
 </script>
 
@@ -38,8 +40,9 @@ const emit = defineEmits<{
       :groupTestId="playingGroupTestId || undefined" @back="emit('back-to-tests')" />
     <Editing v-else-if="currentPage === 'editing' && editingTestId" :testId="editingTestId"
       @back="emit('back-to-tests')" />
-    <Public v-else-if="currentPage === 'public'" @startTest="(id: string) => emit('start-test', id)" />
-    <Profile v-else-if="currentPage === 'profile'" />
+    <Public v-else-if="currentPage === 'public'" @startTest="(id: string) => emit('start-test', id)"
+      @viewProfile="(userId: string) => emit('view-profile', userId)" />
+    <Profile v-else-if="currentPage === 'profile'" :userId="viewingProfileId || undefined" />
     <MyGroups v-else-if="currentPage === 'myGroups'" @select="(id: string) => emit('select-group', id)"
       @create="emit('create-group')" />
     <CreateGroup v-else-if="currentPage === 'createGroup'" @back="emit('back-to-groups')"

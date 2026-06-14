@@ -27,7 +27,6 @@ export const setupSocket = (server: HttpServer) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("Пользователь подключился:", (socket as any).userId);
 
     socket.on("joinGroup", (groupId: string) => {
       socket.join(groupId);
@@ -49,9 +48,5 @@ export const setupSocket = (server: HttpServer) => {
         io.to(data.groupId).emit("newMessage", message);
       },
     );
-
-    socket.on("disconnect", () => {
-      console.log("Пользователь отключился:", (socket as any).userId);
-    });
   });
 };

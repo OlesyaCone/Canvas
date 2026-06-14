@@ -41,16 +41,68 @@
   }
 }
 
+.author-clickable {
+  cursor: pointer;
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+}
+
+.comments-section {
+  margin-top: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.comments-list {
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 16px 16px 0;
+}
+
+.empty-comments {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  text-align: center;
+  padding: 16px;
+}
+
 .comment-item {
+  display: flex;
+  gap: 8px;
   padding: 8px 0;
   border-bottom: 1px solid var(--color-border);
+  font-size: 13px;
+  strong {
+    flex-shrink: 0;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  strong:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+  span {
+    color: var(--color-text-secondary);
+  }
 }
-.comment-item p {
-  margin: 4px 0 0;
-  color: var(--color-text-secondary);
-}
+
 .comment-form {
   display: flex;
   gap: 8px;
-  margin-top: 16px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  .input {
+    padding: 6px 10px;
+    font-size: 13px;
+    flex: 1;
+  }
+  .btn {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
 }
