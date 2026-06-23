@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import User from "../../models/auth/User";
-import PendingUser from "../../models/auth/PendingUser";
+import User from "../../models/User";
+import PendingUser from "../../models/PendingUser";
 import { generateAccessToken, generateRefreshToken } from "./generation";
 
 export const refresh = async (req: Request, res: Response): Promise<void> => {
@@ -11,31 +11,25 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ message: "Refresh token обязателен" });
       return;
     }
-
     const decoded = jwt.verify(
       token,
       process.env.JWT_REFRESH_SECRET as string,
     ) as { id: string };
     const user = await User.findById(decoded.id);
-
     if (!user || user.refreshToken !== token) {
       res.status(401).json({ message: "Невалидный refresh token" });
       return;
     }
-
     const newAccessToken = generateAccessToken(user._id);
     const newRefreshToken = generateRefreshToken(user._id);
-
     user.refreshToken = newRefreshToken;
     await user.save();
-
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
     res.json({ accessToken: newAccessToken });
   } catch (error) {
     res.status(401).json({ message: "Невалидный refresh token" });
@@ -65,13 +59,11 @@ export const verifyEmail = async (
 ): Promise<void> => {
   try {
     const { token } = req.params;
-
     const pending = await PendingUser.findOne({ verificationToken: token });
     if (!pending) {
       res.status(400).json({ message: "Неверный или просроченный токен" });
       return;
     }
-
     const user = await User.create({
       email: pending.email,
       username: pending.username,
@@ -79,20 +71,16 @@ export const verifyEmail = async (
       isVerified: true,
     });
     await PendingUser.deleteOne({ _id: pending._id });
-
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
-
     user.refreshToken = refreshToken;
     await user.save();
-
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
     res.json({
       message: "Email подтверждён",
       accessToken,

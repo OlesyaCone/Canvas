@@ -5,8 +5,12 @@ import { useNotificationStore } from "../../stores/notifications";
 const getSystemTheme = (): boolean => window.matchMedia("(prefers-color-scheme: dark)").matches;
 const isDark = ref(getSystemTheme());
 const applyTheme = () => document.documentElement.setAttribute("data-theme", isDark.value ? "dark" : "light");
-const toggleTheme = () => { isDark.value = !isDark.value; applyTheme(); localStorage.setItem("theme", isDark.value ? "dark" : "light"); };
+const toggleTheme = () => { applyTheme(); localStorage.setItem("theme", isDark.value ? "dark" : "light"); };
 watch(isDark, applyTheme);
+
+const notifStore = useNotificationStore();
+const showNotifications = ref(false);
+let interval: any;
 
 onMounted(() => {
   const savedTheme = localStorage.getItem("theme");
@@ -16,15 +20,10 @@ onMounted(() => {
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     if (!localStorage.getItem("theme")) { isDark.value = e.matches; applyTheme(); }
   });
-});
 
-const notifStore = useNotificationStore();
-const showNotifications = ref(false);
-let interval: any;
-
-onMounted(() => {
   notifStore.fetchNotifications();
-  interval = setInterval(() => notifStore.fetchNotifications(), 30000);
+  notifStore.connectSocket();
+  interval = setInterval(() => notifStore.fetchNotifications(), 60000);
   document.addEventListener("click", closeNotifications);
 });
 
@@ -66,8 +65,8 @@ const closeNotifications = (e: MouseEvent) => {
         </div>
       </div>
 
-      <label class="theme-toggle" @click="toggleTheme">
-        <input type="checkbox" class="theme-toggle-input" v-model="isDark" />
+      <label class="theme-toggle">
+        <input type="checkbox" class="theme-toggle-input" v-model="isDark" @change="toggleTheme" />
         <svg class="theme-toggle-svg" viewBox="0 0 20 20" fill="currentColor" stroke="none">
           <mask id="moon-mask">
             <rect x="0" y="0" width="20" height="20" fill="white"></rect>

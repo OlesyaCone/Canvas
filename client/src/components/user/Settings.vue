@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import AvatarGeneratorModal from "./Avatar.vue";
 import { useAuthStore } from '../../stores/auth'
+import noPhoto from "../../assets/nophoto.png";
 
 defineProps<{
   isOpen: boolean;
@@ -17,11 +18,11 @@ const { user, userAvatar } = storeToRefs(authStore)
 
 const showAvatarModal = ref(false);
 const username = ref(user.value?.username || "");
-const avatarPreview = ref(userAvatar.value);
+const avatarPreview = ref(userAvatar.value || noPhoto);
 const fileInput = ref<HTMLInputElement>();
 
 watch(userAvatar, (newAvatar) => {
-  avatarPreview.value = newAvatar;
+  avatarPreview.value = newAvatar || noPhoto;
 });
 
 watch(() => user.value, (newUser) => {
@@ -42,7 +43,7 @@ const handleAvatarUpload = (event: Event) => {
 };
 
 const resetAvatar = () => {
-  avatarPreview.value = "https://via.placeholder.com/100";
+  avatarPreview.value = noPhoto;
 };
 
 const handleAvatarGenerated = (avatarUrl: string) => {

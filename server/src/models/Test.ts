@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const testingSchema = new mongoose.Schema(
+const testSchema = new mongoose.Schema(
   {
     title: String,
     img: String,
@@ -23,8 +23,22 @@ const testingSchema = new mongoose.Schema(
     likes: { type: Number, default: 0 },
     dislikes: { type: Number, default: 0 },
     passes: { type: Number, default: 0 },
+    reactions: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        type: { type: String, enum: ["like", "dislike"] },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    comments: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        text: String,
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true },
 );
 
-export default mongoose.model("Test", testingSchema);
+export default mongoose.model("Test", testSchema);

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Notification from "../../models/social/Notification";
+import User from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 
 export const getNotifications = async (
@@ -11,12 +11,19 @@ export const getNotifications = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
-  const notifications = await Notification.find({ user: userId })
-    .populate("from", "username avatar")
-    .sort({ createdAt: -1 })
-    .limit(20);
-  res.json(notifications);
+  const user = await User.findById(userId).populate(
+    "notifications.from",
+    "username avatar",
+  );
+  if (!user) {
+    res.status(404).json({ message: "Пользователь не найден" });
+    return;
+  }
+  res.json(
+    user.notifications
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 20),
+  );
 };
 
 export const markRead = async (req: Request, res: Response): Promise<void> => {
@@ -25,7 +32,9 @@ export const markRead = async (req: Request, res: Response): Promise<void> => {
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
-  await Notification.updateMany({ user: userId, read: false }, { read: true });
+  await User.updateOne(
+    { _id: userId },
+    { $set: { "notifications.$[].read": true } },
+  );
   res.json({ message: "Отмечено прочитанным" });
 };

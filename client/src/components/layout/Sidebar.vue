@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { storeToRefs } from "pinia";
+import noPhoto from "../../assets/nophoto.png";
 
 const authStore = useAuthStore();
 const { user, userAvatar } = storeToRefs(authStore);
+
+const avatarSrc = computed(() => userAvatar.value || noPhoto);
 
 const emit = defineEmits<{
   (e: "open-settings"): void;
@@ -25,7 +29,7 @@ const emit = defineEmits<{
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar">
-          <img :src="userAvatar" />
+          <img :src="avatarSrc" />
         </div>
         <div class="user-info">
           <div class="user-name">{{ user?.username }}</div>

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import UserModel from "../models/auth/User";
-import Test from "../models/tests/Test";
+import UserModel from "../models/User";
+import Test from "../models/Test";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -19,23 +19,19 @@ export const updateProfile = async (
       res.status(401).json({ message: "Нет токена" });
       return;
     }
-
     const decoded = jwt.verify(
       token,
       process.env.JWT_ACCESS_SECRET as string,
     ) as { id: string };
     const username = req.body.username;
-
     const currentUser = await UserModel.findById(decoded.id);
     if (req.file && currentUser?.avatar?.startsWith("/uploads/avatars/")) {
       const oldPath = path.join(__dirname, "..", "..", currentUser.avatar);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
-
     const avatar = req.file
       ? `/uploads/avatars/${req.file.filename}`
       : req.body.avatar;
-
     const user = await UserModel.findByIdAndUpdate(
       decoded.id,
       { username, avatar },
@@ -45,7 +41,6 @@ export const updateProfile = async (
       res.status(404).json({ message: "Пользователь не найден" });
       return;
     }
-
     res.json({
       user: {
         id: user._id.toString(),
@@ -69,7 +64,6 @@ export const getProfile = async (
       res.status(401).json({ message: "Нет токена" });
       return;
     }
-
     const decoded = jwt.verify(
       token,
       process.env.JWT_ACCESS_SECRET as string,
@@ -79,7 +73,6 @@ export const getProfile = async (
       res.status(404).json({ message: "Пользователь не найден" });
       return;
     }
-
     res.json({
       user: {
         id: user._id.toString(),
@@ -103,7 +96,6 @@ export const getProfileStats = async (
       res.status(401).json({ message: "Нет токена" });
       return;
     }
-
     const decoded = jwt.verify(
       token,
       process.env.JWT_ACCESS_SECRET as string,
@@ -113,11 +105,9 @@ export const getProfileStats = async (
       res.status(404).json({ message: "Пользователь не найден" });
       return;
     }
-
     const testsCreated = await Test.countDocuments({ author: decoded.id });
     const testsPassed = user.passedTests?.length || 0;
     const groupsCount = user.groups?.length || 0;
-
     const publicTests = await Test.find({
       author: decoded.id,
       visibility: "public",
@@ -125,7 +115,6 @@ export const getProfileStats = async (
       .select("title img likes dislikes passes question")
       .sort({ createdAt: -1 })
       .limit(10);
-
     res.json({
       user: {
         id: user._id.toString(),

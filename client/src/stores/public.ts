@@ -15,9 +15,6 @@ export const usePublicStore = defineStore("public", () => {
       if (sort) params.sort = sort;
       const { data } = await api.get("/auth/tests/public", { params });
       tests.value = data;
-      data.forEach((test: any) => {
-        fetchComments(test._id);
-      });
     } catch (e) {
       console.error("Ошибка загрузки:", e);
     } finally {
@@ -26,18 +23,39 @@ export const usePublicStore = defineStore("public", () => {
   };
 
   const toggleReaction = async (testId: string, type: "like" | "dislike") => {
+    const test = tests.value.find((t) => t._id === testId);
+    if (!test) return;
+
+    const opposite = type === "like" ? "dislike" : "like";
+
+    if (test.myReaction === type) {
+      test.myReaction = null;
+      test[type + "s"]--;
+    } else if (test.myReaction === opposite) {
+      test.myReaction = type;
+      test[type + "s"]++;
+      test[opposite + "s"]--;
+    } else {
+      test.myReaction = type;
+      test[type + "s"]++;
+    }
+
     await api.post(`/auth/tests/${testId}/reaction`, { type });
-    await fetchPublicTests();
   };
 
   const fetchComments = async (testId: string) => {
     const { data } = await api.get(`/auth/tests/${testId}/comments`);
     commentsMap.value[testId] = data;
+    const test = tests.value.find((t) => t._id === testId);
+    if (test) test.commentsCount = data.length;
   };
 
   const addComment = async (testId: string, text: string) => {
-    await api.post(`/auth/tests/${testId}/comments`, { text });
-    await fetchComments(testId);
+    const { data } = await api.post(`/auth/tests/${testId}/comments`, { text });
+    if (!commentsMap.value[testId]) commentsMap.value[testId] = [];
+    commentsMap.value[testId].push(data);
+    const test = tests.value.find((t) => t._id === testId);
+    if (test) test.commentsCount = (test.commentsCount || 0) + 1;
   };
 
   const getComments = (testId: string) => {

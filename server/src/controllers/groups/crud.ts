@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Group from "../../models/groups/Group";
-import UserModel from "../../models/auth/User";
+import Group from "../../models/Group";
+import UserModel from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 
 export const createGroup = async (
@@ -12,10 +12,8 @@ export const createGroup = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
   const { name, description } = req.body;
-  const avatar = req.file ? `/uploads/groups/${req.file.filename}` : "";
-
+  const avatar = req.file ? `/uploads/avatars/${req.file.filename}` : "";
   const group = await Group.create({
     name,
     description,
@@ -36,7 +34,6 @@ export const updateGroup = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
   const group = await Group.findById(req.params.id);
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
@@ -46,12 +43,10 @@ export const updateGroup = async (
     res.status(403).json({ message: "Нет прав" });
     return;
   }
-
   const { name, description } = req.body;
   const avatar = req.file
     ? `/uploads/groups/${req.file.filename}`
     : group.avatar;
-
   const updated = await Group.findByIdAndUpdate(
     req.params.id,
     { name, description, avatar },
@@ -69,7 +64,6 @@ export const deleteGroup = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
   const group = await Group.findById(req.params.id);
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
@@ -79,7 +73,6 @@ export const deleteGroup = async (
     res.status(403).json({ message: "Нет прав" });
     return;
   }
-
   await UserModel.updateMany(
     { groups: group._id },
     { $pull: { groups: group._id } },
@@ -99,7 +92,6 @@ export const getGroup = async (req: Request, res: Response): Promise<void> => {
   }
   res.json(group);
 };
-
 export const getMyGroups = async (
   req: Request,
   res: Response,

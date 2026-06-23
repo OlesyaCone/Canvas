@@ -5,16 +5,16 @@ import { protect } from "../middleware/auth";
 import passport from "../config/passport";
 import { googleCallback } from "../controllers/auth/google";
 import {
-  getNotifications,
-  markRead,
-} from "../controllers/social/notifications";
-import {
   getProfile,
   updateProfile,
   getProfileStats,
 } from "../controllers/user";
 import { upload, getFile } from "../controllers/upload";
 import { getPublicTests } from "../controllers/tests/public";
+import {
+  getNotifications,
+  markRead,
+} from "../controllers/social/notifications";
 import { toggleReaction } from "../controllers/social/reactions";
 import {
   getComments,
@@ -44,15 +44,13 @@ authRouter.patch("/profile", protect, upload.single("avatar"), updateProfile);
 authRouter.get("/profile", protect, getProfile);
 authRouter.get("/profile/stats", protect, getProfileStats);
 authRouter.get("/uploads/*", getFile);
-
 authRouter.get("/tests/public", getPublicTests);
+authRouter.get("/notifications", protect, getNotifications);
+authRouter.post("/notifications/read", protect, markRead);
 authRouter.post("/tests/:id/reaction", protect, toggleReaction);
 authRouter.get("/tests/:id/comments", getComments);
 authRouter.post("/tests/:id/comments", protect, addComment);
 authRouter.delete("/tests/:id/comments/:commentId", protect, deleteComment);
-
-authRouter.get("/notifications", protect, getNotifications);
-authRouter.post("/notifications/read", protect, markRead);
 
 export const setupRoutes = (app: any) => {
   app.use("/api/auth", authRouter);

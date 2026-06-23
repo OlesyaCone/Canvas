@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useProfileStore } from "../../stores/profile";
 import { useAuthStore } from "../../stores/auth";
 import noPhoto from "../../assets/nophoto.png";
@@ -8,6 +8,8 @@ const props = defineProps<{ userId?: string }>();
 
 const profileStore = useProfileStore();
 const authStore = useAuthStore();
+
+const avatarSrc = computed(() => authStore.userAvatar || noPhoto);
 
 onMounted(() => {
     profileStore.fetchProfileStats();
@@ -19,7 +21,7 @@ onMounted(() => {
         <h2 class="page-title">{{ props.userId && props.userId !== authStore.user?.id ? 'Профиль пользователя' : 'Мой профиль' }}</h2>
         <div class="profile-card card">
             <div class="profile-avatar">
-                <img :src="authStore.userAvatar" alt="avatar" />
+                <img :src="avatarSrc" alt="avatar" />
             </div>
             <div class="profile-info">
                 <h2>{{ profileStore.stats.user.username }}</h2>

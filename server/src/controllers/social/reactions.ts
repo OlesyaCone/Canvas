@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import Reaction from "../../models/social/Reaction";
-import Test from "../../models/tests/Test";
+import Test from "../../models/Test";
+import User from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
-import { createNotification } from "../../services/mail";
+import { emitNotification } from "../../services/socket";
 
 export const toggleReaction = async (
   req: Request,
@@ -13,45 +13,51 @@ export const toggleReaction = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-
   const { type } = req.body;
-  const testId = req.params.id;
-
-  const test = await Test.findById(testId);
+  const test = await Test.findById(req.params.id);
   if (!test) {
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
 
-  const existing = await Reaction.findOne({ user: userId, test: testId });
-
+  const existing = (test.reactions as any[]).find(
+    (r) => r.user?.toString() === userId,
+  );
   if (existing) {
     if (existing.type === type) {
-      await Reaction.deleteOne({ _id: existing._id });
-      await Test.findByIdAndUpdate(testId, { $inc: { [type + "s"]: -1 } });
-      res.json({ removed: true });
+      (test.reactions as any) = (test.reactions as any[]).filter(
+        (r) => r.user?.toString() !== userId,
+      );
+      (test as any)[type + "s"]--;
     } else {
       const oldType = existing.type;
       existing.type = type;
-      await existing.save();
-      await Test.findByIdAndUpdate(testId, {
-        $inc: { [type + "s"]: 1, [oldType + "s"]: -1 },
-      });
-      res.json({ changed: true, type });
+      (test as any)[type + "s"]++;
+      (test as any)[oldType + "s"]--;
     }
   } else {
-    await Reaction.create({ user: userId, test: testId, type });
-    await Test.findByIdAndUpdate(testId, { $inc: { [type + "s"]: 1 } });
-    res.json({ added: true, type });
+    (test.reactions as any).push({ user: userId, type });
+    (test as any)[type + "s"]++;
   }
+  await test.save();
 
-  if (test.author?.toString() !== userId) {
-    await createNotification(
-      test.author!.toString(),
+  if (test?.author && test.author.toString() !== userId) {
+    await User.findByIdAndUpdate(test.author, {
+      $push: {
+        notifications: {
+          from: userId,
+          type: type,
+          text: `Новая реакция на тест "${test.title}"`,
+          link: `/tests/${test._id}`,
+          read: false,
+          createdAt: new Date(),
+        },
+      },
+    });
+    emitNotification(test.author.toString(), {
       type,
-      `Новая реакция на тест "${test.title}"`,
-      userId,
-      `/tests/${test._id}`,
-    );
+      text: `Новая реакция на тест "${test.title}"`,
+    });
   }
+  res.json(test);
 };

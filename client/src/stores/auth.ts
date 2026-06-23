@@ -12,11 +12,11 @@ export const useAuthStore = defineStore("auth", () => {
   const userName = computed(() => user.value?.username || "Гость");
 
   const userAvatar = computed(() => {
-    const avatar = user.value?.avatar;
-    if (!avatar) return "https://via.placeholder.com/40";
-    if (avatar.startsWith("http") || avatar.startsWith("data:")) return avatar;
-    return `http://localhost:5000${avatar}`;
-  });
+  const avatar = user.value?.avatar;
+  if (!avatar) return '';
+  if (avatar.startsWith('http') || avatar.startsWith('data:')) return avatar;
+  return `http://localhost:5000${avatar}`;
+});
 
   const setAuth = (data: {
     user: User;

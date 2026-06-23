@@ -14,6 +14,29 @@ const groupSchema = new mongoose.Schema(
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     inviteCode: { type: String, unique: true },
     chatEnabled: { type: Boolean, default: true },
+    messages: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        text: String,
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    tests: [
+      {
+        test: { type: mongoose.Schema.Types.ObjectId, ref: "Test" },
+        deadline: Date,
+        assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        results: [
+          {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            score: Number,
+            total: Number,
+            answers: [{ questionIndex: Number, answer: String }],
+            completedAt: { type: Date, default: Date.now },
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true },
 );
