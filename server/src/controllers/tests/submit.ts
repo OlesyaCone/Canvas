@@ -13,26 +13,41 @@ export const submitTest = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
+
   const test = await Test.findById(req.params.id);
   if (!test) {
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
+
   const { answers } = req.body as {
     answers: { questionIndex: number; answer: string }[];
   };
+
   let correctCount = 0;
-  answers.forEach((a) => {
+  answers.forEach(function (a) {
     const question = test.question[a.questionIndex];
-    if (question && question.correctAnswer === a.answer) correctCount++;
+    if (question && question.correctAnswer === a.answer) {
+      correctCount++;
+    }
   });
-  if (!test.users.some((id) => id.toString() === userId)) {
-    test.users.push(new mongoose.Types.ObjectId(userId));
+
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  if (
+    !test.users.some(function (id) {
+      return id.equals(userObjectId);
+    })
+  ) {
+    test.users.push(userObjectId);
   }
+
   test.passes = (test.passes || 0) + 1;
   await test.save();
+
   await UserModel.findByIdAndUpdate(userId, {
     $addToSet: { passedTests: test._id },
   });
+
   res.json({ score: correctCount, total: test.question.length });
 };

@@ -1,29 +1,35 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { storeToRefs } from "pinia";
 import noPhoto from "../../assets/nophoto.png";
 
 const authStore = useAuthStore();
+const router = useRouter();
 const { user, userAvatar } = storeToRefs(authStore);
 
-const avatarSrc = computed(() => userAvatar.value || noPhoto);
+const avatarSrc = computed(function () {
+  return userAvatar.value || noPhoto;
+});
 
 const emit = defineEmits<{
   (e: "open-settings"): void;
-  (e: "navigate", page: "personal" | "completed" | "creating" | "public" | "profile" | "myGroups"): void;
 }>();
+
+function navigate(name: string) {
+  router.push({ name });
+}
 </script>
 
 <template>
   <aside class="sidebar">
     <nav class="sidebar-nav">
-      <a class="nav-item" @click="emit('navigate', 'personal')">Мои тесты</a>
-      <a class="nav-item" @click="emit('navigate', 'completed')">Пройденные тесты</a>
-      <a class="nav-item" @click="emit('navigate', 'creating')">Составить тест</a>
-      <a class="nav-item" @click="emit('navigate', 'public')">Публичные тесты</a>
-      <a class="nav-item" @click="emit('navigate', 'myGroups')">Мои группы</a>
-      <a class="nav-item" @click="emit('navigate', 'profile')">Профиль</a>
+      <a class="nav-item" @click="navigate('personal')">Мои тесты</a>
+      <a class="nav-item" @click="navigate('creating')">Составить тест</a>
+      <a class="nav-item" @click="navigate('public')">Публичные тесты</a>
+      <a class="nav-item" @click="navigate('myGroups')">Мои группы</a>
+      <a class="nav-item" @click="navigate('profile')">Профиль</a>
     </nav>
 
     <div class="sidebar-footer">

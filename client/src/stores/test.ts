@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { Test } from "../types/index";
+import type { Test } from "../types";
 import api from "../api/axios";
 
 export const useTestStore = defineStore("test", () => {

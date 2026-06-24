@@ -8,6 +8,7 @@ import {
   getProfile,
   updateProfile,
   getProfileStats,
+  getUserProfile,
 } from "../controllers/user";
 import { upload, getFile } from "../controllers/upload";
 import { getPublicTests } from "../controllers/tests/public";
@@ -43,6 +44,7 @@ authRouter.get("/verify/:token", verifyEmail);
 authRouter.patch("/profile", protect, upload.single("avatar"), updateProfile);
 authRouter.get("/profile", protect, getProfile);
 authRouter.get("/profile/stats", protect, getProfileStats);
+authRouter.get("/profile/:userId", protect, getUserProfile);
 authRouter.get("/uploads/*", getFile);
 authRouter.get("/tests/public", getPublicTests);
 authRouter.get("/notifications", protect, getNotifications);

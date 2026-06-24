@@ -1,46 +1,63 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 
-const auth = useAuthStore()
-const isLogin = ref(true)
-const email = ref('')
-const username = ref('')
-const password = ref('')
-const error = ref('')
-const loading = ref(false)
+const auth = useAuthStore();
 
-const toggleMode = () => {
-  isLogin.value = !isLogin.value
-  error.value = ''
+const isLogin = ref(true);
+const email = ref("");
+const username = ref("");
+const password = ref("");
+const error = ref("");
+const loading = ref(false);
+
+function toggleMode() {
+  isLogin.value = !isLogin.value;
+  error.value = "";
 }
 
-const submit = async () => {
-  error.value = ''
-  loading.value = true
+async function submit() {
+  error.value = "";
+  loading.value = true;
+
   try {
     if (isLogin.value) {
-      await auth.login(email.value, password.value)
-    } else {
-      const data = await auth.register(email.value, username.value, password.value)
-      error.value = data.message
+      await auth.login({ email: email.value, password: password.value });
     }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Ошибка'
+    else {
+      await auth.register({
+        email: email.value,
+        username: username.value,
+        password: password.value,
+      });
+    }
+  }
+  catch (err) {
+    if (err instanceof Error) {
+      error.value = err.message;
+    }
+    else {
+      error.value = "Ошибка";
+    }
+  }
+  finally {
+    loading.value = false;
   }
 }
 
-const googleLogin = () => {
-  window.location.href = 'http://localhost:5000/api/auth/google'
+function googleLogin() {
+  window.location.href = "http://localhost:5000/api/auth/google";
 }
 </script>
 
 <template>
   <div class="auth-overlay">
     <div class="auth-card">
-      <h2 class="auth-title">{{ isLogin ? 'Вход' : 'Регистрация' }}</h2>
+      <h2 class="auth-title">
+        {{ isLogin ? "Вход" : "Регистрация" }}
+      </h2>
 
-      <form @submit.prevent="submit" class="auth-form">
+      <form class="auth-form" @submit.prevent="submit">
         <div class="field">
           <label class="field-label">Email</label>
           <input v-model="email" type="email" class="field-input" placeholder="user@mail.com" />
@@ -59,18 +76,20 @@ const googleLogin = () => {
         <p v-if="error" class="auth-error">{{ error }}</p>
 
         <button type="submit" class="auth-btn" :disabled="loading">
-          {{ loading ? '...' : isLogin ? 'Войти' : 'Создать аккаунт' }}
+          {{ loading ? "..." : isLogin ? "Войти" : "Создать аккаунт" }}
         </button>
       </form>
 
       <p class="auth-toggle">
-        {{ isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?' }}
+        {{ isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?" }}
         <button class="auth-link" @click="toggleMode">
-          {{ isLogin ? 'Регистрация' : 'Войти' }}
+          {{ isLogin ? "Регистрация" : "Войти" }}
         </button>
       </p>
 
-      <div class="auth-divider"><span>или</span></div>
+      <div class="auth-divider">
+        <span>или</span>
+      </div>
 
       <button class="google-btn" @click="googleLogin">
         <svg viewBox="0 0 24 24" width="18" height="18">
@@ -88,6 +107,7 @@ const googleLogin = () => {
     </div>
   </div>
 </template>
+
 <style lang="scss">
-@use '../../../styles/pages/register';
+@use "../../../styles/pages/register";
 </style>

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { Group, GroupTest } from "../types/index";
+import type { Group, GroupTest, TestStats } from "../types";
 import api from "../api/axios";
 
 export const useGroupStore = defineStore("group", () => {
@@ -8,7 +8,7 @@ export const useGroupStore = defineStore("group", () => {
   const currentGroup = ref<Group | null>(null);
   const groupTests = ref<GroupTest[]>([]);
   const groupResults = ref<GroupTest[]>([]);
-  const testStats = ref<any>(null);
+  const testStats = ref<TestStats | null>(null);
   const loading = ref(false);
   const loadingStats = ref(false);
 

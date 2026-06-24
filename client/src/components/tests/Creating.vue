@@ -1,69 +1,84 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useTestStore } from '../../stores/test';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useTestStore } from "../../stores/test";
 
-const emit = defineEmits<{ (e: 'back'): void }>();
-
+const router = useRouter();
 const testStore = useTestStore();
 
-const title = ref('');
-const description = ref('');
+interface QuestionData {
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  imgFile: File | null;
+  imgPreview: string;
+}
+
+interface NewQuestionData {
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  imgFile: File | null;
+  imgPreview: string;
+}
+
+const title = ref("");
+const description = ref("");
 const isPublic = ref(false);
 const imgFile = ref<File | null>(null);
 
-const questions = ref<
-  {
-    question: string;
-    answers: string[];
-    correctAnswer: string;
-    imgFile: File | null;
-    imgPreview: string;
-  }[]
->([]);
+const questions = ref<QuestionData[]>([]);
 
-const newQuestion = ref({
-  question: '',
-  answers: ['', ''],
-  correctAnswer: '',
-  imgFile: null as File | null,
-  imgPreview: '' as string,
+const newQuestion = ref<NewQuestionData>({
+  question: "",
+  answers: ["", ""],
+  correctAnswer: "",
+  imgFile: null,
+  imgPreview: "",
 });
 
-const addAnswer = () => {
-  newQuestion.value.answers.push('');
-};
+function addAnswer() {
+  newQuestion.value.answers.push("");
+}
 
-const removeAnswer = (index: number) => {
+function removeAnswer(index: number) {
   if (newQuestion.value.answers.length > 1) {
     newQuestion.value.answers.splice(index, 1);
   }
-};
+}
 
-const onQuestionImageChange = (e: Event) => {
+function onQuestionImageChange(e: Event) {
   const target = e.target as HTMLInputElement;
   const file = target.files?.[0];
   if (file) {
     newQuestion.value.imgFile = file;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = function (ev) {
       newQuestion.value.imgPreview = ev.target?.result as string;
     };
     reader.readAsDataURL(file);
   }
-};
+}
 
-const addQuestion = () => {
+function addQuestion() {
   const q = newQuestion.value;
-  if (!q.question.trim() || !q.correctAnswer.trim()) return;
+  if (!q.question.trim() || !q.correctAnswer.trim()) {
+    return;
+  }
 
   const filteredAnswers = q.answers
-    .map((a) => a.trim())
-    .filter((a) => a !== '');
+    .map(function (a) { return a.trim(); })
+    .filter(function (a) { return a !== ""; });
+
   const uniqueAnswers = [...new Set(filteredAnswers)];
+
   if (!uniqueAnswers.includes(q.correctAnswer.trim())) {
     uniqueAnswers.push(q.correctAnswer.trim());
   }
-  if (uniqueAnswers.length === 0) return;
+
+  if (uniqueAnswers.length === 0) {
+    return;
+  }
 
   questions.value.push({
     question: q.question.trim(),
@@ -74,60 +89,63 @@ const addQuestion = () => {
   });
 
   newQuestion.value = {
-    question: '',
-    answers: ['', ''],
-    correctAnswer: '',
+    question: "",
+    answers: ["", ""],
+    correctAnswer: "",
     imgFile: null,
-    imgPreview: '',
+    imgPreview: "",
   };
-};
+}
 
-const removeQuestion = (index: number) => {
+function removeQuestion(index: number) {
   questions.value.splice(index, 1);
-};
+}
 
-const onFileChange = (e: Event) => {
+function onFileChange(e: Event) {
   const target = e.target as HTMLInputElement;
   if (target.files?.[0]) {
     imgFile.value = target.files[0];
   }
-};
+}
 
-const submit = async () => {
+async function submit() {
   const formData = new FormData();
-  formData.append('title', title.value);
-  formData.append('description', description.value);
-  formData.append('visibility', isPublic.value ? 'public' : 'private');
+  formData.append("title", title.value);
+  formData.append("description", description.value);
+  formData.append("visibility", isPublic.value ? "public" : "private");
+
   if (imgFile.value) {
-    formData.append('img', imgFile.value);
+    formData.append("img", imgFile.value);
   }
 
-  const questionsData = questions.value.map((q) => ({
-    question: q.question,
-    answers: q.answers,
-    correctAnswer: q.correctAnswer,
-  }));
-  formData.append('questions', JSON.stringify(questionsData));
+  const questionsData = questions.value.map(function (q) {
+    return {
+      question: q.question,
+      answers: q.answers,
+      correctAnswer: q.correctAnswer,
+    };
+  });
+  formData.append("questions", JSON.stringify(questionsData));
 
-  questions.value.forEach((q, idx) => {
+  questions.value.forEach(function (q, idx) {
     if (q.imgFile) {
-      formData.append('questionImgs', q.imgFile);
-      formData.append('questionImgIndexes', idx.toString());
+      formData.append("questionImgs", q.imgFile);
+      formData.append("questionImgIndexes", idx.toString());
     }
   });
 
   try {
     await testStore.createTest(formData);
-    title.value = '';
-    description.value = '';
-    questions.value = [];
-    imgFile.value = null;
-    isPublic.value = false;
-    emit('back');
-  } catch (e) {
-    console.error('Ошибка создания теста:', e);
+    router.push({ name: "personal" });
   }
-};
+  catch (e) {
+    console.error("Ошибка создания теста:", e);
+  }
+}
+
+function onBack() {
+  router.push({ name: "personal" });
+}
 </script>
 
 <template>
@@ -139,22 +157,29 @@ const submit = async () => {
         <label>Название теста</label>
         <input v-model="title" type="text" class="input" placeholder="Введите название" />
       </div>
+
       <div class="form-group">
         <label>Описание</label>
         <textarea v-model="description" class="input" rows="3" placeholder="Описание теста"></textarea>
       </div>
+
       <div class="form-group">
         <label class="checkbox-label">
           <input type="checkbox" v-model="isPublic" />
           <span>Сделать тест публичным</span>
         </label>
       </div>
+
       <div class="form-group">
         <label>Обложка теста</label>
         <div class="file-upload-wrapper">
-          <label for="test-cover" class="file-upload-btn">Выберите файл</label>
-          <input id="test-cover" type="file" accept="image/*" @change="onFileChange" class="file-input-hidden" />
-          <span class="file-name">{{ imgFile ? imgFile.name : 'Файл не выбран' }}</span>
+          <label for="test-cover" class="file-upload-btn">
+            Выберите файл
+          </label>
+          <input id="test-cover" type="file" accept="image/*" class="file-input-hidden" @change="onFileChange" />
+          <span class="file-name">
+            {{ imgFile ? imgFile.name : "Файл не выбран" }}
+          </span>
         </div>
       </div>
     </div>
@@ -167,7 +192,9 @@ const submit = async () => {
       <div v-for="(q, idx) in questions" :key="idx" class="question-card">
         <div class="question-header">
           <span class="question-number">Вопрос {{ idx + 1 }}</span>
-          <button class="btn-icon" @click="removeQuestion(idx)" title="Удалить вопрос">✕</button>
+          <button class="btn-icon" title="Удалить вопрос" @click="removeQuestion(idx)">
+            ✕
+          </button>
         </div>
         <p class="question-text">{{ q.question }}</p>
         <div v-if="q.imgPreview" class="question-image">
@@ -195,10 +222,14 @@ const submit = async () => {
         <div class="form-group">
           <label>Изображение вопроса (необязательно)</label>
           <div class="file-upload-wrapper">
-            <label for="question-img" class="file-upload-btn">Выберите файл</label>
-            <input id="question-img" type="file" accept="image/*" @change="onQuestionImageChange"
-              class="file-input-hidden" />
-            <span class="file-name">{{ newQuestion.imgFile ? newQuestion.imgFile.name : 'Файл не выбран' }}</span>
+            <label for="question-img" class="file-upload-btn">
+              Выберите файл
+            </label>
+            <input id="question-img" type="file" accept="image/*" class="file-input-hidden"
+              @change="onQuestionImageChange" />
+            <span class="file-name">
+              {{ newQuestion.imgFile ? newQuestion.imgFile.name : "Файл не выбран" }}
+            </span>
           </div>
           <div v-if="newQuestion.imgPreview" class="image-preview">
             <img :src="newQuestion.imgPreview" alt="предпросмотр" />
@@ -209,28 +240,41 @@ const submit = async () => {
           <label>Варианты ответов</label>
           <div v-for="(_, i) in newQuestion.answers" :key="i" class="answer-row">
             <input v-model="newQuestion.answers[i]" class="input" :placeholder="'Ответ ' + (i + 1)" />
-            <button v-if="newQuestion.answers.length > 1" class="btn-icon" @click="removeAnswer(i)"
-              title="Удалить вариант">✕</button>
+            <button v-if="newQuestion.answers.length > 1" class="btn-icon" title="Удалить вариант"
+              @click="removeAnswer(i)">
+              ✕
+            </button>
           </div>
-          <button class="btn btn-add" @click="addAnswer">+ Добавить вариант</button>
+          <button class="btn btn-add" @click="addAnswer">
+            + Добавить вариант
+          </button>
         </div>
 
         <div class="form-group">
           <label>Правильный ответ</label>
           <input v-model="newQuestion.correctAnswer" class="input" placeholder="Введите правильный ответ" />
-          <small class="hint">Этот вариант автоматически добавится в список ответов, если его там нет.</small>
+          <small class="hint">
+            Этот вариант автоматически добавится в список ответов, если его там нет.
+          </small>
         </div>
 
-        <button class="btn btn-add" @click="addQuestion">Добавить вопрос</button>
+        <button class="btn btn-add" @click="addQuestion">
+          Добавить вопрос
+        </button>
       </div>
     </div>
 
-    <button class="btn btn-primary submit-btn" @click="submit" :disabled="!title || questions.length === 0">
-      Создать тест
-    </button>
+    <div class="form-actions">
+      <button class="btn btn-primary" :disabled="!title || questions.length === 0" @click="submit">
+        Создать тест
+      </button>
+      <button class="btn btn-secondary" @click="onBack">
+        Отмена
+      </button>
+    </div>
   </div>
 </template>
 
 <style lang="scss">
-@use '../../../styles/pages/tests';
+@use "../../../styles/pages/tests";
 </style>

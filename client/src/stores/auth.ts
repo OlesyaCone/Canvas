@@ -1,6 +1,12 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { User } from "../types/index";
+import type {
+  User,
+  AuthResponse,
+  RegisterPayload,
+  LoginPayload,
+  ProfilePayload,
+} from "../types";
 import api from "../api/axios";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -12,43 +18,50 @@ export const useAuthStore = defineStore("auth", () => {
   const userName = computed(() => user.value?.username || "Гость");
 
   const userAvatar = computed(() => {
-  const avatar = user.value?.avatar;
-  if (!avatar) return '';
-  if (avatar.startsWith('http') || avatar.startsWith('data:')) return avatar;
-  return `http://localhost:5000${avatar}`;
-});
+    const avatar = user.value?.avatar;
+    if (!avatar) return "";
+    if (avatar.startsWith("http") || avatar.startsWith("data:")) return avatar;
+    return `http://localhost:5000${avatar}`;
+  });
 
-  const setAuth = (data: {
-    user: User;
-    accessToken: string;
-    refreshToken?: string;
-  }) => {
-    user.value = data.user;
-    isAuth.value = true;
-    accessToken.value = data.accessToken;
-    localStorage.setItem("accessToken", data.accessToken);
-    if (data.refreshToken) {
-      refreshToken.value = data.refreshToken;
-      localStorage.setItem("refreshToken", data.refreshToken);
-    }
+  const persistTokens = (access: string, refresh?: string) => {
+    localStorage.setItem("accessToken", access);
+    if (refresh) localStorage.setItem("refreshToken", refresh);
   };
 
-  const register = async (
-    email: string,
-    username: string,
-    password: string,
-  ) => {
-    const { data } = await api.post("/auth/register", {
-      email,
-      username,
-      password,
-    });
+  const clearTokens = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+  };
+
+  const setAuth = ({
+    user: u,
+    accessToken: access,
+    refreshToken: refresh,
+  }: AuthResponse) => {
+    user.value = u;
+    isAuth.value = true;
+    accessToken.value = access;
+    refreshToken.value = refresh ?? null;
+    persistTokens(access, refresh);
+  };
+
+  const clearAuth = () => {
+    user.value = null;
+    isAuth.value = false;
+    accessToken.value = null;
+    refreshToken.value = null;
+    clearTokens();
+  };
+
+  const register = async (payload: RegisterPayload) => {
+    const { data } = await api.post<AuthResponse>("/auth/register", payload);
     if (data.accessToken) setAuth(data);
     return data;
   };
 
-  const login = async (email: string, password: string) => {
-    const { data } = await api.post("/auth/login", { email, password });
+  const login = async (payload: LoginPayload) => {
+    const { data } = await api.post<AuthResponse>("/auth/login", payload);
     if (data.accessToken) setAuth(data);
     return data;
   };
@@ -58,26 +71,25 @@ export const useAuthStore = defineStore("auth", () => {
     avatar: string | FormData,
   ) => {
     if (avatar instanceof FormData) {
-      const { data } = await api.patch("/auth/profile", avatar);
-      if (data.user) user.value = data.user;
-      return data;
-    } else {
-      const { data } = await api.patch("/auth/profile", { username, avatar });
+      avatar.append("username", username);
+      const { data } = await api.patch<{ user: User }>("/auth/profile", avatar);
       if (data.user) user.value = data.user;
       return data;
     }
+
+    const { data } = await api.patch<{ user: User }>("/auth/profile", {
+      username,
+      avatar,
+    } as ProfilePayload);
+    if (data.user) user.value = data.user;
+    return data;
   };
 
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (e) {}
-    user.value = null;
-    isAuth.value = false;
-    accessToken.value = null;
-    refreshToken.value = null;
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    } catch {}
+    clearAuth();
   };
 
   return {

@@ -1,118 +1,133 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useTestStore } from '../../stores/test';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useTestStore } from "../../stores/test";
+import type { Question } from "../../types";
 
-const props = defineProps<{ testId: string }>();
-const emit = defineEmits<{ (e: 'back'): void }>();
+interface EditableQuestion {
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  imgFile: File | null;
+  imgPreview: string;
+}
+
+const router = useRouter();
 const testStore = useTestStore();
 
-const title = ref('');
-const description = ref('');
+const props = defineProps<{ testId: string }>();
+
+const title = ref("");
+const description = ref("");
 const imgFile = ref<File | null>(null);
-const existingCover = ref('');
+const existingCover = ref("");
 
-const questions = ref<
-  {
-    question: string;
-    answers: string[];
-    correctAnswer: string;
-    imgFile: File | null;
-    imgPreview: string;
-  }[]
->([]);
+const questions = ref<EditableQuestion[]>([]);
 
-onMounted(async () => {
+onMounted(async function () {
   await testStore.fetchTestById(props.testId);
   const t = testStore.currentTest;
   if (t) {
     title.value = t.title;
-    description.value = t.description || '';
-    existingCover.value = t.img || '';
-    questions.value = t.question.map((q: any) => ({
-      question: q.question,
-      answers: [...q.answers],
-      correctAnswer: q.correctAnswer,
-      imgFile: null,
-      imgPreview: q.img
-        ? q.img.startsWith('http')
-          ? q.img
-          : `http://localhost:5000${q.img}`
-        : '',
-    }));
+    description.value = t.description || "";
+    existingCover.value = t.img || "";
+    questions.value = t.question.map(function (q: Question) {
+      return {
+        question: q.question,
+        answers: [...q.answers],
+        correctAnswer: q.correctAnswer,
+        imgFile: null,
+        imgPreview: q.img
+          ? q.img.startsWith("http")
+            ? q.img
+            : `http://localhost:5000${q.img}`
+          : "",
+      };
+    });
   }
 });
 
-const addQuestion = () => {
+function addQuestion() {
   questions.value.push({
-    question: '',
-    answers: ['', ''],
-    correctAnswer: '',
+    question: "",
+    answers: ["", ""],
+    correctAnswer: "",
     imgFile: null,
-    imgPreview: '',
+    imgPreview: "",
   });
-};
+}
 
-const removeQuestion = (index: number) => {
+function removeQuestion(index: number) {
   questions.value.splice(index, 1);
-};
+}
 
-const addAnswer = (qIndex: number) => {
-  questions.value[qIndex].answers.push('');
-};
+function addAnswer(qIndex: number) {
+  questions.value[qIndex].answers.push("");
+}
 
-const removeAnswer = (qIndex: number, aIndex: number) => {
+function removeAnswer(qIndex: number, aIndex: number) {
   if (questions.value[qIndex].answers.length > 1) {
     questions.value[qIndex].answers.splice(aIndex, 1);
   }
-};
+}
 
-const onCoverChange = (e: Event) => {
+function onCoverChange(e: Event) {
   const target = e.target as HTMLInputElement;
-  if (target.files?.[0]) imgFile.value = target.files[0];
-};
+  if (target.files?.[0]) {
+    imgFile.value = target.files[0];
+  }
+}
 
-const onQuestionImageChange = (e: Event, qIndex: number) => {
+function onQuestionImageChange(e: Event, qIndex: number) {
   const target = e.target as HTMLInputElement;
   const file = target.files?.[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = function (ev) {
       questions.value[qIndex].imgPreview = ev.target?.result as string;
     };
     reader.readAsDataURL(file);
     questions.value[qIndex].imgFile = file;
   }
-};
+}
 
-const submit = async () => {
+async function submit() {
   const formData = new FormData();
-  formData.append('title', title.value);
-  formData.append('description', description.value);
+  formData.append("title", title.value);
+  formData.append("description", description.value);
+
   if (imgFile.value) {
-    formData.append('img', imgFile.value);
+    formData.append("img", imgFile.value);
   }
 
-  const questionsData = questions.value.map(q => ({
-    question: q.question,
-    answers: q.answers.filter(a => a.trim() !== ''),
-    correctAnswer: q.correctAnswer,
-  }));
-  formData.append('questions', JSON.stringify(questionsData));
+  const questionsData = questions.value.map(function (q) {
+    return {
+      question: q.question,
+      answers: q.answers.filter(function (a) { return a.trim() !== ""; }),
+      correctAnswer: q.correctAnswer,
+    };
+  });
+  formData.append("questions", JSON.stringify(questionsData));
 
-  questions.value.forEach((q, idx) => {
+  questions.value.forEach(function (q, idx) {
     if (q.imgFile) {
-      formData.append('questionImgs', q.imgFile);
-      formData.append('questionImgIndexes', idx.toString());
+      formData.append("questionImgs", q.imgFile);
+      formData.append("questionImgIndexes", idx.toString());
     }
   });
 
   try {
     await testStore.updateTest(props.testId, formData);
-    emit('back');
-  } catch (e) {
-    console.error('Ошибка обновления теста:', e);
+    router.push({ name: "personal" });
   }
-};
+  catch (e) {
+    console.error("Ошибка обновления теста:", e);
+  }
+}
+
+function onBack() {
+  router.push({ name: "personal" });
+}
 </script>
 
 <template>
@@ -124,10 +139,12 @@ const submit = async () => {
         <label>Название теста</label>
         <input v-model="title" type="text" class="input" />
       </div>
+
       <div class="form-group">
         <label>Описание</label>
         <textarea v-model="description" class="input" rows="3"></textarea>
       </div>
+
       <div class="form-group">
         <label>Обложка теста</label>
         <div v-if="existingCover && !imgFile" class="image-preview">
@@ -135,9 +152,13 @@ const submit = async () => {
             alt="текущая обложка" />
         </div>
         <div class="file-upload-wrapper">
-          <label for="edit-cover" class="file-upload-btn">Выберите файл</label>
-          <input id="edit-cover" type="file" accept="image/*" @change="onCoverChange" class="file-input-hidden" />
-          <span class="file-name">{{ imgFile ? imgFile.name : 'Файл не выбран' }}</span>
+          <label for="edit-cover" class="file-upload-btn">
+            Выберите файл
+          </label>
+          <input id="edit-cover" type="file" accept="image/*" class="file-input-hidden" @change="onCoverChange" />
+          <span class="file-name">
+            {{ imgFile ? imgFile.name : "Файл не выбран" }}
+          </span>
         </div>
       </div>
     </div>
@@ -150,7 +171,9 @@ const submit = async () => {
       <div v-for="(q, idx) in questions" :key="idx" class="question-card">
         <div class="question-header">
           <span class="question-number">Вопрос {{ idx + 1 }}</span>
-          <button class="btn-icon" @click="removeQuestion(idx)" title="Удалить вопрос">✕</button>
+          <button class="btn-icon" title="Удалить вопрос" @click="removeQuestion(idx)">
+            ✕
+          </button>
         </div>
 
         <div class="form-group">
@@ -164,10 +187,14 @@ const submit = async () => {
             <img :src="q.imgPreview" alt="предпросмотр" />
           </div>
           <div class="file-upload-wrapper">
-            <label :for="'edit-q-img-' + idx" class="file-upload-btn">Выберите файл</label>
-            <input :id="'edit-q-img-' + idx" type="file" accept="image/*" @change="(e) => onQuestionImageChange(e, idx)"
-              class="file-input-hidden" />
-            <span class="file-name">{{ q.imgFile ? q.imgFile.name : 'Файл не выбран' }}</span>
+            <label :for="'edit-q-img-' + idx" class="file-upload-btn">
+              Выберите файл
+            </label>
+            <input :id="'edit-q-img-' + idx" type="file" accept="image/*" class="file-input-hidden"
+              @change="(e: Event) => onQuestionImageChange(e, idx)" />
+            <span class="file-name">
+              {{ q.imgFile ? q.imgFile.name : "Файл не выбран" }}
+            </span>
           </div>
         </div>
 
@@ -175,10 +202,14 @@ const submit = async () => {
           <label>Варианты ответов</label>
           <div v-for="(_, aIdx) in q.answers" :key="aIdx" class="answer-row">
             <input v-model="q.answers[aIdx]" class="input" :placeholder="'Ответ ' + (aIdx + 1)" />
-            <button v-if="q.answers.length > 1" class="btn-icon" @click="removeAnswer(idx, aIdx)"
-              title="Удалить вариант">✕</button>
+            <button v-if="q.answers.length > 1" class="btn-icon" title="Удалить вариант"
+              @click="removeAnswer(idx, aIdx)">
+              ✕
+            </button>
           </div>
-          <button class="btn btn-add" @click="addAnswer(idx)">+ Добавить вариант</button>
+          <button class="btn btn-add" @click="addAnswer(idx)">
+            + Добавить вариант
+          </button>
         </div>
 
         <div class="form-group">
@@ -187,16 +218,22 @@ const submit = async () => {
         </div>
       </div>
 
-      <button class="btn btn-add" @click="addQuestion">+ Добавить вопрос</button>
+      <button class="btn btn-add" @click="addQuestion">
+        + Добавить вопрос
+      </button>
     </div>
 
     <div class="form-actions">
-      <button class="btn btn-primary" @click="submit">Сохранить изменения</button>
-      <button class="btn btn-secondary" @click="emit('back')">Отмена</button>
+      <button class="btn btn-primary" @click="submit">
+        Сохранить изменения
+      </button>
+      <button class="btn btn-secondary" @click="onBack">
+        Отмена
+      </button>
     </div>
   </div>
 </template>
 
 <style lang="scss">
-@use '../../../styles/pages/tests';
+@use "../../../styles/pages/tests";
 </style>

@@ -130,3 +130,42 @@ export const getProfileStats = async (
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
+
+export const getUserProfile = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: "Пользователь не найден" });
+      return;
+    }
+
+    const testsCreated = await Test.countDocuments({ author: userId });
+    const testsPassed = user.passedTests?.length || 0;
+    const groupsCount = user.groups?.length || 0;
+    const publicTests = await Test.find({
+      author: userId,
+      visibility: "public",
+    })
+      .select("title img likes dislikes passes question")
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json({
+      user: {
+        _id: user._id.toString(),
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        createdAt: user.createdAt,
+      },
+      stats: { testsCreated, testsPassed, groupsCount },
+      publicTests,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
