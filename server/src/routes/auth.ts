@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Express } from "express";
 import { register, login } from "../controllers/auth/register";
 import { refresh, logout, verifyEmail } from "../controllers/auth/tokens";
 import { protect } from "../middleware/auth";
@@ -54,7 +54,7 @@ authRouter.get("/tests/:id/comments", getComments);
 authRouter.post("/tests/:id/comments", protect, addComment);
 authRouter.delete("/tests/:id/comments/:commentId", protect, deleteComment);
 
-export const setupRoutes = (app: any) => {
+export const setupRoutes = (app: Express) => {
   app.use("/api/auth", authRouter);
   app.use("/api/tests", testRoutes);
   app.use("/api/groups", groupRoutes);

@@ -32,7 +32,7 @@ export const submitTest = async (
     }
   });
 
-  const userObjectId = new mongoose.Types.ObjectId(userId);
+  const userObjectId = userId as unknown as mongoose.Types.ObjectId;
 
   if (
     !test.users.some(function (id) {

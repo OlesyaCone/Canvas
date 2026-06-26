@@ -8,15 +8,20 @@ import crypto from "crypto";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+interface MulterRequest extends Request {
+  user?: { _id?: { toString(): string } };
+}
+
 const createStorage = (subfolder: string) =>
   multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       const dir = path.join(__dirname, "..", "..", "uploads", subfolder);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       cb(null, dir);
     },
     filename: (req, file, cb) => {
-      const userId = (req as any).user?._id?.toString() || "unknown";
+      const multerReq = req as MulterRequest;
+      const userId = multerReq.user?._id?.toString() || "unknown";
       const ext = path.extname(file.originalname);
       const uniqueSuffix = crypto.randomBytes(8).toString("hex");
       const name = `${userId}-${Date.now()}-${uniqueSuffix}${ext}`;
@@ -25,7 +30,7 @@ const createStorage = (subfolder: string) =>
   });
 
 const fileFilter = (
-  req: any,
+  _req: Request,
   file: Express.Multer.File,
   cb: multer.FileFilterCallback,
 ) => {

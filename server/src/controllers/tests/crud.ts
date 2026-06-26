@@ -2,12 +2,8 @@ import { Request, Response } from "express";
 import Test from "../../models/Test";
 import UserModel from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
-import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import path from "path";
 
 export const createTest = async (
   req: Request,

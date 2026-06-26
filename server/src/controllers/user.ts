@@ -2,12 +2,8 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/User";
 import Test from "../models/Test";
-import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import path from "path";
 
 export const updateProfile = async (
   req: Request,

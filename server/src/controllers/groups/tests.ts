@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Group from "../../models/Group";
 import Test from "../../models/Test";
 import User from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 import { emitNotification } from "../../services/socket";
-import { sendTestAssignedEmail, createNotification } from "../../services/mail";
+import { sendTestAssignedEmail } from "../../services/mail";
 
 export const assignTest = async (
   req: Request,
@@ -15,10 +16,13 @@ export const assignTest = async (
     res.status(401).json({ message: "Не авторизован" });
     return;
   }
-  const group = await Group.findById(req.params.id).populate(
-    "members",
-    "_id email username",
-  );
+  const group = await Group.findById(req.params.id).populate<{
+    members: {
+      _id: mongoose.Types.ObjectId;
+      email: string;
+      username: string;
+    }[];
+  }>("members", "_id email username");
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
     return;
@@ -37,9 +41,9 @@ export const assignTest = async (
     return;
   }
   group.tests.push({
-    test: testId,
+    test: testId as unknown as mongoose.Types.ObjectId,
     deadline: deadline || null,
-    assignedBy: userId,
+    assignedBy: userId as unknown as mongoose.Types.ObjectId,
     results: [],
   });
   await group.save();
@@ -47,8 +51,8 @@ export const assignTest = async (
   for (const member of group.members) {
     try {
       await sendTestAssignedEmail(
-        (member as any).email,
-        (member as any).username,
+        member.email,
+        member.username,
         group.name,
         test.title || "",
         testLink,

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Group from "../../models/Group";
 import UserModel from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
@@ -19,7 +20,7 @@ export const joinGroup = async (req: Request, res: Response): Promise<void> => {
     res.status(400).json({ message: "Вы уже в группе" });
     return;
   }
-  group.members.push(userId as any);
+  group.members.push(userId as unknown as mongoose.Types.ObjectId);
   await group.save();
   await UserModel.findByIdAndUpdate(userId, {
     $addToSet: { groups: group._id },
@@ -103,7 +104,7 @@ export const promoteMember = async (
     return;
   }
   if (!group.moderators.some((id) => id.toString() === targetId)) {
-    group.moderators.push(targetId as any);
+    group.moderators.push(targetId as unknown as mongoose.Types.ObjectId);
     await group.save();
   }
   res.json(group);

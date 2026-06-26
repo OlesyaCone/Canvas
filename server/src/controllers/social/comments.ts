@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Test from "../../models/Test";
 import User from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
@@ -34,8 +35,13 @@ export const addComment = async (
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
-  (test.comments as any).push({ user: userId, text });
+  test.comments.push({
+    user: userId as unknown as mongoose.Types.ObjectId,
+    text,
+    createdAt: new Date(),
+  });
   await test.save();
+
   const populated = await Test.findById(req.params.id).populate(
     "comments.user",
     "username avatar",
@@ -44,10 +50,10 @@ export const addComment = async (
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
-  const comments = populated.comments as any[];
+  const comments = populated.comments;
   res.json(comments[comments.length - 1]);
 
-  if (test?.author && test.author.toString() !== userId) {
+  if (test.author && test.author.toString() !== userId) {
     await User.findByIdAndUpdate(test.author, {
       $push: {
         notifications: {
@@ -81,9 +87,9 @@ export const deleteComment = async (
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
-  (test.comments as any) = (test.comments as any[]).filter(
+  test.comments = test.comments.filter(
     (c) => c._id.toString() !== req.params.commentId,
-  );
+  ) as typeof test.comments;
   await test.save();
   res.json({ message: "Удалено" });
 };

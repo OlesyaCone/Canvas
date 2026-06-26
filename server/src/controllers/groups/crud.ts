@@ -86,12 +86,14 @@ export const getGroup = async (req: Request, res: Response): Promise<void> => {
     .populate("admin", "username avatar")
     .populate("moderators", "username avatar")
     .populate("members", "username avatar");
+
   if (!group) {
     res.status(404).json({ message: "Группа не найдена" });
     return;
   }
   res.json(group);
 };
+
 export const getMyGroups = async (
   req: Request,
   res: Response,
