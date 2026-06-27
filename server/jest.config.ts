@@ -6,19 +6,27 @@ const config: Config = {
   roots: ["<rootDir>/src"],
   testMatch: ["**/__tests__/**/*.test.ts"],
   extensionsToTreatAsEsm: [".ts"],
+  testTimeout: 300000,
+
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^../../services/mail$": "<rootDir>/src/__tests__/__mocks__/mail.ts",
   },
+
   transform: {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
         useESM: true,
         tsconfig: "tsconfig.json",
+        isolatedModules: true,
       },
     ],
   },
-  transformIgnorePatterns: ["node_modules/(?!(@types)/)"],
+
+  transformIgnorePatterns: [
+    "node_modules/(?!(@types)/|socket.io|multer|jsonwebtoken|bcryptjs|passport)",
+  ],
 };
 
 export default config;

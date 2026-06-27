@@ -1,30 +1,11 @@
-import dotenv from "dotenv";
-dotenv.config();
-
-import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import { createServer } from "http";
+import app from "./app";
 import { setupSocket } from "./services/socket";
-import { setupRoutes } from "./routes/auth";
-import { getFile } from "./controllers/upload";
 
-const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-  }),
-);
-app.use(express.json());
-app.use(cookieParser());
-
-app.get("/uploads/:path(*)", getFile);
-setupRoutes(app);
 setupSocket(server);
 
 mongoose

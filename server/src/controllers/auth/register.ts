@@ -8,20 +8,36 @@ import { generateAccessToken, generateRefreshToken } from "./generation";
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, username, password } = req.body;
+
     if (!email || !username || !password) {
       res.status(400).json({ message: "Все поля обязательны" });
       return;
     }
-    const exists = await User.findOne({ $or: [{ email }, { username }] });
-    if (exists) {
-      res.status(400).json({ message: "Email или имя занято" });
+
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingPending = await PendingUser.findOne({ email });
+
+    if (existingUser || existingPending) {
+      res.status(400).json({ 
+        message: "Email или имя пользователя уже занято" 
+      });
       return;
     }
+
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    await PendingUser.create({ email, username, password, verificationToken });
+
+    await PendingUser.create({ 
+      email, 
+      username, 
+      password, 
+      verificationToken 
+    });
+
     await sendVerificationEmail(email, verificationToken);
-    res.status(201).json({ message: "Проверьте почту" });
+
+    res.status(201).json({ message: "Проверьте почту для подтверждения" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
