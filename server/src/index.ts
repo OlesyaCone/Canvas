@@ -16,6 +16,6 @@ mongoose
     process.exit(1);
   });
 
-server.listen(PORT, () => {
+server.listen(Number(PORT), "127.0.0.1", () => {
   console.log(`Сервер запущен: http://localhost:${PORT}`);
 });

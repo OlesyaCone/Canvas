@@ -27,10 +27,10 @@ const totalQuestions = computed(function () {
 });
 
 const currentQuestion = computed(function () {
-  if (!test.value) {
+  if (!test.value || !test.value.question) {
     return null;
   }
-  return test.value.question[currentIndex.value];
+  return test.value.question[currentIndex.value] ?? null;
 });
 
 onMounted(async function () {

@@ -4,6 +4,10 @@ import UserModel from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createTest = async (
   req: Request,
@@ -90,12 +94,24 @@ export const updateTest = async (
   res.json(updated);
 };
 
-export const deleteTest = async (req: Request, res: Response): Promise<void> => {
+export const deleteTest = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   const userId = getUserId(req);
-  if (!userId) { res.status(401).json({ message: "Не авторизован" }); return; }
+  if (!userId) {
+    res.status(401).json({ message: "Не авторизован" });
+    return;
+  }
   const test = await Test.findById(req.params.id);
-  if (!test) { res.status(404).json({ message: "Тест не найден" }); return; }
-  if (test.author?.toString() !== userId) { res.status(403).json({ message: "Нет прав" }); return; }
+  if (!test) {
+    res.status(404).json({ message: "Тест не найден" });
+    return;
+  }
+  if (test.author?.toString() !== userId) {
+    res.status(403).json({ message: "Нет прав" });
+    return;
+  }
 
   if (test.img?.startsWith("/uploads/tests/")) {
     const imgPath = path.join(__dirname, "..", "..", "..", test.img);
@@ -109,7 +125,9 @@ export const deleteTest = async (req: Request, res: Response): Promise<void> => 
   });
 
   await Test.findByIdAndDelete(req.params.id);
-  await UserModel.findByIdAndUpdate(userId, { $pull: { myTests: req.params.id } });
+  await UserModel.findByIdAndUpdate(userId, {
+    $pull: { myTests: req.params.id },
+  });
   res.json({ message: "Тест удалён" });
 };
 
