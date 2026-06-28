@@ -11,10 +11,7 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ message: "Refresh token обязателен" });
       return;
     }
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_REFRESH_SECRET as string,
-    ) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string) as { id: string };
     const user = await User.findById(decoded.id);
     if (!user || user.refreshToken !== token) {
       res.status(401).json({ message: "Невалидный refresh token" });
@@ -53,10 +50,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const verifyEmail = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
   try {
     const { token } = req.params;
     const pending = await PendingUser.findOne({ verificationToken: token });

@@ -1,8 +1,5 @@
 import jwt from "jsonwebtoken";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../../controllers/auth/generation";
+import { generateAccessToken, generateRefreshToken } from "../../controllers/auth/generation";
 
 jest.mock("jsonwebtoken");
 
@@ -19,9 +16,7 @@ test("generateAccessToken — вызывает jwt.sign с правильным�
 
 test("generateRefreshToken — вызывает jwt.sign с expiresIn 7d", function () {
   process.env.JWT_REFRESH_SECRET = "refresh_secret";
-  const signSpy = jest
-    .spyOn(jwt, "sign")
-    .mockReturnValue("fake_refresh" as any);
+  const signSpy = jest.spyOn(jwt, "sign").mockReturnValue("fake_refresh" as any);
 
   const token = generateRefreshToken("user1");
 

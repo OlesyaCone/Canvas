@@ -48,12 +48,8 @@ describe("group store", function () {
   test("fetchMyGroups обрабатывает ошибку", async function () {
     const store = useGroupStore();
     const api = await import("../../api/axios");
-    const consoleSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(function () {});
-    (api.default.get as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("Сеть"),
-    );
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(function () {});
+    (api.default.get as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("Сеть"));
 
     await store.fetchMyGroups();
 

@@ -4,39 +4,23 @@ import UserModel from "../models/User";
 import Test from "../models/Test";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const updateProfile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       res.status(401).json({ message: "Нет токена" });
       return;
     }
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_ACCESS_SECRET as string,
-    ) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
     const username = req.body.username;
     const currentUser = await UserModel.findById(decoded.id);
     if (req.file && currentUser?.avatar?.startsWith("/uploads/avatars/")) {
-      const oldPath = path.join(__dirname, "..", "..", currentUser.avatar);
+      const oldPath = path.join(process.cwd(), currentUser.avatar);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
-    const avatar = req.file
-      ? `/uploads/avatars/${req.file.filename}`
-      : req.body.avatar;
-    const user = await UserModel.findByIdAndUpdate(
-      decoded.id,
-      { username, avatar },
-      { new: true },
-    );
+    const avatar = req.file ? `/uploads/avatars/${req.file.filename}` : req.body.avatar;
+    const user = await UserModel.findByIdAndUpdate(decoded.id, { username, avatar }, { new: true });
     if (!user) {
       res.status(404).json({ message: "Пользователь не найден" });
       return;
@@ -54,20 +38,14 @@ export const updateProfile = async (
   }
 };
 
-export const getProfile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       res.status(401).json({ message: "Нет токена" });
       return;
     }
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_ACCESS_SECRET as string,
-    ) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
     const user = await UserModel.findById(decoded.id);
     if (!user) {
       res.status(404).json({ message: "Пользователь не найден" });
@@ -86,20 +64,14 @@ export const getProfile = async (
   }
 };
 
-export const getProfileStats = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getProfileStats = async (req: Request, res: Response): Promise<void> => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       res.status(401).json({ message: "Нет токена" });
       return;
     }
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_ACCESS_SECRET as string,
-    ) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
     const user = await UserModel.findById(decoded.id);
     if (!user) {
       res.status(404).json({ message: "Пользователь не найден" });
@@ -131,10 +103,7 @@ export const getProfileStats = async (
   }
 };
 
-export const getUserProfile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = req.params;
     const user = await UserModel.findById(userId);

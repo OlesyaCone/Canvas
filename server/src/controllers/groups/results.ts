@@ -13,10 +13,7 @@ interface SubmitBody {
   answers: Answer[];
 }
 
-export const submitGroupResult = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const submitGroupResult = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -28,17 +25,13 @@ export const submitGroupResult = async (
     return;
   }
 
-  const groupTest = group.tests.find(
-    (t) => t._id.toString() === req.params.testId,
-  );
+  const groupTest = group.tests.find((t) => t._id.toString() === req.params.testId);
   if (!groupTest) {
     res.status(404).json({ message: "Тест не найден" });
     return;
   }
 
-  const alreadyPassed = groupTest.results.some(
-    (r) => r.user?.toString() === userId,
-  );
+  const alreadyPassed = groupTest.results.some((r) => r.user?.toString() === userId);
   if (alreadyPassed) {
     res.status(400).json({ message: "Вы уже проходили этот тест" });
     return;
@@ -75,10 +68,7 @@ export const submitGroupResult = async (
   });
 };
 
-export const getGroupResults = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getGroupResults = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -106,10 +96,7 @@ export const getGroupResults = async (
   res.json(group.tests);
 };
 
-export const getTestStats = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getTestStats = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -121,9 +108,7 @@ export const getTestStats = async (
     return;
   }
 
-  const groupTest = group.tests.find(
-    (t) => t._id.toString() === req.params.testId,
-  );
+  const groupTest = group.tests.find((t) => t._id.toString() === req.params.testId);
   if (!groupTest) {
     res.status(404).json({ message: "Тест не найден" });
     return;
@@ -138,9 +123,7 @@ export const getTestStats = async (
   const results = groupTest.results;
 
   const questionStats = test.question.map((q, idx) => {
-    const total = results.filter((r) =>
-      r.answers?.some((a) => a.questionIndex === idx),
-    ).length;
+    const total = results.filter((r) => r.answers?.some((a) => a.questionIndex === idx)).length;
     const correct = results.filter((r) => {
       const answer = r.answers?.find((a) => a.questionIndex === idx);
       return answer && answer.answer === q.correctAnswer;
@@ -165,12 +148,9 @@ export const getTestStats = async (
     else distribution[4]++;
   });
 
-  const scores: number[] = results
-    .map((r) => r.score ?? 0)
-    .filter((s) => !isNaN(s));
+  const scores: number[] = results.map((r) => r.score ?? 0).filter((s) => !isNaN(s));
   const avgScore = scores.length
-    ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) /
-      100
+    ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100
     : 0;
   const bestScore = scores.length ? Math.max(...scores) : 0;
 

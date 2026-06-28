@@ -4,24 +4,12 @@ import { refresh, logout, verifyEmail } from "../controllers/auth/tokens";
 import { protect } from "../middleware/auth";
 import passport from "../config/passport";
 import { googleCallback } from "../controllers/auth/google";
-import {
-  getProfile,
-  updateProfile,
-  getProfileStats,
-  getUserProfile,
-} from "../controllers/user";
+import { getProfile, updateProfile, getProfileStats, getUserProfile } from "../controllers/user";
 import { upload, getFile } from "../controllers/upload";
 import { getPublicTests } from "../controllers/tests/public";
-import {
-  getNotifications,
-  markRead,
-} from "../controllers/social/notifications";
+import { getNotifications, markRead } from "../controllers/social/notifications";
 import { toggleReaction } from "../controllers/social/reactions";
-import {
-  getComments,
-  addComment,
-  deleteComment,
-} from "../controllers/social/comments";
+import { getComments, addComment, deleteComment } from "../controllers/social/comments";
 import testRoutes from "./tests";
 import groupRoutes from "./groups";
 
@@ -31,10 +19,7 @@ authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/refresh", refresh);
 authRouter.post("/logout", protect, logout);
-authRouter.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
+authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/" }),

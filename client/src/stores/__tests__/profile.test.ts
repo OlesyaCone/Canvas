@@ -35,9 +35,7 @@ describe("profile store", function () {
           createdAt: "2024-01-01",
         },
         stats: { testsCreated: 5, testsPassed: 10, groupsCount: 2 },
-        publicTests: [
-          { _id: "t1", title: "Test", likes: 3, dislikes: 0, passes: 5 },
-        ],
+        publicTests: [{ _id: "t1", title: "Test", likes: 3, dislikes: 0, passes: 5 }],
       },
     });
 
@@ -74,12 +72,8 @@ describe("profile store", function () {
   test("fetchProfileStats обрабатывает ошибку", async function () {
     const store = useProfileStore();
     const api = await import("../../api/axios");
-    const consoleSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(function () {});
-    (api.default.get as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("Сеть"),
-    );
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(function () {});
+    (api.default.get as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("Сеть"));
 
     await store.fetchProfileStats();
 

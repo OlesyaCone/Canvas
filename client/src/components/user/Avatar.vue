@@ -2,11 +2,7 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { createAvatar } from "@dicebear/core";
 import * as styles from "@dicebear/collection";
-import {
-  AVATAR_STYLES_LIST,
-  AVATAR_STYLES,
-  type AvatarStyleId,
-} from "./avatar";
+import { AVATAR_STYLES_LIST, AVATAR_STYLES, type AvatarStyleId } from "./avatar";
 
 const props = defineProps<{
   isOpen: boolean;
@@ -17,9 +13,7 @@ const emit = defineEmits<{
   (e: "generate", avatarUrl: string): void;
 }>();
 
-const selectedStyle = ref<AvatarStyleId>(
-  AVATAR_STYLES_LIST[0]?.id || "adventurer"
-);
+const selectedStyle = ref<AvatarStyleId>(AVATAR_STYLES_LIST[0]?.id || "adventurer");
 
 const seedValue = ref(Math.random().toString());
 const avatarPreview = ref("");
@@ -58,8 +52,7 @@ function generateAvatar(styleId?: AvatarStyleId, customSeed?: string) {
     const avatarSvg = avatar.toString();
     const blob = new Blob([avatarSvg], { type: "image/svg+xml" });
     avatarPreview.value = URL.createObjectURL(blob);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Ошибка генерации аватара:", error);
   }
 }
@@ -90,8 +83,7 @@ async function applyAvatar() {
       emit("close");
     };
     reader.readAsDataURL(blob);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Ошибка конвертации:", error);
   }
 }
@@ -125,12 +117,14 @@ onMounted(function () {
 });
 
 watch(
-  function () { return props.isOpen; },
+  function () {
+    return props.isOpen;
+  },
   function (newVal) {
     if (newVal) {
       generateAvatar();
     }
-  }
+  },
 );
 </script>
 
@@ -140,11 +134,7 @@ watch(
       <div class="modal-content">
         <div class="modal-header">
           <h2>
-            {{
-              showAllAvatars
-                ? `Все аватары: ${currentStyle?.name}`
-                : "Создать аватар"
-            }}
+            {{ showAllAvatars ? `Все аватары: ${currentStyle?.name}` : "Создать аватар" }}
           </h2>
           <button class="close-btn" @click="emit('close')">×</button>
         </div>
@@ -158,8 +148,16 @@ watch(
             </div>
 
             <div class="avatars-grid">
-              <div v-for="seed in allSeeds" :key="seed" class="avatar-card" @click="selectFromAll(seed)">
-                <img :src="`https://api.dicebear.com/9.x/${currentStyle?.urlKey}/svg?seed=${seed}`" :alt="seed" />
+              <div
+                v-for="seed in allSeeds"
+                :key="seed"
+                class="avatar-card"
+                @click="selectFromAll(seed)"
+              >
+                <img
+                  :src="`https://api.dicebear.com/9.x/${currentStyle?.urlKey}/svg?seed=${seed}`"
+                  :alt="seed"
+                />
               </div>
             </div>
           </div>
@@ -177,40 +175,36 @@ watch(
 
             <div class="style-selector">
               <div class="carousel-container">
-                <button class="carousel-arrow left" @click="scrollLeft">
-                  ‹
-                </button>
+                <button class="carousel-arrow left" @click="scrollLeft">‹</button>
                 <div ref="carouselRef" class="carousel">
-                  <div v-for="style in AVATAR_STYLES_LIST" :key="style.id" class="carousel-item"
-                    :class="{ active: selectedStyle === style.id }" @click="selectStyle(style.id)">
-                    <img :src="`https://api.dicebear.com/9.x/${style.urlKey}/svg?seed=preview`" :alt="style.name" />
+                  <div
+                    v-for="style in AVATAR_STYLES_LIST"
+                    :key="style.id"
+                    class="carousel-item"
+                    :class="{ active: selectedStyle === style.id }"
+                    @click="selectStyle(style.id)"
+                  >
+                    <img
+                      :src="`https://api.dicebear.com/9.x/${style.urlKey}/svg?seed=preview`"
+                      :alt="style.name"
+                    />
                     <span class="style-name">{{ style.name }}</span>
                   </div>
                 </div>
-                <button class="carousel-arrow right" @click="scrollRight">
-                  ›
-                </button>
+                <button class="carousel-arrow right" @click="scrollRight">›</button>
               </div>
             </div>
 
             <div class="action-buttons">
-              <button class="btn-primary" @click="randomAvatar">
-                Случайный
-              </button>
-              <button class="btn-primary" @click="showAll">
-                Показать все
-              </button>
-              <button class="btn-primary" @click="applyAvatar">
-                Выбрать
-              </button>
+              <button class="btn-primary" @click="randomAvatar">Случайный</button>
+              <button class="btn-primary" @click="showAll">Показать все</button>
+              <button class="btn-primary" @click="applyAvatar">Выбрать</button>
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button class="btn-secondary" @click="emit('close')">
-            Отмена
-          </button>
+          <button class="btn-secondary" @click="emit('close')">Отмена</button>
         </div>
       </div>
     </div>

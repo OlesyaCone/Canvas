@@ -2,12 +2,7 @@ import request from "supertest";
 import mongoose from "mongoose";
 import app from "../../app";
 import { connectTestDB, closeTestDB, clearDB } from "../helpers/db";
-import {
-  registerUser,
-  loginUser,
-  createTest,
-  submitTest,
-} from "../helpers/factories";
+import { registerUser, loginUser, createTest, submitTest } from "../helpers/factories";
 
 beforeAll(connectTestDB);
 afterAll(closeTestDB);
@@ -45,9 +40,7 @@ describe("Tests Integration", function () {
       .field("title", "Updated Title")
       .field(
         "questions",
-        JSON.stringify([
-          { question: "q1", answers: ["a", "b"], correctAnswer: "a" },
-        ]),
+        JSON.stringify([{ question: "q1", answers: ["a", "b"], correctAnswer: "a" }]),
       );
     expect(update.status).toBe(200);
 
@@ -116,9 +109,7 @@ describe("Tests Integration", function () {
       .set("Authorization", `Bearer ${token}`);
     expect(del.status).toBe(200);
 
-    const getAfter = await request(app).get(
-      `/api/auth/tests/${testId}/comments`,
-    );
+    const getAfter = await request(app).get(`/api/auth/tests/${testId}/comments`);
     expect(getAfter.body.length).toBe(0);
   });
 });

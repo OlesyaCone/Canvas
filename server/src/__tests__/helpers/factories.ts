@@ -1,14 +1,8 @@
 import request from "supertest";
 import app from "../../app";
 
-export async function registerUser(
-  email: string,
-  username: string,
-  password: string,
-) {
-  const res = await request(app)
-    .post("/api/auth/register")
-    .send({ email, username, password });
+export async function registerUser(email: string, username: string, password: string) {
+  const res = await request(app).post("/api/auth/register").send({ email, username, password });
   return res;
 }
 
@@ -18,17 +12,11 @@ export async function verifyUser(token: string) {
 }
 
 export async function loginUser(email: string, password: string) {
-  const res = await request(app)
-    .post("/api/auth/login")
-    .send({ email, password });
+  const res = await request(app).post("/api/auth/login").send({ email, password });
   return res;
 }
 
-export async function createTest(
-  token: string,
-  title: string,
-  questions: object[],
-) {
+export async function createTest(token: string, title: string, questions: object[]) {
   const res = await request(app)
     .post("/api/tests")
     .set("Authorization", `Bearer ${token}`)
@@ -38,11 +26,7 @@ export async function createTest(
   return res;
 }
 
-export async function submitTest(
-  token: string,
-  testId: string,
-  answers: object[],
-) {
+export async function submitTest(token: string, testId: string, answers: object[]) {
   const res = await request(app)
     .post(`/api/tests/${testId}/submit`)
     .set("Authorization", `Bearer ${token}`)

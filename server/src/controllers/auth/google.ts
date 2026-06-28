@@ -6,14 +6,10 @@ export const googleAuth = (_req: Request, res: Response): void => {
   res.redirect("/api/auth/google/callback");
 };
 
-export const googleCallback = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const googleCallback = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = req.user as
-      | { _id: string; email: string; username?: string; avatar?: string }
-      | undefined;
+      { _id: string; email: string; username?: string; avatar?: string } | undefined;
     if (!user) {
       res.redirect(`${process.env.CLIENT_URL}/auth/error`);
       return;

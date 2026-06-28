@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import Test from "../../models/Test";
 import User from "../../models/User";
-import {
-  getComments,
-  addComment,
-  deleteComment,
-} from "../../controllers/social/comments";
+import { getComments, addComment, deleteComment } from "../../controllers/social/comments";
 import { getUserId } from "../../utils/getUserId";
 import { emitNotification } from "../../services/socket";
 
@@ -40,9 +36,7 @@ describe("getComments", function () {
   });
 
   test("успешное получение", async function () {
-    const comments = [
-      { _id: "c1", text: "hello", user: { _id: "u1", username: "aaa" } },
-    ];
+    const comments = [{ _id: "c1", text: "hello", user: { _id: "u1", username: "aaa" } }];
 
     const chain = { populate: jest.fn().mockResolvedValue({ comments }) };
     (Test.findById as jest.Mock).mockReturnValue(chain);
@@ -103,11 +97,9 @@ describe("addComment", function () {
       ],
     };
 
-    (Test.findById as jest.Mock)
-      .mockResolvedValueOnce(testMock)
-      .mockReturnValueOnce({
-        populate: jest.fn().mockResolvedValue(populatedMock),
-      });
+    (Test.findById as jest.Mock).mockResolvedValueOnce(testMock).mockReturnValueOnce({
+      populate: jest.fn().mockResolvedValue(populatedMock),
+    });
 
     const req = mockReq({ text: "hello" }, { id: "t1" });
     const res = mockRes();
@@ -115,9 +107,7 @@ describe("addComment", function () {
     await addComment(req, res);
 
     expect(testMock.comments.length).toBe(1);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ text: "hello" }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ text: "hello" }));
   });
 });
 
@@ -137,10 +127,7 @@ describe("deleteComment", function () {
     (getUserId as jest.Mock).mockReturnValue("user1");
 
     const testMock = {
-      comments: [
-        { _id: { toString: () => "c1" } },
-        { _id: { toString: () => "c2" } },
-      ],
+      comments: [{ _id: { toString: () => "c1" } }, { _id: { toString: () => "c2" } }],
       save: jest.fn().mockResolvedValue(undefined),
     };
 

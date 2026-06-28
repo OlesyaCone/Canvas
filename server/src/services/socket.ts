@@ -32,10 +32,7 @@ export const setupSocket = (server: HttpServer) => {
     const token = socket.handshake.auth.token;
     if (!token) return next(new Error("Не авторизован"));
     try {
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_ACCESS_SECRET as string,
-      ) as { id: string };
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
       (socket as AuthenticatedSocket).userId = decoded.id;
       socket.join(decoded.id);
       next();
@@ -69,14 +66,8 @@ export const setupSocket = (server: HttpServer) => {
   });
 };
 
-export const emitNotification = async (
-  userId: string,
-  notification: NotificationData,
-) => {
-  const user = await User.findById(userId).populate(
-    "notifications.from",
-    "username avatar",
-  );
+export const emitNotification = async (userId: string, _notification: NotificationData) => {
+  const user = await User.findById(userId).populate("notifications.from", "username avatar");
   if (!user) return;
   const notif = user.notifications[user.notifications.length - 1];
   io.to(userId).emit("newNotification", notif);

@@ -4,10 +4,7 @@ import Test from "../../models/Test";
 import UserModel from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 
-export const submitTest = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const submitTest = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });

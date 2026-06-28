@@ -26,12 +26,14 @@ watch(userAvatar, function (newAvatar) {
 });
 
 watch(
-  function () { return user.value; },
+  function () {
+    return user.value;
+  },
   function (newUser) {
     if (newUser) {
       username.value = newUser.username || "";
     }
-  }
+  },
 );
 
 function handleAvatarUpload(event: Event) {
@@ -60,8 +62,7 @@ async function generateUsername() {
     const data = await response.json();
     const randomUser = data.results[0];
     username.value = randomUser.login.username;
-  }
-  catch (error) {
+  } catch (error) {
     username.value = "user_" + Math.random().toString(36).substring(2, 10);
   }
 }
@@ -75,8 +76,7 @@ async function saveSettings() {
       formData.append("avatar", file);
       formData.append("username", username.value);
       await authStore.completeProfileSetup(username.value, formData);
-    }
-    else if (avatarPreview.value.startsWith("data:")) {
+    } else if (avatarPreview.value.startsWith("data:")) {
       const response = await fetch(avatarPreview.value);
       const blob = await response.blob();
       const mimeType = blob.type || "image/svg+xml";
@@ -86,14 +86,12 @@ async function saveSettings() {
       formData.append("avatar", newFile);
       formData.append("username", username.value);
       await authStore.completeProfileSetup(username.value, formData);
-    }
-    else {
+    } else {
       await authStore.completeProfileSetup(username.value, avatarPreview.value);
     }
 
     emit("close");
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Ошибка сохранения:", error);
   }
 }
@@ -117,11 +115,14 @@ async function saveSettings() {
                   <img :src="avatarPreview" alt="avatar" />
                 </div>
                 <div class="avatar-actions">
-                  <input ref="fileInput" type="file" accept="image/*" class="hidden-input"
-                    @change="handleAvatarUpload" />
-                  <button class="btn-secondary" @click="resetAvatar">
-                    Сбросить
-                  </button>
+                  <input
+                    ref="fileInput"
+                    type="file"
+                    accept="image/*"
+                    class="hidden-input"
+                    @change="handleAvatarUpload"
+                  />
+                  <button class="btn-secondary" @click="resetAvatar">Сбросить</button>
                   <button class="btn-primary" @click="showAvatarModal = true">
                     Создать аватар
                   </button>
@@ -137,28 +138,31 @@ async function saveSettings() {
             <div class="input-group">
               <label class="input-label">Имя пользователя</label>
               <div class="input-with-button">
-                <input v-model="username" type="text" class="input-field" placeholder="Введите имя" />
-                <button class="btn-secondary" @click="generateUsername">
-                  Сгенерировать
-                </button>
+                <input
+                  v-model="username"
+                  type="text"
+                  class="input-field"
+                  placeholder="Введите имя"
+                />
+                <button class="btn-secondary" @click="generateUsername">Сгенерировать</button>
               </div>
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button class="btn-secondary" @click="emit('close')">
-            Отмена
-          </button>
-          <button class="btn-primary" @click="saveSettings">
-            Сохранить
-          </button>
+          <button class="btn-secondary" @click="emit('close')">Отмена</button>
+          <button class="btn-primary" @click="saveSettings">Сохранить</button>
         </div>
       </div>
     </div>
   </Teleport>
 
-  <AvatarGeneratorModal :is-open="showAvatarModal" @close="showAvatarModal = false" @generate="handleAvatarGenerated" />
+  <AvatarGeneratorModal
+    :is-open="showAvatarModal"
+    @close="showAvatarModal = false"
+    @generate="handleAvatarGenerated"
+  />
 </template>
 
 <style lang="scss">

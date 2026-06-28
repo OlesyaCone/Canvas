@@ -33,8 +33,7 @@ async function submit() {
   try {
     const group = await groupStore.createGroup(formData);
     router.push({ name: "groupView", params: { groupId: group._id } });
-  }
-  catch (e) {
+  } catch (e) {
     console.error("Ошибка создания группы:", e);
   }
 }
@@ -56,16 +55,25 @@ function onBack() {
 
       <div class="form-group">
         <label>Описание</label>
-        <textarea v-model="description" class="input" rows="3" placeholder="Описание группы"></textarea>
+        <textarea
+          v-model="description"
+          class="input"
+          rows="3"
+          placeholder="Описание группы"
+        ></textarea>
       </div>
 
       <div class="form-group">
         <label>Аватар группы</label>
         <div class="file-upload-wrapper">
-          <label for="group-avatar" class="file-upload-btn">
-            Выберите файл
-          </label>
-          <input id="group-avatar" type="file" accept="image/*" class="file-input-hidden" @change="onFileChange" />
+          <label for="group-avatar" class="file-upload-btn"> Выберите файл </label>
+          <input
+            id="group-avatar"
+            type="file"
+            accept="image/*"
+            class="file-input-hidden"
+            @change="onFileChange"
+          />
           <span class="file-name">
             {{ avatarFile ? avatarFile.name : "Файл не выбран" }}
           </span>
@@ -73,12 +81,8 @@ function onBack() {
       </div>
 
       <div class="form-actions">
-        <button class="btn btn-primary" :disabled="!name.trim()" @click="submit">
-          Создать
-        </button>
-        <button class="btn btn-secondary" @click="onBack">
-          Отмена
-        </button>
+        <button class="btn btn-primary" :disabled="!name.trim()" @click="submit">Создать</button>
+        <button class="btn btn-secondary" @click="onBack">Отмена</button>
       </div>
     </div>
   </div>

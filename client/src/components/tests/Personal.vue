@@ -9,13 +9,15 @@ const router = useRouter();
 const testStore = useTestStore();
 
 watch(
-  function () { return route.name; },
+  function () {
+    return route.name;
+  },
   function (name) {
     if (name === "personal") {
       testStore.fetchMyTests();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function onStart(testId: string) {
@@ -31,13 +33,16 @@ function onEdit(testId: string) {
   <div class="tests-container">
     <h2 class="page-title">Мои тесты</h2>
 
-    <div v-if="testStore.myTests.length === 0" class="empty">
-      У вас пока нет созданных тестов.
-    </div>
+    <div v-if="testStore.myTests.length === 0" class="empty">У вас пока нет созданных тестов.</div>
 
     <div v-else class="tests-grid">
-      <TestCard v-for="test in testStore.myTests" :key="test._id" :test="test" @start="(id: string) => onStart(id)"
-        @edit="(id: string) => onEdit(id)" />
+      <TestCard
+        v-for="test in testStore.myTests"
+        :key="test._id"
+        :test="test"
+        @start="(id: string) => onStart(id)"
+        @edit="(id: string) => onEdit(id)"
+      />
     </div>
   </div>
 </template>

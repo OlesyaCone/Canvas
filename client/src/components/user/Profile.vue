@@ -22,7 +22,7 @@ const avatarSrc = computed(function () {
 });
 
 onMounted(function () {
-  const uid = props.userId || route.params.userId as string;
+  const uid = props.userId || (route.params.userId as string);
   if (uid && uid !== authStore.user?._id) {
     profileStore.fetchUserProfile(uid);
   } else {
@@ -34,7 +34,11 @@ onMounted(function () {
 <template>
   <div v-if="profileStore.stats" class="profile-page">
     <h2 class="page-title">
-      {{ props.userId && props.userId !== authStore.user?._id ? "Профиль пользователя" : "Мой профиль" }}
+      {{
+        props.userId && props.userId !== authStore.user?._id
+          ? "Профиль пользователя"
+          : "Мой профиль"
+      }}
     </h2>
 
     <div class="profile-card card">
@@ -68,14 +72,16 @@ onMounted(function () {
     <div v-if="profileStore.stats.publicTests?.length" class="public-tests-section">
       <h3>Публичные тесты</h3>
       <div class="tests-grid">
-        <div
-          v-for="test in profileStore.stats.publicTests"
-          :key="test._id"
-          class="test-card"
-        >
+        <div v-for="test in profileStore.stats.publicTests" :key="test._id" class="test-card">
           <div class="test-image-wrapper">
             <img
-              :src="test.img?.startsWith('http') || test.img?.startsWith('data:') ? test.img : test.img ? `http://localhost:5000${test.img}` : noPhoto"
+              :src="
+                test.img?.startsWith('http') || test.img?.startsWith('data:')
+                  ? test.img
+                  : test.img
+                    ? `http://localhost:5000${test.img}`
+                    : noPhoto
+              "
               class="test-image"
               alt="cover"
             />
@@ -83,9 +89,7 @@ onMounted(function () {
           <div class="test-body">
             <h3 class="test-title">{{ test.title }}</h3>
             <div class="test-meta">
-              <span class="meta-item">
-                {{ test.question?.length || 0 }} вопросов
-              </span>
+              <span class="meta-item"> {{ test.question?.length || 0 }} вопросов </span>
             </div>
             <div class="test-stats-row">
               <span class="stat-btn">
@@ -97,7 +101,9 @@ onMounted(function () {
                   stroke="currentColor"
                   stroke-width="2"
                 >
-                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                  <path
+                    d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                  />
                 </svg>
                 {{ test.likes }}
               </span>
@@ -110,7 +116,9 @@ onMounted(function () {
                   stroke="currentColor"
                   stroke-width="2"
                 >
-                  <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H17" />
+                  <path
+                    d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H17"
+                  />
                 </svg>
                 {{ test.dislikes }}
               </span>

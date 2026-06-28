@@ -43,8 +43,7 @@ const groupSchema = new mongoose.Schema(
 
 groupSchema.pre("save", function (next) {
   if (!this.inviteCode) {
-    this.inviteCode =
-      Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    this.inviteCode = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }
   next();
 });

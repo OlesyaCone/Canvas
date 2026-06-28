@@ -14,10 +14,7 @@ function getSystemTheme(): boolean {
 }
 
 function applyTheme() {
-  document.documentElement.setAttribute(
-    "data-theme",
-    isDark.value ? "dark" : "light"
-  );
+  document.documentElement.setAttribute("data-theme", isDark.value ? "dark" : "light");
 }
 
 function toggleTheme() {
@@ -38,8 +35,7 @@ onMounted(function () {
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     isDark.value = savedTheme === "dark";
-  }
-  else {
+  } else {
     isDark.value = getSystemTheme();
   }
   applyTheme();
@@ -74,8 +70,16 @@ onUnmounted(function () {
 
     <div class="header-right">
       <div class="notif-bell" @click.stop="showNotifications = !showNotifications">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-          stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
@@ -92,18 +96,21 @@ onUnmounted(function () {
           </button>
         </div>
 
-        <div v-if="notifStore.notifications.length === 0" class="notif-empty">
-          Нет уведомлений
-        </div>
+        <div v-if="notifStore.notifications.length === 0" class="notif-empty">Нет уведомлений</div>
 
-        <div v-for="n in notifStore.notifications" :key="n._id" class="notif-item" :class="{ unread: !n.read }">
+        <div
+          v-for="n in notifStore.notifications"
+          :key="n._id"
+          class="notif-item"
+          :class="{ unread: !n.read }"
+        >
           <p>{{ n.text }}</p>
           <span>{{ new Date(n.createdAt).toLocaleString() }}</span>
         </div>
       </div>
 
       <label class="theme-toggle">
-        <input type="checkbox" class="theme-toggle-input" v-model="isDark" @change="toggleTheme" />
+        <input v-model="isDark" type="checkbox" class="theme-toggle-input" @change="toggleTheme" />
         <svg class="theme-toggle-svg" viewBox="0 0 20 20" fill="currentColor" stroke="none">
           <mask id="moon-mask">
             <rect x="0" y="0" width="20" height="20" fill="white" />

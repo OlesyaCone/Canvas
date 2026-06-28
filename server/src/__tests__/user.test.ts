@@ -2,12 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/User";
 import Test from "../models/Test";
-import {
-  getProfile,
-  getProfileStats,
-  getUserProfile,
-  updateProfile,
-} from "../controllers/user";
+import { getProfile, getProfileStats, getUserProfile, updateProfile } from "../controllers/user";
 
 jest.mock("jsonwebtoken");
 jest.mock("../models/User");

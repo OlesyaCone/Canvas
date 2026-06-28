@@ -1,11 +1,6 @@
 import { Router } from "express";
 import { protect } from "../middleware/auth";
-import {
-  createTest,
-  updateTest,
-  deleteTest,
-  getTestById,
-} from "../controllers/tests/crud";
+import { createTest, updateTest, deleteTest, getTestById } from "../controllers/tests/crud";
 import { getMyTests, getPassedTests } from "../controllers/tests/my";
 import { submitTest } from "../controllers/tests/submit";
 import { uploadTestImage } from "../controllers/upload";

@@ -70,9 +70,7 @@ describe("Creating", function () {
 
   test("добавление вопроса", async function () {
     const wrapper = createWrapper();
-    const questionInput = wrapper.find(
-      '.add-question-form input[placeholder="Введите вопрос"]',
-    );
+    const questionInput = wrapper.find('.add-question-form input[placeholder="Введите вопрос"]');
     const correctInput = wrapper.find(
       '.add-question-form input[placeholder="Введите правильный ответ"]',
     );

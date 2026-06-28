@@ -2,11 +2,11 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { Request, Response } from "express";
-import { fileURLToPath } from "url";
 import crypto from "crypto";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+function getUploadsDir(): string {
+  return path.join(process.cwd(), "uploads");
+}
 
 interface MulterRequest extends Request {
   user?: { _id?: { toString(): string } };
@@ -15,7 +15,7 @@ interface MulterRequest extends Request {
 const createStorage = (subfolder: string) =>
   multer.diskStorage({
     destination: (_req, _file, cb) => {
-      const dir = path.join(__dirname, "..", "..", "uploads", subfolder);
+      const dir = path.join(getUploadsDir(), subfolder);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       cb(null, dir);
     },
@@ -29,11 +29,7 @@ const createStorage = (subfolder: string) =>
     },
   });
 
-const fileFilter = (
-  _req: Request,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback,
-) => {
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
@@ -59,13 +55,7 @@ export const uploadGroupAvatar = multer({
 
 export const getFile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const filePath = path.join(
-      __dirname,
-      "..",
-      "..",
-      "uploads",
-      req.params.path,
-    );
+    const filePath = path.join(getUploadsDir(), req.params.path);
     if (!fs.existsSync(filePath)) {
       res.status(404).json({ message: "Файл не найден" });
       return;
@@ -76,10 +66,7 @@ export const getFile = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const uploadAvatar = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const uploadAvatar = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file) {
       res.status(400).json({ message: "Файл не загружен" });

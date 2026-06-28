@@ -2,11 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 
-export const protect = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const protect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     let token: string | undefined;
 
@@ -19,10 +15,7 @@ export const protect = async (
       return;
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_ACCESS_SECRET as string,
-    ) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
     const user = await User.findById(decoded.id);
 
     if (!user) {

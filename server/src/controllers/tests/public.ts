@@ -7,10 +7,7 @@ interface QueryParams {
   sort?: string;
 }
 
-export const getPublicTests = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getPublicTests = async (req: Request, res: Response): Promise<void> => {
   const { search, sort } = req.query as QueryParams;
   const userId = getUserId(req);
 
@@ -30,9 +27,7 @@ export const getPublicTests = async (
   const testsWithMeta = tests.map((test) => {
     const testObj = test.toObject() as Record<string, unknown>;
     if (userId) {
-      const reaction = test.reactions.find(
-        (r) => r.user?.toString() === userId,
-      );
+      const reaction = test.reactions.find((r) => r.user?.toString() === userId);
       testObj.myReaction = reaction?.type || null;
     }
     testObj.commentsCount = test.comments.length;

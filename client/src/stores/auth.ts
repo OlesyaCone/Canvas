@@ -1,12 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type {
-  User,
-  AuthResponse,
-  RegisterPayload,
-  LoginPayload,
-  ProfilePayload,
-} from "../types";
+import type { User, AuthResponse, RegisterPayload, LoginPayload, ProfilePayload } from "../types";
 import api from "../api/axios";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -34,11 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage.removeItem("refreshToken");
   };
 
-  const setAuth = ({
-    user: u,
-    accessToken: access,
-    refreshToken: refresh,
-  }: AuthResponse) => {
+  const setAuth = ({ user: u, accessToken: access, refreshToken: refresh }: AuthResponse) => {
     user.value = u;
     isAuth.value = true;
     accessToken.value = access;
@@ -66,10 +56,7 @@ export const useAuthStore = defineStore("auth", () => {
     return data;
   };
 
-  const completeProfileSetup = async (
-    username: string,
-    avatar: string | FormData,
-  ) => {
+  const completeProfileSetup = async (username: string, avatar: string | FormData) => {
     if (avatar instanceof FormData) {
       avatar.append("username", username);
       const { data } = await api.patch<{ user: User }>("/auth/profile", avatar);

@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import Group from "../../models/Group";
 import Test from "../../models/Test";
-import {
-  submitGroupResult,
-  getGroupResults,
-  getTestStats,
-} from "../../controllers/groups/results";
+import { submitGroupResult, getGroupResults, getTestStats } from "../../controllers/groups/results";
 import { getUserId } from "../../utils/getUserId";
 
 jest.mock("../../models/Group");
@@ -201,8 +197,6 @@ describe("getTestStats", function () {
     const req = mockReq({}, { id: "g1", testId: "t1" });
     const res = mockRes();
     await getTestStats(req, res);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ totalPassed: 2 }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ totalPassed: 2 }));
   });
 });

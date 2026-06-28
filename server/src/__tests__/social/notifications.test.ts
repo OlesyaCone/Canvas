@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import User from "../../models/User";
-import {
-  getNotifications,
-  markRead,
-} from "../../controllers/social/notifications";
+import { getNotifications, markRead } from "../../controllers/social/notifications";
 import { getUserId } from "../../utils/getUserId";
 
 jest.mock("../../models/User");

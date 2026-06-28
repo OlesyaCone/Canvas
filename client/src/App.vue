@@ -40,8 +40,7 @@ async function tryRestoreFromStoredToken(): Promise<boolean> {
       auth.isAuth = true;
       return true;
     }
-  }
-  catch {
+  } catch {
     return false;
   }
 
@@ -62,8 +61,7 @@ async function tryRefreshToken(): Promise<boolean> {
       }
       return true;
     }
-  }
-  catch {
+  } catch {
     return false;
   }
 
@@ -81,13 +79,11 @@ async function tryHandleOAuthParams(): Promise<boolean> {
 
     if (userParam) {
       userData = JSON.parse(decodeURIComponent(userParam));
-    }
-    else {
+    } else {
       try {
         const payload = JSON.parse(atob(accessToken.split(".")[1]));
         userData._id = payload.id;
-      }
-      catch { }
+      } catch {}
     }
 
     auth.setAuth({ user: userData, accessToken });
@@ -97,8 +93,7 @@ async function tryHandleOAuthParams(): Promise<boolean> {
       if (data.user) {
         auth.user = data.user;
       }
-    }
-    catch { }
+    } catch {}
 
     window.history.replaceState({}, "", "/");
     return true;
@@ -112,8 +107,7 @@ async function tryHandleOAuthParams(): Promise<boolean> {
         window.history.replaceState({}, "", "/");
         return true;
       }
-    }
-    catch {
+    } catch {
       return false;
     }
   }

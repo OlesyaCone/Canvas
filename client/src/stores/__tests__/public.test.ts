@@ -56,9 +56,7 @@ describe("public store", function () {
 
   test("toggleReaction ставит лайк", async function () {
     const store = usePublicStore();
-    store.tests = [
-      { _id: "t1", likes: 0, dislikes: 0, myReaction: null },
-    ] as any[];
+    store.tests = [{ _id: "t1", likes: 0, dislikes: 0, myReaction: null }] as any[];
 
     await store.toggleReaction("t1", "like");
 
@@ -68,9 +66,7 @@ describe("public store", function () {
 
   test("toggleReaction меняет лайк на дизлайк", async function () {
     const store = usePublicStore();
-    store.tests = [
-      { _id: "t1", likes: 1, dislikes: 0, myReaction: "like" },
-    ] as any[];
+    store.tests = [{ _id: "t1", likes: 1, dislikes: 0, myReaction: "like" }] as any[];
 
     await store.toggleReaction("t1", "dislike");
 
@@ -81,9 +77,7 @@ describe("public store", function () {
 
   test("toggleReaction убирает реакцию при повторном клике", async function () {
     const store = usePublicStore();
-    store.tests = [
-      { _id: "t1", likes: 1, dislikes: 0, myReaction: "like" },
-    ] as any[];
+    store.tests = [{ _id: "t1", likes: 1, dislikes: 0, myReaction: "like" }] as any[];
 
     await store.toggleReaction("t1", "like");
 

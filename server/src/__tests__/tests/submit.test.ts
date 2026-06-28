@@ -132,10 +132,7 @@ describe("submitTest", function () {
 
     (Test.findById as jest.Mock).mockResolvedValue(testMock);
 
-    const req = mockReq(
-      { answers: [{ questionIndex: 0, answer: "a" }] },
-      { id: "t1" },
-    );
+    const req = mockReq({ answers: [{ questionIndex: 0, answer: "a" }] }, { id: "t1" });
     const res = mockRes();
 
     await submitTest(req, res);

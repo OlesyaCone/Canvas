@@ -14,11 +14,7 @@ jest.mock("../../models/Group");
 jest.mock("../../models/User");
 jest.mock("../../utils/getUserId");
 
-function mockReq(
-  body: object = {},
-  params: object = {},
-  file?: object,
-): Request {
+function mockReq(body: object = {}, params: object = {}, file?: object): Request {
   const req = { body, params, file } as unknown as Request;
   return req;
 }
@@ -90,9 +86,7 @@ describe("getGroup", function () {
     const req = mockReq({}, { id: "g1" });
     const res = mockRes();
     await getGroup(req, res);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ _id: "g1" }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ _id: "g1" }));
   });
 });
 

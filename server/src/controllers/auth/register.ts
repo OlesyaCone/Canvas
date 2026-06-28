@@ -18,19 +18,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const existingPending = await PendingUser.findOne({ email });
 
     if (existingUser || existingPending) {
-      res.status(400).json({ 
-        message: "Email или имя пользователя уже занято" 
+      res.status(400).json({
+        message: "Email или имя пользователя уже занято",
       });
       return;
     }
 
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
-    await PendingUser.create({ 
-      email, 
-      username, 
-      password, 
-      verificationToken 
+    await PendingUser.create({
+      email,
+      username,
+      password,
+      verificationToken,
     });
 
     await sendVerificationEmail(email, verificationToken);

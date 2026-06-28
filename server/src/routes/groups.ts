@@ -15,11 +15,7 @@ import {
   demoteMember,
 } from "../controllers/groups/members";
 import { assignTest, getGroupTests } from "../controllers/groups/tests";
-import {
-  submitGroupResult,
-  getGroupResults,
-  getTestStats,
-} from "../controllers/groups/results";
+import { submitGroupResult, getGroupResults, getTestStats } from "../controllers/groups/results";
 import { getMessages } from "../controllers/social/messages";
 import { upload } from "../controllers/upload";
 

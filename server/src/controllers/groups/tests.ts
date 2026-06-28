@@ -7,10 +7,7 @@ import { getUserId } from "../../utils/getUserId";
 import { emitNotification } from "../../services/socket";
 import { sendTestAssignedEmail } from "../../services/mail";
 
-export const assignTest = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const assignTest = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -79,10 +76,7 @@ export const assignTest = async (
   res.status(201).json(group.tests[group.tests.length - 1]);
 };
 
-export const getGroupTests = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getGroupTests = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });

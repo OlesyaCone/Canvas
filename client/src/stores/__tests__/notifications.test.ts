@@ -92,9 +92,6 @@ describe("notification store", function () {
     store.connectSocket();
 
     expect(io).toHaveBeenCalled();
-    expect(mockSocket.on).toHaveBeenCalledWith(
-      "newNotification",
-      expect.any(Function),
-    );
+    expect(mockSocket.on).toHaveBeenCalledWith("newNotification", expect.any(Function));
   });
 });

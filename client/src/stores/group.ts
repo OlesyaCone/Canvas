@@ -61,9 +61,7 @@ export const useGroupStore = defineStore("group", () => {
       currentGroup.value = {
         ...currentGroup.value,
         members: currentGroup.value.members.filter((m) => m._id !== userId),
-        moderators: currentGroup.value.moderators.filter(
-          (m) => m._id !== userId,
-        ),
+        moderators: currentGroup.value.moderators.filter((m) => m._id !== userId),
       };
     }
   };
@@ -94,11 +92,7 @@ export const useGroupStore = defineStore("group", () => {
     return data;
   };
 
-  const assignTest = async (
-    groupId: string,
-    testId: string,
-    deadline?: string,
-  ) => {
+  const assignTest = async (groupId: string, testId: string, deadline?: string) => {
     const { data } = await api.post(`/groups/${groupId}/tests`, {
       testId,
       deadline,
@@ -116,9 +110,7 @@ export const useGroupStore = defineStore("group", () => {
   const fetchTestStats = async (groupId: string, testId: string) => {
     loadingStats.value = true;
     try {
-      const { data } = await api.get(
-        `/groups/${groupId}/tests/${testId}/stats`,
-      );
+      const { data } = await api.get(`/groups/${groupId}/tests/${testId}/stats`);
       testStats.value = data;
       return data;
     } catch (e) {

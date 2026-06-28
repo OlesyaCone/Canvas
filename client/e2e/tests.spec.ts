@@ -3,10 +3,7 @@ import { test, expect } from "@playwright/test";
 test("создание и прохождение теста", async ({ page }) => {
   await page.goto("/");
 
-  await page.fill(
-    'input[placeholder="user@mail.com"]',
-    "gizatullin.serzh1976@mail.ru",
-  );
+  await page.fill('input[placeholder="user@mail.com"]', "gizatullin.serzh1976@mail.ru");
   await page.fill('input[placeholder="••••••"]', "123321");
   await page.click("text=Войти");
 
@@ -14,14 +11,8 @@ test("создание и прохождение теста", async ({ page }) =
 
   await page.click("text=Составить тест");
   await page.fill('input[placeholder="Введите название"]', "E2E Test");
-  await page.fill(
-    '.add-question-form input[placeholder="Введите вопрос"]',
-    "2+2?",
-  );
-  await page.fill(
-    '.add-question-form input[placeholder="Введите правильный ответ"]',
-    "4",
-  );
+  await page.fill('.add-question-form input[placeholder="Введите вопрос"]', "2+2?");
+  await page.fill('.add-question-form input[placeholder="Введите правильный ответ"]', "4");
   await page.locator(".add-question-form .btn-add").last().click();
   await page.click("text=Создать тест");
 

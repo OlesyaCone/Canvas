@@ -17,9 +17,7 @@ describe("Auth Integration", function () {
     const pending = await PendingUser.findOne({ email: "a@a.com" });
     expect(pending).toBeDefined();
 
-    const verify = await request(app).get(
-      `/api/auth/verify/${pending.verificationToken}`,
-    );
+    const verify = await request(app).get(`/api/auth/verify/${pending.verificationToken}`);
     expect(verify.status).toBe(200);
     expect(verify.body.accessToken).toBeDefined();
     const accessToken = verify.body.accessToken;

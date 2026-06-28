@@ -47,9 +47,7 @@ describe("getMessages", function () {
   test("успешное получение", async function () {
     (getUserId as jest.Mock).mockReturnValue("user1");
 
-    const messages = [
-      { _id: "m1", text: "hello", user: { _id: "u1", username: "aaa" } },
-    ];
+    const messages = [{ _id: "m1", text: "hello", user: { _id: "u1", username: "aaa" } }];
 
     (Group.findById as jest.Mock).mockReturnValue({
       populate: jest.fn().mockResolvedValue({ messages }),

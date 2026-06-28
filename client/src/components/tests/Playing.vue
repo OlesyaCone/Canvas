@@ -36,8 +36,7 @@ const currentQuestion = computed(function () {
 onMounted(async function () {
   try {
     await testStore.fetchTestById(props.testId);
-  }
-  catch (e) {
+  } catch (e) {
     console.error("Ошибка загрузки теста:", e);
   }
 });
@@ -64,25 +63,19 @@ async function submitAnswers() {
 
   try {
     if (props.groupTestId) {
-      const { data } = await api.post(
-        `/groups/${props.groupTestId}/tests/${props.testId}/submit`,
-        { answers }
-      );
+      const { data } = await api.post(`/groups/${props.groupTestId}/tests/${props.testId}/submit`, {
+        answers,
+      });
       score.value = data.score;
       total.value = data.total;
-    }
-    else {
-      const { data } = await api.post(
-        `/tests/${props.testId}/submit`,
-        { answers }
-      );
+    } else {
+      const { data } = await api.post(`/tests/${props.testId}/submit`, { answers });
       score.value = data.score;
       total.value = data.total;
     }
     submitted.value = true;
     testStore.passedTests = [];
-  }
-  catch (e) {
+  } catch (e) {
     console.error("Ошибка отправки ответов:", e);
   }
 }
@@ -94,27 +87,19 @@ function goBack() {
 
 <template>
   <div class="playing-test">
-    <div v-if="!test" class="loading">
-      Загрузка теста...
-    </div>
+    <div v-if="!test" class="loading">Загрузка теста...</div>
 
     <template v-else>
       <div class="test-header">
-        <button class="btn btn-secondary" @click="goBack">
-          ← Назад
-        </button>
+        <button class="btn btn-secondary" @click="goBack">← Назад</button>
         <h2 class="page-title">{{ test.title }}</h2>
-        <div class="progress-badge">
-          {{ currentIndex + 1 }} / {{ totalQuestions }}
-        </div>
+        <div class="progress-badge">{{ currentIndex + 1 }} / {{ totalQuestions }}</div>
       </div>
 
       <div v-if="submitted" class="result-card card">
         <h3>Результат</h3>
         <p class="score">{{ score }} / {{ total }}</p>
-        <button class="btn btn-primary" @click="goBack">
-          Вернуться
-        </button>
+        <button class="btn btn-primary" @click="goBack">Вернуться</button>
       </div>
 
       <div v-else-if="currentQuestion" class="question-card">
@@ -122,30 +107,45 @@ function goBack() {
 
         <div v-if="currentQuestion.img" class="question-image">
           <img
-            :src="currentQuestion.img.startsWith('http') ? currentQuestion.img : `http://localhost:5000${currentQuestion.img}`"
-            alt="изображение вопроса" />
+            :src="
+              currentQuestion.img.startsWith('http')
+                ? currentQuestion.img
+                : `http://localhost:5000${currentQuestion.img}`
+            "
+            alt="изображение вопроса"
+          />
         </div>
 
         <div class="answers-grid">
-          <label v-for="(ans, i) in currentQuestion.answers" :key="i" class="answer-option"
-            :class="{ selected: selectedAnswers[currentIndex] === ans }">
-            <input type="radio" :name="`question-${currentIndex}`" :value="ans"
-              v-model="selectedAnswers[currentIndex]" />
+          <label
+            v-for="(ans, i) in currentQuestion.answers"
+            :key="i"
+            class="answer-option"
+            :class="{ selected: selectedAnswers[currentIndex] === ans }"
+          >
+            <input
+              v-model="selectedAnswers[currentIndex]"
+              type="radio"
+              :name="`question-${currentIndex}`"
+              :value="ans"
+            />
             {{ ans }}
           </label>
         </div>
 
         <div class="nav-buttons">
-          <button v-if="currentIndex > 0" class="btn btn-secondary" @click="goPrev">
-            ← Назад
-          </button>
+          <button v-if="currentIndex > 0" class="btn btn-secondary" @click="goPrev">← Назад</button>
           <div v-else class="btn-placeholder"></div>
 
           <button v-if="currentIndex < totalQuestions - 1" class="btn btn-primary" @click="goNext">
             Далее →
           </button>
-          <button v-else class="btn btn-primary submit-btn"
-            :disabled="Object.keys(selectedAnswers).length !== totalQuestions" @click="submitAnswers">
+          <button
+            v-else
+            class="btn btn-primary submit-btn"
+            :disabled="Object.keys(selectedAnswers).length !== totalQuestions"
+            @click="submitAnswers"
+          >
             Отправить ответы
           </button>
         </div>

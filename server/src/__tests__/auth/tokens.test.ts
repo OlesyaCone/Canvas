@@ -3,10 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../../models/User";
 import PendingUser from "../../models/PendingUser";
 import { refresh, logout, verifyEmail } from "../../controllers/auth/tokens";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../../controllers/auth/generation";
+import { generateAccessToken, generateRefreshToken } from "../../controllers/auth/generation";
 
 jest.mock("jsonwebtoken");
 jest.mock("../../models/User");

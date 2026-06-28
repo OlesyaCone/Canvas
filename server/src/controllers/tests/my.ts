@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import Test from "../../models/Test";
 import { getUserId } from "../../utils/getUserId";
 
-export const getMyTests = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getMyTests = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -17,10 +14,7 @@ export const getMyTests = async (
   res.json(tests);
 };
 
-export const getPassedTests = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getPassedTests = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });

@@ -67,8 +67,12 @@ function addQuestion() {
   }
 
   const filteredAnswers = q.answers
-    .map(function (a) { return a.trim(); })
-    .filter(function (a) { return a !== ""; });
+    .map(function (a) {
+      return a.trim();
+    })
+    .filter(function (a) {
+      return a !== "";
+    });
 
   const uniqueAnswers = [...new Set(filteredAnswers)];
 
@@ -137,8 +141,7 @@ async function submit() {
   try {
     await testStore.createTest(formData);
     router.push({ name: "personal" });
-  }
-  catch (e) {
+  } catch (e) {
     console.error("Ошибка создания теста:", e);
   }
 }
@@ -160,12 +163,17 @@ function onBack() {
 
       <div class="form-group">
         <label>Описание</label>
-        <textarea v-model="description" class="input" rows="3" placeholder="Описание теста"></textarea>
+        <textarea
+          v-model="description"
+          class="input"
+          rows="3"
+          placeholder="Описание теста"
+        ></textarea>
       </div>
 
       <div class="form-group">
         <label class="checkbox-label">
-          <input type="checkbox" v-model="isPublic" />
+          <input v-model="isPublic" type="checkbox" />
           <span>Сделать тест публичным</span>
         </label>
       </div>
@@ -173,10 +181,14 @@ function onBack() {
       <div class="form-group">
         <label>Обложка теста</label>
         <div class="file-upload-wrapper">
-          <label for="test-cover" class="file-upload-btn">
-            Выберите файл
-          </label>
-          <input id="test-cover" type="file" accept="image/*" class="file-input-hidden" @change="onFileChange" />
+          <label for="test-cover" class="file-upload-btn"> Выберите файл </label>
+          <input
+            id="test-cover"
+            type="file"
+            accept="image/*"
+            class="file-input-hidden"
+            @change="onFileChange"
+          />
           <span class="file-name">
             {{ imgFile ? imgFile.name : "Файл не выбран" }}
           </span>
@@ -192,9 +204,7 @@ function onBack() {
       <div v-for="(q, idx) in questions" :key="idx" class="question-card">
         <div class="question-header">
           <span class="question-number">Вопрос {{ idx + 1 }}</span>
-          <button class="btn-icon" title="Удалить вопрос" @click="removeQuestion(idx)">
-            ✕
-          </button>
+          <button class="btn-icon" title="Удалить вопрос" @click="removeQuestion(idx)">✕</button>
         </div>
         <p class="question-text">{{ q.question }}</p>
         <div v-if="q.imgPreview" class="question-image">
@@ -222,11 +232,14 @@ function onBack() {
         <div class="form-group">
           <label>Изображение вопроса (необязательно)</label>
           <div class="file-upload-wrapper">
-            <label for="question-img" class="file-upload-btn">
-              Выберите файл
-            </label>
-            <input id="question-img" type="file" accept="image/*" class="file-input-hidden"
-              @change="onQuestionImageChange" />
+            <label for="question-img" class="file-upload-btn"> Выберите файл </label>
+            <input
+              id="question-img"
+              type="file"
+              accept="image/*"
+              class="file-input-hidden"
+              @change="onQuestionImageChange"
+            />
             <span class="file-name">
               {{ newQuestion.imgFile ? newQuestion.imgFile.name : "Файл не выбран" }}
             </span>
@@ -239,28 +252,36 @@ function onBack() {
         <div class="form-group">
           <label>Варианты ответов</label>
           <div v-for="(_, i) in newQuestion.answers" :key="i" class="answer-row">
-            <input v-model="newQuestion.answers[i]" class="input" :placeholder="'Ответ ' + (i + 1)" />
-            <button v-if="newQuestion.answers.length > 1" class="btn-icon" title="Удалить вариант"
-              @click="removeAnswer(i)">
+            <input
+              v-model="newQuestion.answers[i]"
+              class="input"
+              :placeholder="'Ответ ' + (i + 1)"
+            />
+            <button
+              v-if="newQuestion.answers.length > 1"
+              class="btn-icon"
+              title="Удалить вариант"
+              @click="removeAnswer(i)"
+            >
               ✕
             </button>
           </div>
-          <button class="btn btn-add" @click="addAnswer">
-            + Добавить вариант
-          </button>
+          <button class="btn btn-add" @click="addAnswer">+ Добавить вариант</button>
         </div>
 
         <div class="form-group">
           <label>Правильный ответ</label>
-          <input v-model="newQuestion.correctAnswer" class="input" placeholder="Введите правильный ответ" />
+          <input
+            v-model="newQuestion.correctAnswer"
+            class="input"
+            placeholder="Введите правильный ответ"
+          />
           <small class="hint">
             Этот вариант автоматически добавится в список ответов, если его там нет.
           </small>
         </div>
 
-        <button class="btn btn-add" @click="addQuestion">
-          Добавить вопрос
-        </button>
+        <button class="btn btn-add" @click="addQuestion">Добавить вопрос</button>
       </div>
     </div>
 
@@ -268,9 +289,7 @@ function onBack() {
       <button class="btn btn-primary" :disabled="!title || questions.length === 0" @click="submit">
         Создать тест
       </button>
-      <button class="btn btn-secondary" @click="onBack">
-        Отмена
-      </button>
+      <button class="btn btn-secondary" @click="onBack">Отмена</button>
     </div>
   </div>
 </template>

@@ -47,9 +47,11 @@ const isAdmin = computed(function () {
 });
 
 const isModerator = computed(function () {
-  return groupStore.currentGroup?.moderators.some(function (m) {
-    return m._id === authStore.user?._id;
-  }) ?? false;
+  return (
+    groupStore.currentGroup?.moderators.some(function (m) {
+      return m._id === authStore.user?._id;
+    }) ?? false
+  );
 });
 
 function getAvatarUrl(avatar?: string): string {
@@ -149,11 +151,7 @@ async function handleAssignTest() {
   if (!selectedTest.value) {
     return;
   }
-  await groupStore.assignTest(
-    props.groupId,
-    selectedTest.value,
-    deadline.value || undefined
-  );
+  await groupStore.assignTest(props.groupId, selectedTest.value, deadline.value || undefined);
   selectedTest.value = "";
   deadline.value = "";
   await loadData();
@@ -188,12 +186,8 @@ async function openStats(testId: string) {
 <template>
   <div v-if="groupStore.currentGroup" class="group-view">
     <div class="group-top-bar">
-      <button class="btn btn-secondary" @click="emit('back')">
-        ← Назад
-      </button>
-      <button v-if="!isAdmin" class="btn btn-danger" @click="handleLeave">
-        Покинуть группу
-      </button>
+      <button class="btn btn-secondary" @click="emit('back')">← Назад</button>
+      <button v-if="!isAdmin" class="btn btn-danger" @click="handleLeave">Покинуть группу</button>
     </div>
 
     <div class="group-banner">
@@ -219,14 +213,22 @@ async function openStats(testId: string) {
     </div>
 
     <div class="tabs">
-      <button class="tab" :class="{ active: activeTab === 'members' }" @click="activeTab = 'members'">
+      <button
+        class="tab"
+        :class="{ active: activeTab === 'members' }"
+        @click="activeTab = 'members'"
+      >
         Участники ({{ groupStore.currentGroup.members.length }})
       </button>
       <button class="tab" :class="{ active: activeTab === 'tests' }" @click="activeTab = 'tests'">
         Тесты ({{ groupStore.groupTests.length }})
       </button>
-      <button v-if="isAdmin || isModerator" class="tab" :class="{ active: activeTab === 'results' }"
-        @click="activeTab = 'results'">
+      <button
+        v-if="isAdmin || isModerator"
+        class="tab"
+        :class="{ active: activeTab === 'results' }"
+        @click="activeTab = 'results'"
+      >
         Результаты
       </button>
       <button class="tab" :class="{ active: activeTab === 'chat' }" @click="activeTab = 'chat'">
@@ -241,20 +243,29 @@ async function openStats(testId: string) {
         <span v-if="member._id === groupStore.currentGroup.admin._id" class="role-tag admin">
           Админ
         </span>
-        <span v-else-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)"
-          class="role-tag moderator">
+        <span
+          v-else-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)"
+          class="role-tag moderator"
+        >
           Модер
         </span>
-        <span v-else class="role-tag member">
-          Участник
-        </span>
+        <span v-else class="role-tag member"> Участник </span>
 
         <div v-if="isAdmin && member._id !== authStore.user?._id" class="member-controls">
-          <button v-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)" class="btn-icon-sm demote"
-            title="Понизить до участника" @click="handleDemote(member._id)">
+          <button
+            v-if="groupStore.currentGroup.moderators.some((m) => m._id === member._id)"
+            class="btn-icon-sm demote"
+            title="Понизить до участника"
+            @click="handleDemote(member._id)"
+          >
             ⬇
           </button>
-          <button v-else class="btn-icon-sm promote" title="Повысить до модератора" @click="handlePromote(member._id)">
+          <button
+            v-else
+            class="btn-icon-sm promote"
+            title="Повысить до модератора"
+            @click="handlePromote(member._id)"
+          >
             ⬆
           </button>
           <button class="btn-icon-sm kick" title="Кикнуть" @click="handleKick(member._id)">
@@ -269,9 +280,7 @@ async function openStats(testId: string) {
         <h3>Назначить тест</h3>
         <div class="assign-form">
           <select v-model="selectedTest" class="input">
-            <option value="">
-              Выберите тест
-            </option>
+            <option value="">Выберите тест</option>
             <option v-for="t in testStore.myTests" :key="t._id" :value="t._id">
               {{ t.title }}
             </option>
@@ -283,9 +292,7 @@ async function openStats(testId: string) {
         </div>
       </div>
 
-      <div v-if="groupStore.groupTests.length === 0" class="empty">
-        Нет назначенных тестов
-      </div>
+      <div v-if="groupStore.groupTests.length === 0" class="empty">Нет назначенных тестов</div>
 
       <div v-for="gt in groupStore.groupTests" :key="gt._id" class="test-row">
         <div class="test-title">
@@ -303,23 +310,29 @@ async function openStats(testId: string) {
         <template v-else-if="gt.deadline && isExpired(gt.deadline)">
           <span class="test-expired">Просрочен</span>
         </template>
-        <button v-else class="btn btn-primary btn-sm" @click="emit('startTest', gt.test._id, gt._id)">
+        <button
+          v-else
+          class="btn btn-primary btn-sm"
+          @click="emit('startTest', gt.test._id, gt._id)"
+        >
           Пройти
         </button>
       </div>
     </div>
 
     <div v-if="activeTab === 'results'" class="results-panel">
-      <div v-if="groupStore.groupResults.length === 0" class="empty">
-        Нет результатов
-      </div>
+      <div v-if="groupStore.groupResults.length === 0" class="empty">Нет результатов</div>
 
       <div v-for="result in groupStore.groupResults" :key="result._id" class="result-block">
         <div class="result-header-row">
           <h3 class="result-test-title">
             {{ result.test?.title || "Тест" }}
           </h3>
-          <button class="btn btn-sm btn-secondary" title="Статистика" @click="openStats(result._id)">
+          <button
+            class="btn btn-sm btn-secondary"
+            title="Статистика"
+            @click="openStats(result._id)"
+          >
             📊 Статистика
           </button>
         </div>
@@ -331,14 +344,21 @@ async function openStats(testId: string) {
             <span>Процент</span>
             <span>Дата</span>
           </div>
-          <div v-for="r in result.results" :key="r.user?._id || r.user?.toString()" class="result-row">
+          <div
+            v-for="r in result.results"
+            :key="r.user?._id || r.user?.toString()"
+            class="result-row"
+          >
             <span>{{ r.user?.username || "Неизвестный" }}</span>
             <span class="result-score">{{ r.score }} / {{ r.total }}</span>
-            <span class="result-percent" :class="{
-              high: (r.score / r.total) >= 0.8,
-              mid: (r.score / r.total) >= 0.5 && (r.score / r.total) < 0.8,
-              low: (r.score / r.total) < 0.5
-            }">
+            <span
+              class="result-percent"
+              :class="{
+                high: r.score / r.total >= 0.8,
+                mid: r.score / r.total >= 0.5 && r.score / r.total < 0.8,
+                low: r.score / r.total < 0.5,
+              }"
+            >
               {{ Math.round((r.score / r.total) * 100) }}%
             </span>
             <span>{{ new Date(r.completedAt).toLocaleDateString() }}</span>
@@ -349,20 +369,25 @@ async function openStats(testId: string) {
 
     <div v-if="activeTab === 'chat'" class="chat-panel">
       <div ref="chatContainer" class="chat-messages">
-        <div v-if="chatMessages.length === 0" class="empty">
-          Нет сообщений
-        </div>
-        <div v-for="msg in chatMessages" :key="msg._id" class="chat-msg"
-          :class="{ mine: msg.user?._id === authStore.user?._id }">
+        <div v-if="chatMessages.length === 0" class="empty">Нет сообщений</div>
+        <div
+          v-for="msg in chatMessages"
+          :key="msg._id"
+          class="chat-msg"
+          :class="{ mine: msg.user?._id === authStore.user?._id }"
+        >
           <span>{{ msg.text }}</span>
           <strong>{{ msg.user?.username || "Неизвестный" }}</strong>
         </div>
       </div>
       <div class="chat-form">
-        <input v-model="chatText" class="input" placeholder="Сообщение..." @keyup.enter="sendMessage" />
-        <button class="btn btn-primary" @click="sendMessage">
-          Отправить
-        </button>
+        <input
+          v-model="chatText"
+          class="input"
+          placeholder="Сообщение..."
+          @keyup.enter="sendMessage"
+        />
+        <button class="btn btn-primary" @click="sendMessage">Отправить</button>
       </div>
     </div>
 
@@ -371,9 +396,7 @@ async function openStats(testId: string) {
         <div class="modal-content stats-modal">
           <div class="modal-header">
             <h2>Статистика теста</h2>
-            <button class="close-btn" @click="showStats = false">
-              ×
-            </button>
+            <button class="close-btn" @click="showStats = false">×</button>
           </div>
 
           <div v-if="groupStore.testStats" class="modal-body">
@@ -398,13 +421,21 @@ async function openStats(testId: string) {
 
             <h3>Распределение результатов</h3>
             <div class="distribution-bars">
-              <div v-for="(count, i) in groupStore.testStats.distribution" :key="i" class="dist-bar-row">
+              <div
+                v-for="(count, i) in groupStore.testStats.distribution"
+                :key="i"
+                class="dist-bar-row"
+              >
                 <span class="dist-label">
                   {{ ["0-20%", "21-40%", "41-60%", "61-80%", "81-100%"][i as number] }}
                 </span>
                 <div class="dist-bar-wrapper">
-                  <div class="dist-bar"
-                    :style="{ width: Math.max((count / groupStore.testStats.totalPassed) * 100, 2) + '%' }">
+                  <div
+                    class="dist-bar"
+                    :style="{
+                      width: Math.max((count / groupStore.testStats.totalPassed) * 100, 2) + '%',
+                    }"
+                  >
                     {{ count }}
                   </div>
                 </div>
@@ -412,15 +443,23 @@ async function openStats(testId: string) {
             </div>
 
             <h3>Сложность вопросов</h3>
-            <div v-for="(qs, i) in groupStore.testStats.questionStats" :key="i" class="question-stat-row">
+            <div
+              v-for="(qs, i) in groupStore.testStats.questionStats"
+              :key="i"
+              class="question-stat-row"
+            >
               <span class="qs-number">{{ (i as number) + 1 }}</span>
               <span class="qs-text">{{ qs.question }}</span>
               <div class="qs-bar-wrapper">
-                <div class="qs-bar" :style="{ width: qs.percentage + '%' }" :class="{
-                  high: qs.percentage >= 80,
-                  mid: qs.percentage >= 50 && qs.percentage < 80,
-                  low: qs.percentage < 50
-                }">
+                <div
+                  class="qs-bar"
+                  :style="{ width: qs.percentage + '%' }"
+                  :class="{
+                    high: qs.percentage >= 80,
+                    mid: qs.percentage >= 50 && qs.percentage < 80,
+                    low: qs.percentage < 50,
+                  }"
+                >
                   {{ qs.percentage }}%
                 </div>
               </div>
@@ -431,9 +470,7 @@ async function openStats(testId: string) {
     </Teleport>
   </div>
 
-  <div v-else class="loading">
-    Загрузка...
-  </div>
+  <div v-else class="loading">Загрузка...</div>
 </template>
 
 <style lang="scss">

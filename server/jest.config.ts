@@ -27,6 +27,8 @@ const config: Config = {
   transformIgnorePatterns: [
     "node_modules/(?!(@types)/|socket.io|multer|jsonwebtoken|bcryptjs|passport)",
   ],
+
+  testPathIgnorePatterns: ["/node_modules/"],
 };
 
 export default config;

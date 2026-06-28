@@ -31,8 +31,7 @@ async function handleJoin() {
     await groupStore.joinGroup(inviteCode.value.trim());
     inviteCode.value = "";
     await groupStore.fetchMyGroups();
-  }
-  catch (e) {
+  } catch (e) {
     console.error("Ошибка вступления:", e);
   }
 }
@@ -50,31 +49,37 @@ function createGroup() {
   <div class="my-groups">
     <div class="section-header">
       <h2 class="page-title">Мои группы</h2>
-      <button class="btn btn-primary" @click="createGroup">
-        Создать группу
-      </button>
+      <button class="btn btn-primary" @click="createGroup">Создать группу</button>
     </div>
 
     <div class="join-section card">
       <h3>Присоединиться к группе</h3>
       <div class="join-form">
-        <input v-model="inviteCode" type="text" class="input" placeholder="Введите код приглашения" />
+        <input
+          v-model="inviteCode"
+          type="text"
+          class="input"
+          placeholder="Введите код приглашения"
+        />
         <button class="btn btn-primary" :disabled="!inviteCode.trim()" @click="handleJoin">
           Присоединиться
         </button>
       </div>
     </div>
 
-    <div v-if="groupStore.loading" class="loading">
-      Загрузка...
-    </div>
+    <div v-if="groupStore.loading" class="loading">Загрузка...</div>
 
     <div v-else-if="groupStore.myGroups.length === 0" class="empty">
       Вы пока не состоите ни в одной группе.
     </div>
 
     <div v-else class="groups-grid">
-      <div v-for="group in groupStore.myGroups" :key="group._id" class="group-card" @click="selectGroup(group._id)">
+      <div
+        v-for="group in groupStore.myGroups"
+        :key="group._id"
+        class="group-card"
+        @click="selectGroup(group._id)"
+      >
         <div class="group-avatar">
           <img :src="getAvatarUrl(group.avatar)" alt="group avatar" />
         </div>

@@ -5,14 +5,8 @@ import User from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 import { emitNotification } from "../../services/socket";
 
-export const getComments = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const test = await Test.findById(req.params.id).populate(
-    "comments.user",
-    "username avatar",
-  );
+export const getComments = async (req: Request, res: Response): Promise<void> => {
+  const test = await Test.findById(req.params.id).populate("comments.user", "username avatar");
   if (!test) {
     res.status(404).json({ message: "Тест не найден" });
     return;
@@ -20,10 +14,7 @@ export const getComments = async (
   res.json(test.comments);
 };
 
-export const addComment = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const addComment = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -42,10 +33,7 @@ export const addComment = async (
   });
   await test.save();
 
-  const populated = await Test.findById(req.params.id).populate(
-    "comments.user",
-    "username avatar",
-  );
+  const populated = await Test.findById(req.params.id).populate("comments.user", "username avatar");
   if (!populated) {
     res.status(404).json({ message: "Тест не найден" });
     return;
@@ -73,10 +61,7 @@ export const addComment = async (
   }
 };
 
-export const deleteComment = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const deleteComment = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });

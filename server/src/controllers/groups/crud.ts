@@ -3,10 +3,7 @@ import Group from "../../models/Group";
 import UserModel from "../../models/User";
 import { getUserId } from "../../utils/getUserId";
 
-export const createGroup = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const createGroup = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -25,10 +22,7 @@ export const createGroup = async (
   res.status(201).json(group);
 };
 
-export const updateGroup = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const updateGroup = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -44,9 +38,7 @@ export const updateGroup = async (
     return;
   }
   const { name, description } = req.body;
-  const avatar = req.file
-    ? `/uploads/groups/${req.file.filename}`
-    : group.avatar;
+  const avatar = req.file ? `/uploads/groups/${req.file.filename}` : group.avatar;
   const updated = await Group.findByIdAndUpdate(
     req.params.id,
     { name, description, avatar },
@@ -55,10 +47,7 @@ export const updateGroup = async (
   res.json(updated);
 };
 
-export const deleteGroup = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const deleteGroup = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -73,10 +62,7 @@ export const deleteGroup = async (
     res.status(403).json({ message: "Нет прав" });
     return;
   }
-  await UserModel.updateMany(
-    { groups: group._id },
-    { $pull: { groups: group._id } },
-  );
+  await UserModel.updateMany({ groups: group._id }, { $pull: { groups: group._id } });
   await Group.findByIdAndDelete(req.params.id);
   res.json({ message: "Группа удалена" });
 };
@@ -94,10 +80,7 @@ export const getGroup = async (req: Request, res: Response): Promise<void> => {
   res.json(group);
 };
 
-export const getMyGroups = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getMyGroups = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });

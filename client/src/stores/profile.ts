@@ -20,16 +20,16 @@ export const useProfileStore = defineStore("profile", () => {
   };
 
   const fetchUserProfile = async (userId: string) => {
-  loading.value = true;
-  try {
-    const { data } = await api.get<ProfileStats>(`/auth/profile/${userId}`);
-    stats.value = data;
-  } catch (e) {
-    console.error("Ошибка загрузки профиля:", e);
-  } finally {
-    loading.value = false;
-  }
-};
+    loading.value = true;
+    try {
+      const { data } = await api.get<ProfileStats>(`/auth/profile/${userId}`);
+      stats.value = data;
+    } catch (e) {
+      console.error("Ошибка загрузки профиля:", e);
+    } finally {
+      loading.value = false;
+    }
+  };
 
   return { stats, loading, fetchProfileStats, fetchUserProfile };
 });

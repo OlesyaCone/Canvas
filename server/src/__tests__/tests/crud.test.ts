@@ -1,12 +1,7 @@
 import { Request, Response } from "express";
 import Test from "../../models/Test";
 import UserModel from "../../models/User";
-import {
-  createTest,
-  updateTest,
-  deleteTest,
-  getTestById,
-} from "../../controllers/tests/crud";
+import { createTest, updateTest, deleteTest, getTestById } from "../../controllers/tests/crud";
 import { getUserId } from "../../utils/getUserId";
 
 jest.mock("../../models/Test");
@@ -15,11 +10,7 @@ jest.mock("../../utils/getUserId");
 jest.mock("fs");
 jest.mock("path");
 
-function mockReq(
-  body: object = {},
-  params: object = {},
-  files?: object,
-): Request {
+function mockReq(body: object = {}, params: object = {}, files?: object): Request {
   return { body, params, files } as unknown as Request;
 }
 
@@ -51,9 +42,7 @@ describe("createTest", function () {
     const req = mockReq({
       title: "test",
       description: "desc",
-      questions: JSON.stringify([
-        { question: "q1", answers: ["a", "b"], correctAnswer: "a" },
-      ]),
+      questions: JSON.stringify([{ question: "q1", answers: ["a", "b"], correctAnswer: "a" }]),
       visibility: "public",
     });
     const res = mockRes();
@@ -61,9 +50,7 @@ describe("createTest", function () {
     await createTest(req, res);
 
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(Test.create).toHaveBeenCalledWith(
-      expect.objectContaining({ title: "test" }),
-    );
+    expect(Test.create).toHaveBeenCalledWith(expect.objectContaining({ title: "test" }));
   });
 });
 
@@ -122,9 +109,7 @@ describe("updateTest", function () {
 
     await updateTest(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ title: "updated" }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ title: "updated" }));
   });
 });
 
@@ -187,8 +172,6 @@ describe("getTestById", function () {
 
     await getTestById(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ _id: "t1" }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ _id: "t1" }));
   });
 });

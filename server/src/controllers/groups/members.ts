@@ -28,10 +28,7 @@ export const joinGroup = async (req: Request, res: Response): Promise<void> => {
   res.json(group);
 };
 
-export const leaveGroup = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const leaveGroup = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -52,10 +49,7 @@ export const leaveGroup = async (
   res.json({ message: "Вы покинули группу" });
 };
 
-export const kickMember = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const kickMember = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -72,18 +66,13 @@ export const kickMember = async (
   }
   const targetId = req.params.userId;
   group.members = group.members.filter((id) => id.toString() !== targetId);
-  group.moderators = group.moderators.filter(
-    (id) => id.toString() !== targetId,
-  );
+  group.moderators = group.moderators.filter((id) => id.toString() !== targetId);
   await group.save();
   await UserModel.findByIdAndUpdate(targetId, { $pull: { groups: group._id } });
   res.json({ message: "Участник исключён" });
 };
 
-export const promoteMember = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const promoteMember = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -110,10 +99,7 @@ export const promoteMember = async (
   res.json(group);
 };
 
-export const demoteMember = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const demoteMember = async (req: Request, res: Response): Promise<void> => {
   const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ message: "Не авторизован" });
@@ -129,9 +115,7 @@ export const demoteMember = async (
     return;
   }
   const targetId = req.params.userId;
-  group.moderators = group.moderators.filter(
-    (id) => id.toString() !== targetId,
-  );
+  group.moderators = group.moderators.filter((id) => id.toString() !== targetId);
   await group.save();
   res.json(group);
 };

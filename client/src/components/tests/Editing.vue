@@ -103,7 +103,9 @@ async function submit() {
   const questionsData = questions.value.map(function (q) {
     return {
       question: q.question,
-      answers: q.answers.filter(function (a) { return a.trim() !== ""; }),
+      answers: q.answers.filter(function (a) {
+        return a.trim() !== "";
+      }),
       correctAnswer: q.correctAnswer,
     };
   });
@@ -119,8 +121,7 @@ async function submit() {
   try {
     await testStore.updateTest(props.testId, formData);
     router.push({ name: "personal" });
-  }
-  catch (e) {
+  } catch (e) {
     console.error("Ошибка обновления теста:", e);
   }
 }
@@ -148,14 +149,24 @@ function onBack() {
       <div class="form-group">
         <label>Обложка теста</label>
         <div v-if="existingCover && !imgFile" class="image-preview">
-          <img :src="existingCover.startsWith('http') ? existingCover : `http://localhost:5000${existingCover}`"
-            alt="текущая обложка" />
+          <img
+            :src="
+              existingCover.startsWith('http')
+                ? existingCover
+                : `http://localhost:5000${existingCover}`
+            "
+            alt="текущая обложка"
+          />
         </div>
         <div class="file-upload-wrapper">
-          <label for="edit-cover" class="file-upload-btn">
-            Выберите файл
-          </label>
-          <input id="edit-cover" type="file" accept="image/*" class="file-input-hidden" @change="onCoverChange" />
+          <label for="edit-cover" class="file-upload-btn"> Выберите файл </label>
+          <input
+            id="edit-cover"
+            type="file"
+            accept="image/*"
+            class="file-input-hidden"
+            @change="onCoverChange"
+          />
           <span class="file-name">
             {{ imgFile ? imgFile.name : "Файл не выбран" }}
           </span>
@@ -171,9 +182,7 @@ function onBack() {
       <div v-for="(q, idx) in questions" :key="idx" class="question-card">
         <div class="question-header">
           <span class="question-number">Вопрос {{ idx + 1 }}</span>
-          <button class="btn-icon" title="Удалить вопрос" @click="removeQuestion(idx)">
-            ✕
-          </button>
+          <button class="btn-icon" title="Удалить вопрос" @click="removeQuestion(idx)">✕</button>
         </div>
 
         <div class="form-group">
@@ -187,11 +196,14 @@ function onBack() {
             <img :src="q.imgPreview" alt="предпросмотр" />
           </div>
           <div class="file-upload-wrapper">
-            <label :for="'edit-q-img-' + idx" class="file-upload-btn">
-              Выберите файл
-            </label>
-            <input :id="'edit-q-img-' + idx" type="file" accept="image/*" class="file-input-hidden"
-              @change="(e: Event) => onQuestionImageChange(e, idx)" />
+            <label :for="'edit-q-img-' + idx" class="file-upload-btn"> Выберите файл </label>
+            <input
+              :id="'edit-q-img-' + idx"
+              type="file"
+              accept="image/*"
+              class="file-input-hidden"
+              @change="(e: Event) => onQuestionImageChange(e, idx)"
+            />
             <span class="file-name">
               {{ q.imgFile ? q.imgFile.name : "Файл не выбран" }}
             </span>
@@ -202,14 +214,16 @@ function onBack() {
           <label>Варианты ответов</label>
           <div v-for="(_, aIdx) in q.answers" :key="aIdx" class="answer-row">
             <input v-model="q.answers[aIdx]" class="input" :placeholder="'Ответ ' + (aIdx + 1)" />
-            <button v-if="q.answers.length > 1" class="btn-icon" title="Удалить вариант"
-              @click="removeAnswer(idx, aIdx)">
+            <button
+              v-if="q.answers.length > 1"
+              class="btn-icon"
+              title="Удалить вариант"
+              @click="removeAnswer(idx, aIdx)"
+            >
               ✕
             </button>
           </div>
-          <button class="btn btn-add" @click="addAnswer(idx)">
-            + Добавить вариант
-          </button>
+          <button class="btn btn-add" @click="addAnswer(idx)">+ Добавить вариант</button>
         </div>
 
         <div class="form-group">
@@ -218,18 +232,12 @@ function onBack() {
         </div>
       </div>
 
-      <button class="btn btn-add" @click="addQuestion">
-        + Добавить вопрос
-      </button>
+      <button class="btn btn-add" @click="addQuestion">+ Добавить вопрос</button>
     </div>
 
     <div class="form-actions">
-      <button class="btn btn-primary" @click="submit">
-        Сохранить изменения
-      </button>
-      <button class="btn btn-secondary" @click="onBack">
-        Отмена
-      </button>
+      <button class="btn btn-primary" @click="submit">Сохранить изменения</button>
+      <button class="btn btn-secondary" @click="onBack">Отмена</button>
     </div>
   </div>
 </template>

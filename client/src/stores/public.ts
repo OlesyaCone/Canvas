@@ -46,19 +46,14 @@ export const usePublicStore = defineStore("public", () => {
   };
 
   const fetchComments = async (testId: string) => {
-    const { data } = await api.get<TestComment[]>(
-      `/auth/tests/${testId}/comments`,
-    );
+    const { data } = await api.get<TestComment[]>(`/auth/tests/${testId}/comments`);
     commentsMap.value[testId] = data;
     const test = tests.value.find((t) => t._id === testId);
     if (test) test.commentsCount = data.length;
   };
 
   const addComment = async (testId: string, text: string) => {
-    const { data } = await api.post<TestComment>(
-      `/auth/tests/${testId}/comments`,
-      { text },
-    );
+    const { data } = await api.post<TestComment>(`/auth/tests/${testId}/comments`, { text });
     if (!commentsMap.value[testId]) commentsMap.value[testId] = [];
     commentsMap.value[testId].push(data);
     const test = tests.value.find((t) => t._id === testId);
