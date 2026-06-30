@@ -15,11 +15,22 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as { id: string };
     const username = req.body.username;
     const currentUser = await UserModel.findById(decoded.id);
-    if (req.file && currentUser?.avatar?.startsWith("/uploads/avatars/")) {
-      const oldPath = path.join(process.cwd(), currentUser.avatar);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    if (!currentUser) {
+      res.status(404).json({ message: "Пользователь не найден" });
+      return;
     }
-    const avatar = req.file ? `/uploads/avatars/${req.file.filename}` : req.body.avatar;
+
+    let avatar = currentUser.avatar;
+    if (req.file) {
+      if (currentUser.avatar?.startsWith("/uploads/avatars/")) {
+        const oldPath = path.join(process.cwd(), currentUser.avatar);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      avatar = `/uploads/avatars/${req.file.filename}`;
+    } else if (req.body.avatar) {
+      avatar = req.body.avatar;
+    }
+
     const user = await UserModel.findByIdAndUpdate(decoded.id, { username, avatar }, { new: true });
     if (!user) {
       res.status(404).json({ message: "Пользователь не найден" });
@@ -34,6 +45,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       },
     });
   } catch (error) {
+    console.error("updateProfile error:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

@@ -58,7 +58,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const completeProfileSetup = async (username: string, avatar: string | FormData) => {
     if (avatar instanceof FormData) {
-      avatar.append("username", username);
+      avatar.set("username", username);
       const { data } = await api.patch<{ user: User }>("/auth/profile", avatar);
       if (data.user) user.value = data.user;
       return data;

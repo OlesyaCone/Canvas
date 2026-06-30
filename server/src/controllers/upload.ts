@@ -40,17 +40,17 @@ const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFil
 export const upload = multer({
   storage: createStorage("avatars"),
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 export const uploadTestImage = multer({
   storage: createStorage("tests"),
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024, fieldSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024, fieldSize: 10 * 1024 * 1024 },
 });
 export const uploadGroupAvatar = multer({
   storage: createStorage("groups"),
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 export const getFile = async (req: Request, res: Response): Promise<void> => {
