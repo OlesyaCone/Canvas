@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, nextTick, watch } from "vue";
+import { useRouter } from "vue-router";
 import { io, type Socket } from "socket.io-client";
 import { useGroupStore } from "../../stores/group";
 import { useTestStore } from "../../stores/test";
@@ -21,11 +22,7 @@ interface ChatMessage {
 
 const props = defineProps<{ groupId: string }>();
 
-const emit = defineEmits<{
-  (e: "back"): void;
-  (e: "startTest", testId: string, groupTestId: string): void;
-}>();
-
+const router = useRouter();
 const groupStore = useGroupStore();
 const testStore = useTestStore();
 const authStore = useAuthStore();
@@ -43,13 +40,16 @@ const chatContainer = ref<HTMLDivElement>();
 let socket: Socket | null = null;
 
 const isAdmin = computed(function () {
-  return authStore.user?._id === groupStore.currentGroup?.admin._id;
+  const userId = authStore.user?._id || authStore.user?.id;
+  const adminId = groupStore.currentGroup?.admin?._id || groupStore.currentGroup?.admin;
+  return String(userId) === String(adminId);
 });
 
 const isModerator = computed(function () {
+  const userId = authStore.user?._id || authStore.user?.id;
   return (
     groupStore.currentGroup?.moderators.some(function (m) {
-      return m._id === authStore.user?._id;
+      return String(m._id || m) === String(userId);
     }) ?? false
   );
 });
@@ -61,20 +61,23 @@ function getAvatarUrl(avatar?: string): string {
   if (avatar.startsWith("http") || avatar.startsWith("data:")) {
     return avatar;
   }
-  return `http://localhost:5000${avatar}`;
+  return `/api${avatar}`;
 }
 
 function getUserResult(gt: GroupTest) {
   if (!gt.results) {
     return null;
   }
+  const userId = authStore.user?._id || authStore.user?.id;
   return gt.results.find(function (r) {
-    return r.user?._id === authStore.user?._id;
+    return String(r.user?._id || r.user) === String(userId);
   });
 }
 
 function isExpired(deadline: string): boolean {
-  return new Date(deadline) < new Date();
+  const deadlineDate = new Date(deadline);
+  deadlineDate.setHours(23, 59, 59, 999);
+  return deadlineDate < new Date();
 }
 
 async function loadData() {
@@ -84,6 +87,7 @@ async function loadData() {
 
   if (isAdmin.value || isModerator.value) {
     await groupStore.fetchGroupResults(props.groupId);
+    console.log("groupResults:", JSON.parse(JSON.stringify(groupStore.groupResults)));
   }
 }
 
@@ -174,19 +178,26 @@ async function handleDemote(userId: string) {
 
 async function handleLeave() {
   await groupStore.leaveGroup(props.groupId);
-  emit("back");
+  router.push({ name: "myGroups" });
 }
 
 async function openStats(testId: string) {
   showStats.value = true;
   await groupStore.fetchTestStats(props.groupId, testId);
 }
+
+function startTest(testId: string, groupTestId: string) {
+  router.push({
+    name: "playing",
+    params: { testId, groupTestId, groupId: props.groupId },
+  });
+}
 </script>
 
 <template>
   <div v-if="groupStore.currentGroup" class="group-view">
     <div class="group-top-bar">
-      <button class="btn btn-secondary" @click="emit('back')">← Назад</button>
+      <button class="btn btn-secondary" @click="router.push({ name: 'myGroups' })">← Назад</button>
       <button v-if="!isAdmin" class="btn btn-danger" @click="handleLeave">Покинуть группу</button>
     </div>
 
@@ -310,11 +321,7 @@ async function openStats(testId: string) {
         <template v-else-if="gt.deadline && isExpired(gt.deadline)">
           <span class="test-expired">Просрочен</span>
         </template>
-        <button
-          v-else
-          class="btn btn-primary btn-sm"
-          @click="emit('startTest', gt.test._id, gt._id)"
-        >
+        <button v-else class="btn btn-primary btn-sm" @click="startTest(gt.test._id, gt._id)">
           Пройти
         </button>
       </div>

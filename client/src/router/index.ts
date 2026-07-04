@@ -14,7 +14,7 @@ const router = createRouter({
       component: () => import("../components/tests/Creating.vue"),
     },
     {
-      path: "/play/:testId",
+      path: "/play/:testId/:groupTestId?/:groupId?",
       name: "playing",
       component: () => import("../components/tests/Playing.vue"),
       props: true,

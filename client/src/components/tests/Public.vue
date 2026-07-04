@@ -197,4 +197,5 @@ function viewProfile(userId: string) {
 
 <style lang="scss">
 @use "../../../styles/pages/public";
+@use "../../../styles/pages/tests";
 </style>

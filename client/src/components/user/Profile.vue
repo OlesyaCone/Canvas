@@ -79,7 +79,7 @@ onMounted(function () {
                 test.img?.startsWith('http') || test.img?.startsWith('data:')
                   ? test.img
                   : test.img
-                    ? `http://localhost:5000${test.img}`
+                    ? `${test.img}`
                     : noPhoto
               "
               class="test-image"
@@ -145,4 +145,5 @@ onMounted(function () {
 
 <style lang="scss">
 @use "../../../styles/pages/profile";
+@use "../../../styles/pages/tests";
 </style>

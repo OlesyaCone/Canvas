@@ -10,6 +10,7 @@ const testStore = useTestStore();
 const props = defineProps<{
   testId: string;
   groupTestId?: string;
+  groupId?: string;
 }>();
 
 const currentIndex = ref(0);
@@ -62,10 +63,11 @@ async function submitAnswers() {
   });
 
   try {
-    if (props.groupTestId) {
-      const { data } = await api.post(`/groups/${props.groupTestId}/tests/${props.testId}/submit`, {
-        answers,
-      });
+    if (props.groupTestId && props.groupId) {
+      const { data } = await api.post(
+        `/groups/${props.groupId}/tests/${props.groupTestId}/submit`,
+        { answers },
+      );
       score.value = data.score;
       total.value = data.total;
     } else {
@@ -110,7 +112,7 @@ function goBack() {
             :src="
               currentQuestion.img.startsWith('http')
                 ? currentQuestion.img
-                : `http://localhost:5000${currentQuestion.img}`
+                : `/api${currentQuestion.img}`
             "
             alt="изображение вопроса"
           />
