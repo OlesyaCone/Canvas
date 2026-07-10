@@ -24,6 +24,7 @@ function createWrapper() {
     props: {
       testId: "t1",
       groupTestId: undefined,
+      groupId: undefined,
     },
     global: {
       stubs: {
@@ -36,6 +37,7 @@ function createWrapper() {
 describe("Playing", function () {
   beforeEach(function () {
     setActivePinia(createPinia());
+    vi.useFakeTimers();
   });
 
   test("показывает загрузку пока тест не загружен", function () {

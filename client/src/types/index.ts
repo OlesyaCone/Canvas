@@ -42,6 +42,7 @@ export interface Question {
   img?: string;
   answers: string[];
   correctAnswer: string;
+  timeLimit?: number;
 }
 
 export interface TestComment {

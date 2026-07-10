@@ -354,3 +354,31 @@
     accent-color: var(--color-primary);
   }
 }
+
+.timer-bar-wrapper {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  margin: 8px 0 16px;
+}
+
+.timer-bar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.timer-bar.warning {
+  background: #e74c3c;
+}
+
+.timer-text {
+  position: absolute;
+  right: 0;
+  top: -20px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}

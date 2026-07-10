@@ -13,19 +13,25 @@ export const createTest = async (req: Request, res: Response): Promise<void> => 
   }
   const { title, description, questions, visibility } = req.body;
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
   const img = files?.img?.[0] ? `/uploads/tests/${files.img[0].filename}` : req.body.img || "";
+
   let parsedQuestions = typeof questions === "string" ? JSON.parse(questions) : questions;
+
   const questionImgs = files?.questionImgs || [];
   const indexes = Array.isArray(req.body.questionImgIndexes)
     ? req.body.questionImgIndexes
     : req.body.questionImgIndexes
       ? [req.body.questionImgIndexes]
       : [];
+
   questionImgs.forEach((file, i) => {
     const idx = parseInt(indexes[i], 10);
-    if (!isNaN(idx) && parsedQuestions[idx])
+    if (!isNaN(idx) && parsedQuestions[idx]) {
       parsedQuestions[idx].img = `/uploads/tests/${file.filename}`;
+    }
   });
+
   const test = await Test.create({
     title,
     img,

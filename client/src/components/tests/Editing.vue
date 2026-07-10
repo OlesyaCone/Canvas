@@ -10,6 +10,7 @@ interface EditableQuestion {
   correctAnswer: string;
   imgFile: File | null;
   imgPreview: string;
+  timeLimit: number;
 }
 
 const router = useRouter();
@@ -42,6 +43,7 @@ onMounted(async function () {
             ? q.img
             : `http://localhost:5000${q.img}`
           : "",
+        timeLimit: q.timeLimit || 0,
       };
     });
   }
@@ -54,6 +56,7 @@ function addQuestion() {
     correctAnswer: "",
     imgFile: null,
     imgPreview: "",
+    timeLimit: 0,
   });
 }
 
@@ -107,6 +110,7 @@ async function submit() {
         return a.trim() !== "";
       }),
       correctAnswer: q.correctAnswer,
+      timeLimit: q.timeLimit,
     };
   });
   formData.append("questions", JSON.stringify(questionsData));
@@ -229,6 +233,17 @@ function onBack() {
         <div class="form-group">
           <label>Правильный ответ</label>
           <input v-model="q.correctAnswer" class="input" placeholder="Введите правильный ответ" />
+        </div>
+
+        <div class="form-group">
+          <label>Ограничение по времени (сек)</label>
+          <input
+            v-model.number="q.timeLimit"
+            type="number"
+            class="input"
+            min="0"
+            placeholder="0 — без ограничения"
+          />
         </div>
       </div>
 

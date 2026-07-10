@@ -12,6 +12,7 @@ interface QuestionData {
   correctAnswer: string;
   imgFile: File | null;
   imgPreview: string;
+  timeLimit: number;
 }
 
 interface NewQuestionData {
@@ -20,6 +21,8 @@ interface NewQuestionData {
   correctAnswer: string;
   imgFile: File | null;
   imgPreview: string;
+  timeLimit: number;
+  hasTimeLimit: boolean;
 }
 
 const title = ref("");
@@ -35,6 +38,8 @@ const newQuestion = ref<NewQuestionData>({
   correctAnswer: "",
   imgFile: null,
   imgPreview: "",
+  timeLimit: 30,
+  hasTimeLimit: false,
 });
 
 function addAnswer() {
@@ -90,6 +95,7 @@ function addQuestion() {
     correctAnswer: q.correctAnswer.trim(),
     imgFile: q.imgFile,
     imgPreview: q.imgPreview,
+    timeLimit: q.hasTimeLimit ? q.timeLimit : 0,
   });
 
   newQuestion.value = {
@@ -98,6 +104,8 @@ function addQuestion() {
     correctAnswer: "",
     imgFile: null,
     imgPreview: "",
+    timeLimit: 30,
+    hasTimeLimit: false,
   };
 }
 
@@ -127,6 +135,7 @@ async function submit() {
       question: q.question,
       answers: q.answers,
       correctAnswer: q.correctAnswer,
+      timeLimit: q.timeLimit,
     };
   });
   formData.append("questions", JSON.stringify(questionsData));
@@ -219,6 +228,9 @@ function onBack() {
         <div class="correct-answer-label">
           Правильный ответ: <strong>{{ q.correctAnswer }}</strong>
         </div>
+        <div v-if="q.timeLimit > 0" class="time-limit-label">
+          Ограничение по времени: {{ q.timeLimit }} сек
+        </div>
       </div>
 
       <div class="add-question-form card">
@@ -279,6 +291,22 @@ function onBack() {
           <small class="hint">
             Этот вариант автоматически добавится в список ответов, если его там нет.
           </small>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input v-model="newQuestion.hasTimeLimit" type="checkbox" />
+            <span>Ограничение по времени</span>
+          </label>
+          <input
+            v-if="newQuestion.hasTimeLimit"
+            v-model.number="newQuestion.timeLimit"
+            type="number"
+            class="input"
+            placeholder="Время в секундах"
+            min="5"
+            max="600"
+          />
         </div>
 
         <button class="btn btn-add" @click="addQuestion">Добавить вопрос</button>

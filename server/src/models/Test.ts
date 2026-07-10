@@ -13,6 +13,7 @@ const testSchema = new mongoose.Schema(
         img: String,
         answers: [String],
         correctAnswer: String,
+        timeLimit: { type: Number, default: 0 },
       },
     ],
     visibility: {

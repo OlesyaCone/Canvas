@@ -2,7 +2,8 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext .ts,.vue",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:all": "cd client && pnpm test && npx playwright test && cd ../server && pnpm test"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.62.0",

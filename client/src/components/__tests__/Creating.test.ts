@@ -85,3 +85,11 @@ describe("Creating", function () {
     expect(wrapper.text()).toContain("Вопрос 1");
   });
 });
+
+test("переключение ограничения по времени", async function () {
+  const wrapper = createWrapper();
+  const checkbox = wrapper.find('.add-question-form input[type="checkbox"]');
+  await checkbox.setValue(true);
+  const timeInput = wrapper.find('.add-question-form input[type="number"]');
+  expect(timeInput.exists()).toBe(true);
+});
